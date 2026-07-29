@@ -129,18 +129,45 @@ Nia CLI is available for the following platforms:
 
 The quick installer detects the release asset for your platform and provides the shortest installation path. The Nia release repository is private, so authenticate with GitHub CLI or a token before running one of these methods.
 
+#### Install with GitHub CLI
+
 *Linux/macOS:*
 ```bash
-curl -fsSL https://github.com/Telerik/project-nia/releases/latest/download/install.sh | sh
+# Requires: gh CLI authenticated (run 'gh auth login' first)
+gh release download --repo Telerik/project-nia --pattern 'install.sh' && sh install.sh
 ```
 
 *Windows (PowerShell 6+):*
 ```powershell
-Invoke-WebRequest `
+# Requires: gh CLI authenticated (run 'gh auth login' first)
+gh release download --repo Telerik/project-nia --pattern 'install.ps1'
+.\install.ps1
+```
+
+#### Install with a GitHub Token
+
+*Linux/macOS:*
+```bash
+# Requires: GITHUB_TOKEN environment variable
+curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
+  -o install.sh \
+  https://github.com/Telerik/project-nia/releases/latest/download/install.sh
+sh install.sh
+```
+
+*Windows (PowerShell 6+):*
+```powershell
+# Requires: GITHUB_TOKEN environment variable
+$headers = @{Authorization = "token $env:GITHUB_TOKEN"}
+Invoke-WebRequest -Headers $headers `
   -Uri 'https://github.com/Telerik/project-nia/releases/latest/download/install.ps1' `
   -OutFile install.ps1
 .\install.ps1
 ```
+
+> **Authentication required**: This repository is private. Choose one method:
+> - **GitHub CLI**: Run `gh auth login` first, then use the GitHub CLI method.
+> - **Token**: Set the `GITHUB_TOKEN` environment variable, then use the token method.
 
 #### Choose Installer Options
 
@@ -156,9 +183,9 @@ sh install.sh --skip-verify                # Skip verification (not recommended)
 sh install.sh --quiet                      # Quiet mode for CI/CD
 ```
 
-*Linux/macOS with direct download:*
+*Linux/macOS with token:*
 ```bash
-curl -fsSL \
+curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
   -o install.sh \
   https://github.com/Telerik/project-nia/releases/latest/download/install.sh
 sh install.sh --version 4.0.1 --quiet

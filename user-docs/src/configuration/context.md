@@ -220,6 +220,19 @@ The loader merges these sources into the target-operation collection. It dedupli
 
 If a configured file or directory does not exist, NIA returns a configuration error. If a file path resolves to a directory, or a directory path resolves to a file, NIA returns a type-specific configuration error. Missing job context is optional and is skipped.
 
+## Security Considerations
+
+Context configuration has security implications. Before configuring context sources,
+review the [Security Guide](../reference/security.md) to understand:
+
+- Which paths should NOT be included in context (credentials, `.env` files, keys)
+- How path validation works and its limitations
+- The difference between what nia validates and what the agent can access
+
+> **⚠️ Important**: The AI agent can read files directly from your filesystem.
+> Context paths tell the agent where to look, but the agent's access is not
+> limited to those paths. See [Agent File System Access](../reference/security.md#agent-file-system-access).
+
 ## Best Practices
 
 Use these patterns to keep context focused and predictable:

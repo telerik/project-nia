@@ -493,7 +493,7 @@ Temporary workaround:
 2. In the affected project, run: `nia <target> <operation> --clear`
 3. This creates a session with a unique suffix to avoid the conflict
 
-> **Note**: This workaround is temporary. See [Issue #670](https://github.com/Telerik/project-nia/issues/670) for permanent fix.
+> **Note**: This workaround is temporary. See [Issue #670](https://github.com/Progress-Copilot/nia/issues/670) for permanent fix.
 
 **Related**: [Session Context & Token Optimization](../advanced/session-context.md)
 

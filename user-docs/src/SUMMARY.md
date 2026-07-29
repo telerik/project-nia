@@ -77,6 +77,7 @@
   - [Context Merging Rules](./reference/context-merging.md)
   - [Transaction Log Format](./reference/transaction-logs.md)
   - [Environment Variables](./reference/environment-variables.md)
+  - [Security Guide](./reference/security.md)
 
 - [Concepts]()
   - [Workflow Execution Model](./concepts/execution-model.md)

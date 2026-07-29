@@ -456,6 +456,10 @@ Audit your patterns when:
 
 ## Security Considerations
 
+> **📖 Related Documentation**: Secret masking protects **output** (what the agent
+> produces). For **input** security (what data is sent to agents), see the
+> [Security Guide](../reference/security.md).
+
 ### What Gets Masked
 
 ✅ **Protected:**
@@ -499,6 +503,7 @@ nia ask "test" 2>&1 | grep "Loaded.*patterns"
 
 ## See Also
 
+- [Security Guide](../reference/security.md) - Comprehensive security reference covering data flow, sensitive files, and safe customization (complements secret masking with input/configuration security)
 - [Security Workflow](../workflows/security.md) - SAST integration and vulnerability scanning
 - [Configuration Hierarchy](../configuration/hierarchical.md) - How config files are discovered
 - [Session Context](./session-context.md) - Session management and optimization
