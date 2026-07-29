@@ -1,0 +1,406 @@
+# Configuration Troubleshooting
+
+Solving configuration-related problems.
+
+## Validation Errors
+
+### Syntax Errors
+
+**Problem**: TOML syntax errors
+
+**Common Causes**:
+- Unclosed quotes: `name = "test`
+- Missing commas in arrays: `options = ["a" "b"]`
+- Invalid table headers: `[commands]` (should be `[[commands]]`)
+
+**Solution**: Fix syntax at reported line number
+
+### Schema Errors
+
+**Problem**: Invalid schema structure
+
+**Solutions**:
+1. Check required fields present
+2. Verify field types correct
+3. Follow schema reference exactly
+
+### Name Conflicts
+
+**Problem**: Duplicate or conflicting names
+
+**Solutions**:
+1. Ensure all names unique
+2. Don't use built-in command names
+3. Check for case-insensitive duplicates
+
+## Loading Errors
+
+### File Not Found
+
+**Problem**: Configuration file can't be found
+
+**Debugging**:
+```bash
+# Check if file exists
+ls -la .nia/config.toml
+
+# Check current directory
+pwd
+
+# Verify path
+nia config validate --file .nia/config.toml
+```
+
+### Permission Issues
+
+**Problem**: Can't read configuration file
+
+**Solution**:
+```bash
+# Fix permissions
+chmod 644 .nia/config.toml
+
+# Check owner
+ls -l .nia/config.toml
+```
+
+### Lock File Issues
+
+**Problem**: Stale lock file after configuration changes
+
+**Symptom**:
+```
+⚠ Warning: Lock file stale, rebuilding...
+```
+
+**Cause**: Configuration changed but lock file not updated
+
+**Solution**:
+1. **Let Nia rebuild automatically** (recommended):
+   - This is normal after config changes
+   - Nia rebuilds lock file automatically
+   - Only intervene if rebuild fails repeatedly
+
+2. **Manual rebuild** (if automatic fails):
+   ```bash
+   rm .nia/.config_lock
+   nia config validate
+   ```
+
+**Prevention**: Run `nia config validate` after configuration changes
+
+---
+
+### Lock File Corruption
+
+**Problem**: Lock file cannot be parsed
+
+**Error Message**:
+```
+❌ Error: Failed to parse lock file
+```
+
+**Cause**: Corrupted lock file data
+
+**Solution**:
+```bash
+# Remove corrupted lock file
+rm .nia/.config_lock
+
+# Regenerate clean lock file
+nia config validate
+```
+
+Nia will rebuild a clean lock file automatically.
+
+---
+
+### Export Command Fails
+
+**Problem**: Config export command fails
+
+**Symptom 1 - File Already Exists**:
+```
+❌ Error: Workflows file already exists: ./.nia/config/commands.toml
+Use --force to overwrite existing configuration.
+```
+
+**Solutions**:
+1. Use `--force` to overwrite:
+   ```bash
+   nia config export --force
+   ```
+
+2. Backup existing config:
+   ```bash
+   cp .nia/config/commands.toml .nia/config/commands.toml.bak
+   nia config export --force
+   ```
+
+3. Remove and re-export:
+   ```bash
+   rm .nia/config/commands.toml
+   nia config export
+   ```
+
+**Symptom 2 - Target Not Found**:
+```
+❌ Error: Target 'xyz' not found in built-in workflows
+```
+
+**Solution**: Use a valid target name
+```bash
+# Check built-in workflows
+cat configs/commands.toml | grep "target ="
+
+# Or use one of: issue, code, pr, docs, backlog
+nia config export --target issue
+```
+
+---
+
+### Protected Namespace Error
+
+**Problem**: Custom workflow uses protected namespace
+
+**Error Message**:
+```
+❌ Error: Protected namespace violation: 'config'
+  Target 'config' is reserved for utility commands.
+  Choose a different target name.
+```
+
+**Cause**: Trying to use reserved names: `config`, `guide`, `shell`
+
+**Solution**: Choose a different target name
+
+## Structure Errors
+
+### Missing Sections
+
+**Problem**: Required sections not present
+
+**Solution**: Include all required sections:
+```toml
+schema_version = "2.1.0"  # Required
+
+[metadata]  # Required
+name = "..."
+version = "..."
+author = "..."
+
+[cli]  # Required
+name = "nia"
+version = "..."
+description = "..."
+
+[[commands]]  # At least one required
+```
+
+### Invalid Hierarchy
+
+**Problem**: Commands structured incorrectly
+
+**Rules**:
+- Commands can have subcommands OR operations (not both)
+- Subcommands must have operations
+- Operations can have sub-operations
+
+**Example**:
+```toml
+# ✓ Correct
+[[commands]]
+name = "plan"
+
+[[commands.subcommands]]
+name = "task"
+
+[[commands.subcommands.operations]]
+name = "create"
+
+# ✗ Wrong - command has both subcommands and operations
+[[commands]]
+name = "test"
+
+[[commands.subcommands]]
+name = "unit"
+
+[[commands.operations]]  # Can't have both!
+name = "run"
+```
+
+## Type Errors
+
+### Invalid Option Types
+
+**Problem**: Wrong option type specified
+
+**Valid Types**:
+- `boolean`
+- `string`
+- `integer`
+- `path`
+
+**Example**:
+```toml
+# ✗ Wrong
+type = "bool"  # Should be "boolean"
+type = "str"   # Should be "string"
+type = "int"   # Should be "integer"
+
+# ✓ Correct
+type = "boolean"
+type = "string"
+type = "integer"
+```
+
+### Invalid Default Values
+
+**Problem**: Default value doesn't match type
+
+**Solution**: Match type to value:
+```toml
+# ✗ Wrong
+type = "integer"
+default = "abc"  # Not a number
+
+# ✓ Correct
+type = "integer"
+default = "42"  # Numeric string
+```
+
+## Reference Errors
+
+### Missing Help Files
+
+**Problem**: Referenced help file doesn't exist
+
+**Solution**:
+```bash
+# Create help file
+mkdir -p configs/help
+echo "# My Command Help" > configs/help/mycommand.md
+```
+
+### Invalid Prompt Paths
+
+**Problem**: Prompt file not found
+
+**Solution**: Follow convention:
+```toml
+# Automatic path: prompts/role/task_definition.md
+[[commands.operations.prompts]]
+name = "task_definition"
+prompt_type = "role"
+
+# Or specify explicit path
+[[commands.operations.prompts]]
+name = "custom"
+prompt_type = "role"
+file = "prompts/custom/my_prompt.md"
+```
+
+## Debugging Configuration
+
+### Step-by-Step Debugging
+
+1. **Start Simple**:
+   ```toml
+   schema_version = "2.1.0"
+   [metadata]
+   name = "Test"
+   version = "1.0.0"
+   author = "Me"
+   [cli]
+   name = "nia"
+   version = "0.0.1"
+   description = "Test"
+   [[commands]]
+   name = "test"
+   description = "Test"
+   [[commands.operations]]
+   name = "run"
+   description = "Run"
+   default = true
+   ```
+
+2. **Validate**:
+   ```bash
+   nia config validate --file .nia/config.toml
+   ```
+
+3. **Add Complexity Gradually**:
+   - Add one command at a time
+   - Validate after each addition
+   - Test each command works
+
+### Validation Output
+
+**Read Carefully**:
+- Error type (schema, semantic, runtime)
+- Line numbers
+- Field names
+- Suggestions
+
+**Example**:
+```
+Error: Missing required field 'description' at line 15
+In: [[commands]] section
+Suggestion: Add description = "..." to the command
+```
+
+## Common Mistakes
+
+### 1. Wrong Array Syntax
+
+```toml
+# ✗ Wrong
+[[commands.options]]
+name = "edit"
+conflicts_with = "debug"  # Should be array
+
+# ✓ Correct
+conflicts_with = ["debug"]
+```
+
+### 2. Missing Tables
+
+```toml
+# ✗ Wrong - Missing [[commands]] header
+name = "test"
+description = "Test"
+
+# ✓ Correct
+[[commands]]
+name = "test"
+description = "Test"
+```
+
+### 3. Wrong Short Alias
+
+```toml
+# ✗ Wrong
+short = "ab"  # Must be single character
+
+# ✓ Correct
+short = "a"
+```
+
+### 4. Case Sensitivity
+
+```toml
+# ✗ Wrong
+name = "MyCommand"  # Uppercase not allowed
+
+# ✓ Correct
+name = "mycommand"
+name = "my-command"
+```
+
+## Best Practices
+
+1. **Always Validate**: `nia config validate`
+2. **Use Version Control**: Track config changes
+3. **Start Simple**: Minimal config first
+4. **Test Incrementally**: After each change
+5. **Follow Examples**: Use provided examples

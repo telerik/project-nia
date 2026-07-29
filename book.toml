@@ -1,0 +1,21 @@
+[book]
+title = "Nia CLI User Guide"
+description = "User documentation for Nia agentic SDLC CLI"
+authors = ["Nia CLI Contributors"]
+language = "en"
+src = "user-docs/src"
+
+[build]
+build-dir = "user-docs/book"
+
+[output.html]
+git-repository-url = "https://github.com/Telerik/project-nia"
+additional-css = ["user-docs/theme/custom.css"]
+additional-js = ["user-docs/theme/custom.js"]
+
+[output.html.fold]
+enable = true
+level = 0
+
+[output.html.search]
+enable = true
