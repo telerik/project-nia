@@ -4,10 +4,17 @@ on:
   push:
     branches:
       - master
+      - gh-pages-deploy
     paths:
       - "user-docs/**"
       - "book.toml"
+      - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
+
+env:
+  # Checksums retrieved via: gh api repos/rust-lang/mdBook/releases/tags/v0.5.2 --jq '.assets[] | {name, digest}'
+  MDBOOK_VERSION: "0.5.2"
+  MDBOOK_SHA256_LINUX: "084e4342ba564db270108763e404a7d1f309d932651a22484e93c0dc1a071f6d"
 
 permissions:
   contents: read
@@ -27,8 +34,25 @@ jobs:
 
       - name: Install mdBook
         run: |
-          curl -sSL https://github.com/rust-lang/mdBook/releases/latest/download/mdbook-x86_64-unknown-linux-gnu.tar.gz \
-            | tar -xz --directory /usr/local/bin
+          # Download mdBook with cryptographic verification for supply chain security
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+
+          ARCHIVE="mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+
+          echo "Downloading mdBook v${MDBOOK_VERSION}..."
+          curl -fsSL "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/${ARCHIVE}" -o "${ARCHIVE}"
+
+          echo "Verifying SHA256 checksum..."
+          echo "${MDBOOK_SHA256_LINUX}  ${ARCHIVE}" | sha256sum -c -
+
+          echo "Installing mdBook..."
+          tar -xzf "${ARCHIVE}" -C "$HOME/.local/bin"
+          rm "${ARCHIVE}"
+
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/mdbook" --version
+          echo "✓ mdBook installed and verified successfully"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

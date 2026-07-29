@@ -9,7 +9,7 @@ src = "user-docs/src"
 build-dir = "user-docs/book"
 
 [output.html]
-git-repository-url = "https://github.com/Telerik/project-nia"
+git-repository-url = "https://github.com/Progress-Copilot/nia"
 additional-css = ["user-docs/theme/custom.css"]
 additional-js = ["user-docs/theme/custom.js"]
 

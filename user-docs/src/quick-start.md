@@ -45,7 +45,7 @@ Make the `nia` command available in a new terminal.
 4. Download and run the installer:
 
 	```powershell
-	gh release download --repo Telerik/project-nia --pattern 'install.ps1'
+	gh release download --repo Progress-Copilot/nia --pattern 'install.ps1'
 	.\install.ps1
 	```
 
@@ -69,7 +69,7 @@ Make the `nia` command available in a new terminal.
 3. Download and run the installer:
 
 	```bash
-	gh release download --repo Telerik/project-nia --pattern 'install.sh'
+	gh release download --repo Progress-Copilot/nia --pattern 'install.sh'
 	sh install.sh
 	```
 
@@ -302,7 +302,7 @@ This will open the full user guide in your default web browser.
 
 ## Run Your First Workflow Command
 
-Use the issue, code, and pull request workflows to address an existing issue from planning through pull request review. Run these commands from the root of the configured project. 
+Use the issue, code, and pull request workflows to address an existing issue from planning through pull request review. Run these commands from the root of the configured project.
 
 ### Set the issue context
 
@@ -476,4 +476,3 @@ You installed NIA, connected an AI coding agent, initialized NIA in a project, c
 - [Explore issue workflows](./workflows/issue.md) to review, plan, publish, or split issues.
 - [Review the command reference](./reference/commands.md) for targets, operations, flags, and modifiers.
 - [Troubleshoot common issues](./troubleshooting/common-issues.md) when installation, configuration, or workflow execution fails.
-

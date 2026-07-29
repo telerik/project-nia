@@ -97,7 +97,16 @@ command_macos = "brew install jq"
 command_windows = "choco install jq"
 ```
 
-⚠️ **Security Warning**: Shell steps execute with your user's permissions. Avoid using untrusted input in commands to prevent command injection.
+> **⚠️ Security Warning**
+>
+> Shell steps execute with your user's permissions and can run arbitrary commands.
+> This creates security risks including:
+> - Command injection if interpolating untrusted input
+> - Secret exposure if credentials are in commands
+> - Environment variable leakage via `set_env`
+>
+> **Before using shell hooks**, review [Safe Customization Guidelines](../reference/security.md#safe-customization-guidelines)
+> for secure patterns and common pitfalls to avoid.
 
 ### Checks
 
@@ -379,6 +388,9 @@ Each log entry includes:
 - `error`: Error message (if failed)
 
 ## Best Practices
+
+> **📖 Security Reference**: For comprehensive security guidance on hooks,
+> see the [Security Guide](../reference/security.md#shell-hook-security).
 
 1. **Prefer built-in operations** over shell commands for file operations - they're safer and cross-platform
 2. **Keep hooks focused** - Each hook should do one thing well
