@@ -87,7 +87,7 @@ Give NIA an authenticated coding agent that can execute a workflow. You can chan
 
 </div>
 <div class="nia-tab" data-title="OpenCode">
-	
+
 1. Install the CLI. Node.js and npm must be available:
 
 	```bash
