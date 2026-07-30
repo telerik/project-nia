@@ -104,7 +104,7 @@ Nia collects usage telemetry in two consent-gated tiers:
 | Tier | Data Collected | Consent Required |
 |------|----------------|------------------|
 | Anonymous | Command, version, OS, agent name, model | Notice shown |
-| Personalized | MachineId, GUID | Explicit consent |
+| Personalized | MachineId, User ID | Explicit consent |
 
 **What is NOT transmitted**:
 - Your code or file contents

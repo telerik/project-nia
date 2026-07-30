@@ -2,95 +2,59 @@
 
 NIA is a command-line agent harness for software development life cycle (SDLC) workflows. It connects your project context and development tools to an AI coding agent so you can draft issues, create plans, review code, and run other configured workflows.
 
-This guide takes you from a new installation to your first local issue draft. The examples cover GitHub Copilot CLI, Claude Code, and OpenCode — use the tabs to pick your agent. GitHub Copilot CLI is the shortest path in this tutorial. The [AI coding agent setup guide](./agents/setup.md) contains the agent-specific requirements and authentication commands.
+This guide takes you from installing NIA to configuring a supported AI coding agent, initializing NIA in a project, and running an Issue-to-PR workflow that begins by setting an issue context and generating a plan with `nia issue plan`. The examples cover GitHub Copilot CLI, Claude Code, and OpenCode — use the tabs to pick your agent. GitHub Copilot CLI is the shortest path in this tutorial. The [AI coding agent setup guide](./agents/setup.md) contains the agent-specific requirements and authentication commands.
 
-## Install and Verify NIA
+## Prerequisites
+
+Before you begin, ensure that you have:
+
+* **Node.js 18+** (`node --version`) — the coding agents install via npm. Get it from [nodejs.org](https://nodejs.org).
+* **GitHub CLI** (`gh --version` & `gh auth status`) — installs and authenticates NIA. Install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh` and then authenticate.
+* NIA runs inside a project, so you need a local directory to work in. To follow this guide exactly, fork the sample app and run commands inside of it. The [healthcare-app-angular](https://github.com/telerik/healthcare-app-angular) demo ships a Dev Container that installs Node.js, the GitHub CLI, the AI coding agents, and NIA for you — locally in VS Code or in a GitHub Codespace. Open it, authenticate an agent, initialize NIA, and skip straight to [Run Your First Workflow Command](#run-your-first-workflow-command).
+
+	```powershell
+	gh repo fork telerik/healthcare-app-angular --clone
+	cd healthcare-app-angular
+	```
+
+## Installation & Verification
 
 Make the `nia` command available in a new terminal.
+
+1. Download and run the installer:
 
 <div class="nia-tabs" data-group="os">
 <div class="nia-tab" data-title="Windows (PowerShell)">
 
-1. Open PowerShell 6 or later. Check your version:
-
-	```powershell
-	$PSVersionTable.PSVersion.Major
-	```
-
-	The result must be `6` or higher. If the result is `5`, install PowerShell 7:
-
-	```powershell
-	winget install Microsoft.PowerShell
-	```
-
-2. If you will use GitHub Copilot CLI, install and verify it before authenticating with GitHub CLI. Node.js and npm must be available:
-
-	```powershell
-	winget install --id GitHub.cli
-	```
-
-	Close PowerShell and open a new PowerShell window so the updated `PATH` is available. Verify that GitHub CLI is available:
-
-	```powershell
-	gh --version
-	```
-
-3. Authenticate GitHub CLI if you will download NIA from the private release repository:
-
-	```powershell
-	gh auth login
-	gh auth status
-	```
-
-4. Download and run the installer:
-
-	```powershell
-	gh release download --repo Progress-Copilot/nia --pattern 'install.ps1'
-	.\install.ps1
-	```
+```powershell
+gh release download --repo telerik/project-nia --pattern 'install.ps1'
+.\install.ps1
+```
 
 </div>
 <div class="nia-tab" data-title="Linux / macOS">
 
-1. If you will use GitHub Copilot CLI, install and verify it before authenticating with GitHub CLI. Node.js and npm must be available:
-
-	```bash
-	npm install -g @github/copilot
-	copilot --version
-	```
-
-2. Authenticate GitHub CLI if you will download NIA from the private release repository:
-
-	```bash
-	gh auth login
-	gh auth status
-	```
-
-3. Download and run the installer:
-
-	```bash
-	gh release download --repo Progress-Copilot/nia --pattern 'install.sh'
-	sh install.sh
-	```
-
-4. Close the current terminal and open a new one so the updated `PATH` is available.
-
-</div>
-</div>
-
-### Verify the installation
-
-Run this command:
-
 ```bash
-nia --version
+gh release download --repo telerik/project-nia --pattern 'install.sh'
+sh install.sh
 ```
+
+</div>
+</div>
+
+2. Close the current terminal and open a new one so the updated `PATH` is available.
+
+3. Verify the installation.
+
+	```bash
+	nia --version
+	```
 
 The terminal prints a NIA version number, for example `nia 4.2.1`. If the command is not found, open a new terminal and confirm that the directory containing the NIA executable is on your `PATH`.
 
-## Install and Authenticate an AI Coding Agent
+4. Install and authenticate an AI coding agent.
 
-Give NIA an authenticated agent that can execute a workflow. Choose one agent. GitHub Copilot CLI is the shortest path in this tutorial. You can change agents later by re-running `config init`.
+Give NIA an authenticated coding agent that can execute a workflow. You can change agents later by re-running `config init`.
 
 <div class="nia-tabs" data-group="agent">
 <div class="nia-tab" data-title="GitHub Copilot CLI">
@@ -123,7 +87,7 @@ Give NIA an authenticated agent that can execute a workflow. Choose one agent. G
 
 </div>
 <div class="nia-tab" data-title="OpenCode">
-
+	
 1. Install the CLI. Node.js and npm must be available:
 
 	```bash
@@ -137,20 +101,16 @@ Give NIA an authenticated agent that can execute a workflow. Choose one agent. G
 	opencode auth login
 	```
 
-	> Use one installation method only. Mixing npm, Homebrew, and the shell installer can leave multiple `opencode` binaries on your `PATH`.
-
 </div>
 </div>
 
-The selected agent's version command succeeds, and its authentication or test command returns without an authentication error. Keep the same terminal environment for the remaining steps.
+5. Initialize NIA Configuration.
 
-## Initialize NIA Configuration
-
-Run `config init` from the root of your project, such as a locally cloned Git repository (for example https://github.com/telerik/healthcare-app-angular). The command creates the NIA configuration files that store your AI agent, project metadata, and optional toolchain connections.
+Run `nia config init` from the root of your project, such as a locally cloned Git repository (for example, https://github.com/telerik/healthcare-app-angular). The command creates the NIA configuration files that store your AI agent, project metadata, and optional toolchain connections.
 
 Choose the initialization command that matches your setup:
 
-### Connect GitHub Issues and GitHub
+* Connect GitHub Issues and GitHub
 
 Use this command when your workflows will read issues from GitHub or work with a GitHub repository. Pick the tab for the agent you set up in the previous step:
 
@@ -178,9 +138,9 @@ nia config init --issues github_issues --code github --agent opencode --models s
 </div>
 </div>
 
-This command creates configuration for the selected AI coding agent, GitHub Issues, and GitHub as the code platform for demo purposes; other providers like JIRA and Bitbucket are supported.
+This command creates configuration for the selected AI coding agent, GitHub Issues, and GitHub as the code platform for demo purposes. Other providers like JIRA and Bitbucket are supported.
 
-### Use a Local-Only Setup
+* Use a Local-Only Setup
 
 Use this command when you do not want to connect NIA to an external issue tracker or code platform. Pick the tab for the agent you set up in the previous step:
 
@@ -226,7 +186,7 @@ After initialization, confirm that these files exist:
 - `.nia/config/project.toml`, which contains project metadata that you must complete.
 - `.nia/config/toolchain.toml` when you selected an issue tracker or code platform.
 
-## Configure Project Metadata
+6. Configure Project Metadata.
 
 Open `.nia/config/project.toml` and replace the sample values with details about your project. NIA uses this metadata to give the agent reliable information about your language, framework, tests, and package manager.
 
@@ -267,7 +227,7 @@ If validation succeeds, NIA reports:
 Configuration is valid
 ```
 
-## View Available Commands
+7. View Available Commands.
 
 Nia includes a command-line interface (CLI) that provides access to its available features and operations. You can use the built-in help system to discover available commands, view command descriptions, and learn how to use specific functionality.
 
@@ -304,7 +264,7 @@ This will open the full user guide in your default web browser.
 
 Use the issue, code, and pull request workflows to address an existing issue from planning through pull request review. Run these commands from the root of the configured project.
 
-### Set the issue context
+1. Set the issue context.
 
 Replace `14` with the identifier of the existing issue or work item:
 
@@ -321,7 +281,7 @@ export NIA_ISSUE_ID=14
 
 The context command reports the current Issue ID. If NIA reports that an Issue ID is required, set it with one of these methods before continuing.
 
-### Generate and review the implementation plan
+2. Generate and review the implementation plan.
 
 Create the implementation plan for the selected issue:
 
@@ -349,7 +309,7 @@ nia issue plan --edit "Include the required test and validation steps"
 
 Do not start implementation until the plan reflects the approved approach. The code workflow validates the required plan files before it invokes the coding agent.
 
-### Implement the approved plan
+3. Implement the approved plan.
 
 Use the plan to create the implementation and tests:
 
@@ -363,7 +323,7 @@ The `create` operation uses the issue-linked plan, applies changes to the projec
 nia code create --fix "Address the failing validation identified during implementation"
 ```
 
-### Build, test, and review the implementation
+4. Build, test, and review the implementation.
 
 Run the build and test workflows after implementation:
 
@@ -388,7 +348,7 @@ nia code review --auto-fix issues
 
 Run `nia code review` before `--auto-fix` so that the current `review.md` exists. You can use `critical`, `major`, `minor`, `suggestions`, or `all` when a narrower or broader scope is appropriate. After applying fixes, run `nia code build`, `nia code test`, and `nia code review` again and resolve remaining failures or findings. Use specific `--edit` or `--fix` instructions when a workflow needs clarification.
 
-### Create and publish the pull request
+5. Create and publish the pull request.
 
 NIA does not provide a standalone built-in operation for creating a pull request. Use your configured code management system to create the pull request for the implementation changes, then note its identifier. The pull request must be associated with the issue.
 
@@ -426,7 +386,7 @@ nia pr publish
 
 This updates only the pull request description and preserves metadata such as its state, labels, and reviewers. It does not create the pull request.
 
-### Review the pull request and address feedback
+6. Review the pull request and address feedback.
 
 Run the pull request review with both the issue and pull request contexts set:
 
@@ -444,13 +404,13 @@ Review the findings and address the requested changes in the project. Validate a
 
 Stop here. Do not run a merge operation: merging the pull request is not part of this workflow. The documented `nia pr merge` operation prepares a pull request for merging but does not perform the final merge; complete any eventual merge separately through the configured code management system after the required approvals and checks.
 
-### Expected result
+7. Expected result.
 
 The selected issue has a reviewed implementation plan, the planned changes and tests are applied, the build and test workflows report their results, and code review findings are resolved. A pull request exists in the configured code management system with a reviewed description, and `nia pr review` reports the remaining status checks, code-quality findings, reviewer feedback, and merge conflicts. The pull request remains unmerged.
 
 > **Tip:** To see the generated prompt and complete agent response when troubleshooting, inspect the workflow trace under `.nia/work/` or run `nia trace list`.
 
-## Verify your success
+8. Verify your success.
 
 You have completed the quick start when all of the following are true:
 
@@ -467,7 +427,7 @@ If a check fails, fix that check before continuing. Common causes include an old
 
 ## Summary
 
-You installed NIA, connected an AI coding agent, initialized NIA in a project, completed the required project metadata, validated the configuration, created a local issue draft, set an issue context, and generated an implementation plan.
+You installed NIA, connected an AI coding agent, initialized NIA in a project, completed the required project metadata, validated the configuration, and run your first wofklow.
 
 ## Next steps
 

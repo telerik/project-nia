@@ -1,5 +1,74 @@
 # Installation Issues
 
+### GitHub CLI Uses an Environment Token Instead of Stored Credentials
+
+**Problem**: `gh auth login` does not prompt to store credentials because GitHub CLI is already using a token from the current environment.
+
+**Error Message**:
+```text
+The value of the GITHUB_TOKEN environment variable is being used for authentication.
+To have GitHub CLI store credentials instead, first clear the value from the environment.
+```
+
+**Cause**: A token is already present in the shell environment. Nia supports token-based installer downloads with `GITHUB_TOKEN`, and the install scripts also recognize `GH_TOKEN` as an alternative. When one of these variables is set, GitHub CLI can use the environment token instead of prompting to store credentials.
+
+**Solution**:
+
+1. **Check whether a token is already set**:
+   ```bash
+   # Linux/macOS
+   echo "$GITHUB_TOKEN"
+   echo "$GH_TOKEN"
+
+   # Windows (PowerShell)
+   $env:GITHUB_TOKEN
+   $env:GH_TOKEN
+   ```
+
+2. **Clear the token from the current shell if you want `gh auth login` to store credentials**:
+   ```bash
+   # Linux/macOS
+   unset GITHUB_TOKEN
+   unset GH_TOKEN
+
+   # Windows (PowerShell)
+   Remove-Item Env:GITHUB_TOKEN -ErrorAction SilentlyContinue
+   Remove-Item Env:GH_TOKEN -ErrorAction SilentlyContinue
+   ```
+
+3. **Run GitHub CLI authentication again**:
+   ```bash
+   gh auth login
+   gh auth status
+   ```
+
+4. **Use token-based authentication intentionally when appropriate**:
+   ```bash
+   # Linux/macOS installer download
+   curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
+     -o install.sh \
+     https://github.com/telerik/project-nia/releases/latest/download/install.sh
+   sh install.sh
+   ```
+
+   ```powershell
+   # Windows installer download
+   $headers = @{Authorization = "token $env:GITHUB_TOKEN"}
+   Invoke-WebRequest -Headers $headers `
+     -Uri 'https://github.com/telerik/project-nia/releases/latest/download/install.ps1' `
+     -OutFile install.ps1
+   .\install.ps1
+   ```
+
+**Prevention**:
+- Use `gh auth login` when you want GitHub CLI to manage stored credentials for interactive use.
+- Use `GITHUB_TOKEN` or `GH_TOKEN` only in shells where you want token-based authentication to take precedence.
+- Clear inherited environment variables when switching between CI-style token auth and local interactive auth.
+
+**Related**: [Installation Guide](../getting-started/installation.md)
+
+---
+
 ### Nia Binary Not Found in PATH
 
 **Problem**: Shell cannot find the `nia` command after installation.
