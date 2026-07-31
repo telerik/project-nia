@@ -533,6 +533,61 @@ This is useful for deterministic workflows where any loop is an error.
 
 ## Troubleshooting
 
+### Loop Detection Not Triggering
+
+If loop detection is not triggering when expected:
+
+#### Check 1: Verify Configuration
+
+Ensure your workflow TOML has the correct settings:
+
+```toml
+[workflow.loop_detection]
+max_state_visits = 3      # Global default (triggers on 4th visit)
+max_transitions = 100     # Total transitions before abort
+on_loop_detected = "approval_gate"  # or "fail"
+
+[[workflow.states]]
+name = "my_looping_state"
+max_visits = 30           # Per-state override
+```
+
+#### Check 2: Enable Debug Logging
+
+Run with detailed logging to trace visit counts:
+
+```bash
+RUST_LOG=loop_detection=trace nia workflow run my-workflow
+```
+
+Look for log entries like:
+- `Loop detection configuration extracted` - Shows loaded limits
+- `Visit count incremented` - Shows per-iteration counts
+- `Loop detection triggered` - Shows when/if enforcement fires
+
+#### Check 3: Verify State Names
+
+State names are case-sensitive. Ensure the state name in logs matches
+the name in your TOML exactly:
+
+```
+# TOML defines:
+name = "create_code"
+
+# Log should show:
+state = "create_code"  # ✓ Matches
+state = "Create_Code"  # ✗ Case mismatch - won't use per-state limit!
+```
+
+#### Check 4: Check for Default Fallback
+
+If you see `"No per-state visit limits configured, using global defaults"` in debug logs, the per-state
+limits from your workflow config weren't loaded. This can happen if:
+
+- Workflow type doesn't support dynamic configuration
+- Config file wasn't found or parsed correctly
+- State machine type doesn't implement proper configuration access
+
 ### Loop Not Terminating
 
 Check your escape conditions:

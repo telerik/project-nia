@@ -4,18 +4,15 @@ NIA is a command-line agent harness for software development life cycle (SDLC) w
 
 This guide takes you from installing NIA to configuring a supported AI coding agent, initializing NIA in a project, and running an Issue-to-PR workflow that begins by setting an issue context and generating a plan with `nia issue plan`. The examples cover GitHub Copilot CLI, Claude Code, and OpenCode — use the tabs to pick your agent. GitHub Copilot CLI is the shortest path in this tutorial. The [AI coding agent setup guide](./agents/setup.md) contains the agent-specific requirements and authentication commands.
 
+> **Want a guided, hands-on tour first?** The [Quick Start with the Sample App](./quick-start-sample-app.md) runs NIA's built-in `nia learn` tutorials against a ready-made codebase — no configuration required. Come back here when you are ready to adopt NIA in your own project.
+
 ## Prerequisites
 
 Before you begin, ensure that you have:
 
 * **Node.js 18+** (`node --version`) — the coding agents install via npm. Get it from [nodejs.org](https://nodejs.org).
 * **GitHub CLI** (`gh --version` & `gh auth status`) — installs and authenticates NIA. Install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh` and then authenticate.
-* NIA runs inside a project, so you need a local directory to work in. To follow this guide exactly, fork the sample app and run commands inside of it. The [healthcare-app-angular](https://github.com/telerik/healthcare-app-angular) demo ships a Dev Container that installs Node.js, the GitHub CLI, the AI coding agents, and NIA for you — locally in VS Code or in a GitHub Codespace. Open it, authenticate an agent, initialize NIA, and skip straight to [Run Your First Workflow Command](#run-your-first-workflow-command).
-
-	```powershell
-	gh repo fork telerik/healthcare-app-angular --clone
-	cd healthcare-app-angular
-	```
+* NIA runs inside a project, so you need a local Git repository to work in. This guide uses your own project. If you would rather practice on a ready-made codebase with guided tutorials, follow the [Quick Start with the Sample App](./quick-start-sample-app.md) instead.
 
 ## Installation & Verification
 
@@ -423,14 +420,43 @@ You have completed the quick start when all of the following are true:
 - `nia issue plan` creates an implementation plan for the selected issue.
 - `nia issue draft` creates a local issue draft that you can open and review.
 
-If a check fails, fix that check before continuing. Common causes include an old PowerShell version on Windows, an agent executable missing from `PATH`, incomplete agent authentication, or sample values left in `project.toml`.
+If a check fails, fix that check before continuing. Common causes include an old PowerShell version on Windows, an agent executable missing from `PATH`, incomplete agent authentication, or sample values left in `.nia/config/project.toml`.
+
+## Automate the Whole Journey with One Command
+
+You just ran the Issue-to-PR lifecycle step by step — planning, implementation, build, test, review, and pull request. NIA can orchestrate that entire sequence for you as a single, stateful workflow.
+
+> **This is the payoff: `nia workflow run issue-to-pr`.** With the issue context set, this one command chains every step you performed by hand — `nia issue plan`, `nia code create`, `nia code build`, `nia code test`, `nia code review`, and the pull request operations — into a resumable state machine with approval gates, automatic retries, and a full audit trail. It is the recommended way to run the workflow once you are comfortable with the individual steps.
+
+Set the issue context, then run the workflow:
+
+```bash
+nia config set-issue 14
+nia workflow run issue-to-pr
+```
+
+Useful options:
+
+```bash
+# Skip approval gates for CI/automation
+nia workflow run issue-to-pr --bypass-approvals
+
+# Validate the workflow without executing it
+nia workflow run issue-to-pr --dry-run
+
+# Resume an interrupted run from a specific step
+nia workflow run issue-to-pr --start-from create_code
+```
+
+The workflow pauses at approval gates so you stay in control, and it resumes automatically if a run is interrupted. See [Introduction to Workflows](./guides/workflows/introduction.md) for the built-in workflows, states, and transitions.
 
 ## Summary
 
-You installed NIA, connected an AI coding agent, initialized NIA in a project, completed the required project metadata, validated the configuration, and run your first wofklow.
+You installed NIA, connected an AI coding agent, initialized NIA in a project, completed the required project metadata, validated the configuration, and ran your first workflow.
 
 ## Next steps
 
+- [Automate the Issue-to-PR lifecycle](./guides/workflows/introduction.md) with `nia workflow run issue-to-pr` instead of running each step by hand.
 - [Configure an AI coding agent](./agents/setup.md) to change agents, commands, models, or prompt formats.
 - [Configure project metadata](./configuration/project.md) for monorepos, shared context, configuration locks, and custom fields.
 - [Explore issue workflows](./workflows/issue.md) to review, plan, publish, or split issues.

@@ -2,7 +2,9 @@
 
 [Introduction](./README.md)
 
-- [Quick Start](./quick-start.md)
+- [Quick Start]()
+  - [Quick Start with the Sample App](./quick-start-sample-app.md)
+  - [Quick Start on Your Project](./quick-start.md)
 
 - [Getting Started]()
   - [Installation](./getting-started/installation.md)
