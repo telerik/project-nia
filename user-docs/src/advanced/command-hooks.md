@@ -35,21 +35,21 @@ description = "Ask with pre-flight validation"
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "workspace-clean"
-check_type = "shell"
+type = "command_success"
 command = "git diff --quiet"
 on_failure = "warn"
 
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "backup-context"
-step_type = "shell"
+type = "shell"
 command = "cp -r .context .context.bak"
 
 # Post-execution hooks (run after successful command execution)
 [[workflows.targets.operations.post]]
 kind = "step"
 id = "cleanup-backup"
-step_type = "shell"
+type = "shell"
 command = "rm -rf .context.bak"
 
 [workflows.targets.operations.prompts]
@@ -68,7 +68,7 @@ Steps perform actions that may modify the environment. They execute in sequence 
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "create-output-dir"
-step_type = "builtin"
+type = "builtin"
 action = "make_directory"
 path = "output"
 ```
@@ -88,7 +88,7 @@ Available built-in actions:
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "install-deps"
-step_type = "shell"
+type = "shell"
 command = "npm install"
 
 # Or with platform-specific variants:
@@ -133,7 +133,7 @@ Available check types:
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "api-key-exists"
-check_type = "env_exists"
+type = "env_exists"
 env_name = "OPENAI_API_KEY"
 on_false = "fail"
 ```
@@ -158,7 +158,7 @@ Environment modifications in pre-hooks persist through command execution:
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "set-api-key"
-step_type = "builtin"
+type = "builtin"
 action = "set_env"
 env_name = "API_KEY"
 env_value = "secret-value"
@@ -175,21 +175,21 @@ Steps can depend on other steps or require checks to pass:
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "has-tool"
-check_type = "command_exists"
-path = "jq"
+type = "command_exists"
+command = "jq"
 on_false = "skip"
 
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "setup-a"
-step_type = "builtin"
+type = "builtin"
 action = "make_directory"
 path = "temp"
 
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "setup-b"
-step_type = "shell"
+type = "shell"
 command = "jq . config.json > temp/parsed.json"
 depends_on = "setup-a"      # Wait for setup-a to complete
 requires_check = "has-tool"  # Only run if has-tool passed
@@ -203,7 +203,7 @@ Multiple dependencies and failure-based conditions:
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "fallback-config"
-step_type = "builtin"
+type = "builtin"
 action = "copy_file"
 source = "config.default.toml"
 destination = "config.toml"
@@ -226,21 +226,21 @@ name = "issue draft"
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "git-installed"
-check_type = "command_exists"
-path = "git"
+type = "command_exists"
+command = "git"
 on_false = "fail"
 
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "in-git-repo"
-check_type = "shell"
+type = "command_success"
 command = "git rev-parse --git-dir"
 on_false = "fail"
 
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "has-templates"
-check_type = "directory_exists"
+type = "directory_exists"
 path = "templates"
 on_false = "warn"
 ```
@@ -256,7 +256,7 @@ name = "ask"
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "ci-mode"
-check_type = "env_equals"
+type = "env_equals"
 env_name = "CI"
 env_value = "true"
 on_false = "skip"
@@ -264,14 +264,14 @@ on_false = "skip"
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "ci-setup"
-step_type = "shell"
+type = "shell"
 command = "npm ci"  # Clean install in CI
 requires_check = "ci-mode"
 
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "local-setup"
-step_type = "shell"
+type = "shell"
 command = "npm install"  # Regular install locally
 depends_on = "failed(ci-mode)"
 ```
@@ -287,14 +287,14 @@ name = "issue draft"
 [[workflows.targets.operations.post]]
 kind = "check"
 id = "draft-created"
-check_type = "file_exists"
+type = "file_exists"
 path = "issue/draft.md"
 on_false = "fail"
 
 [[workflows.targets.operations.post]]
 kind = "check"
 id = "draft-has-title"
-check_type = "file_contains"
+type = "file_contains"
 path = "issue/draft.md"
 content = "# "
 on_false = "warn"
@@ -302,7 +302,7 @@ on_false = "warn"
 [[workflows.targets.operations.post]]
 kind = "step"
 id = "notify-success"
-step_type = "shell"
+type = "shell"
 command = "echo 'Issue draft created successfully' | notify"
 ```
 
@@ -317,7 +317,7 @@ name = "code create"
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "install-build-tools"
-step_type = "shell"
+type = "shell"
 command_linux = "sudo apt-get install -y build-essential"
 command_macos = "xcode-select --install || true"
 command_windows = "choco install visualstudio2022-workload-vctools"
@@ -331,7 +331,7 @@ Both steps and checks support timeout and retry configuration for reliability:
 [[workflows.targets.operations.pre]]
 kind = "step"
 id = "download-deps"
-step_type = "shell"
+type = "shell"
 command = "curl https://api.example.com/data"
 timeout_seconds = 60        # Kill if takes longer than 60s
 retry_count = 3             # Retry up to 3 times on failure
@@ -381,7 +381,7 @@ cat .nia/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_exe
 
 Each log entry includes:
 - `step_id`: Hook identifier
-- `step_type`: shell, builtin, or agent
+- `type`: shell, builtin, or agent
 - `phase`: pre or post
 - `outcome`: success, failure, or skipped
 - `duration_ms`: Execution time

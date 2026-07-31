@@ -30,7 +30,7 @@ version = "1.0.0"
 [[pre]]
 kind = "step"
 id = "create-feature-branch"
-step_type = "shell"
+type = "shell"
 command = "git checkout -b feature/$FEATURE_NAME"
 
 # Workflow steps (nia commands)
@@ -44,7 +44,7 @@ command = "code create"
 [[post]]
 kind = "step"
 id = "create-pr"
-step_type = "shell"
+type = "shell"
 command = "gh pr create --fill"
 ```
 
@@ -71,7 +71,7 @@ version = "1.0.0"
 [[pre]]
 kind = "step"
 id = "workflow-setup"
-step_type = "shell"
+type = "shell"
 command = "git checkout -b feature/new-issue"
 
 [[steps]]
@@ -84,7 +84,7 @@ command = "issue approve"
 [[post]]
 kind = "step"
 id = "workflow-cleanup"
-step_type = "shell"
+type = "shell"
 command = "git push origin feature/new-issue"
 ```
 
@@ -129,7 +129,7 @@ Execute shell commands. Supports platform-specific variants.
 [[workflows.operations.pre]]
 kind = "step"
 id = "install-deps"
-step_type = "shell"
+type = "shell"
 command = "npm install"
 
 # Or with platform-specific commands:
@@ -154,7 +154,7 @@ variables. Be cautious when:
 ```toml
 [[workflows.operations.pre]]
 kind = "step"
-step_type = "shell"
+type = "shell"
 command = "echo $USER_INPUT"  # ⚠️ Unsafe if USER_INPUT contains shell metacharacters
 ```
 
@@ -178,7 +178,7 @@ Cross-platform file operations that work consistently everywhere.
 [[workflows.operations.pre]]
 kind = "step"
 id = "create-output"
-step_type = "builtin"
+type = "builtin"
 action = "make_directory"
 path = "output/reports"
 ```
@@ -207,7 +207,7 @@ path = "output/reports"
 [[workflows.operations.pre]]
 kind = "step"
 id = "backup-config"
-step_type = "builtin"
+type = "builtin"
 action = "copy_file"
 source = "config.toml"
 destination = "config.toml.bak"
@@ -216,7 +216,7 @@ destination = "config.toml.bak"
 [[workflows.operations.pre]]
 kind = "step"
 id = "create-readme"
-step_type = "builtin"
+type = "builtin"
 action = "write_file"
 path = "output/README.md"
 content = "# Generated Output\n\nThis directory contains generated files."
@@ -225,7 +225,7 @@ content = "# Generated Output\n\nThis directory contains generated files."
 [[workflows.operations.pre]]
 kind = "step"
 id = "set-api-key"
-step_type = "builtin"
+type = "builtin"
 action = "set_env"
 env_name = "API_KEY"
 env_value = "secret-value"
@@ -239,7 +239,7 @@ Execute an AI agent prompt as part of the workflow.
 [[workflows.operations.pre]]
 kind = "step"
 id = "analyze-context"
-step_type = "agent"
+type = "agent"
 prompt = "Analyze the provided context and summarize key requirements."
 ```
 
@@ -267,7 +267,7 @@ Checks probe environment state without modifying it.
 [[workflows.operations.pre]]
 kind = "check"
 id = "has-config"
-check_type = "file_exists"
+type = "file_exists"
 path = ".nia/config.toml"
 on_false = "skip"  # Missing config is OK, use defaults
 ```
@@ -280,21 +280,21 @@ Steps can depend on other steps or require checks to pass:
 [[workflows.operations.pre]]
 kind = "step"
 id = "step-a"
-step_type = "builtin"
+type = "builtin"
 action = "make_directory"
 path = "output"
 
 [[workflows.operations.pre]]
 kind = "step"
 id = "step-b"
-step_type = "shell"
+type = "shell"
 command = "echo 'setup complete' > output/status.txt"
 depends_on = "step-a"  # Waits for step-a to complete
 
 [[workflows.operations.pre]]
 kind = "step"
 id = "step-c"
-step_type = "shell"
+type = "shell"
 command = "process.sh"
 requires_check = "has-tool"  # Only runs if check passed
 ```
@@ -323,7 +323,7 @@ Environment modifications in pre-steps are visible to subsequent steps and the a
 [[workflows.operations.pre]]
 kind = "step"
 id = "set-env"
-step_type = "builtin"
+type = "builtin"
 action = "set_env"
 env_name = "MY_VAR"
 env_value = "value"
@@ -360,13 +360,13 @@ version = "1.0.0"
 [[pre]]
 kind = "step"
 id = "create-branch"
-step_type = "shell"
+type = "shell"
 command = "git checkout -b feature/$FEATURE_NAME"
 
 [[pre]]
 kind = "check"
 id = "branch-created"
-check_type = "shell"
+type = "shell"
 command = "git branch --show-current | grep feature/"
 on_false = "fail"
 
@@ -384,13 +384,13 @@ command = "code review"
 [[post]]
 kind = "step"
 id = "push-branch"
-step_type = "shell"
+type = "shell"
 command = "git push -u origin feature/$FEATURE_NAME"
 
 [[post]]
 kind = "step"
 id = "create-pr"
-step_type = "shell"
+type = "shell"
 command = "gh pr create --fill"
 ```
 
@@ -411,7 +411,7 @@ version = "1.0.0"
 [[pre]]
 kind = "check"
 id = "is-ci"
-check_type = "env_equals"
+type = "env_equals"
 env_name = "CI"
 env_value = "true"
 on_false = "skip"
@@ -420,7 +420,7 @@ on_false = "skip"
 [[pre]]
 kind = "step"
 id = "ci-setup"
-step_type = "shell"
+type = "shell"
 command = "npm ci && npm run lint"
 requires_check = "is-ci"
 
@@ -428,7 +428,7 @@ requires_check = "is-ci"
 [[pre]]
 kind = "step"
 id = "local-setup"
-step_type = "shell"
+type = "shell"
 command = "npm install"
 depends_on = "failed(is-ci)"
 
@@ -442,7 +442,7 @@ command = "pr merge"
 [[post]]
 kind = "step"
 id = "notify-team"
-step_type = "shell"
+type = "shell"
 command = "slack-notify 'PR merged' #team-channel"
 requires_check = "is-ci"
 ```
@@ -462,7 +462,7 @@ version = "1.0.0"
 [[pre]]
 kind = "check"
 id = "has-custom-template"
-check_type = "file_exists"
+type = "file_exists"
 path = ".nia/templates/docs.md"
 on_false = "skip"
 
@@ -470,7 +470,7 @@ on_false = "skip"
 [[pre]]
 kind = "step"
 id = "load-custom"
-step_type = "builtin"
+type = "builtin"
 action = "copy_file"
 source = ".nia/templates/docs.md"
 destination = "templates/current.md"
@@ -480,7 +480,7 @@ requires_check = "has-custom-template"
 [[pre]]
 kind = "step"
 id = "load-default"
-step_type = "builtin"
+type = "builtin"
 action = "write_file"
 path = "templates/current.md"
 content = "# Default Documentation Template"
@@ -492,7 +492,7 @@ command = "docs update"
 [[post]]
 kind = "step"
 id = "cleanup-template"
-step_type = "builtin"
+type = "builtin"
 action = "remove_file"
 path = "templates/current.md"
 ```
@@ -509,7 +509,7 @@ cat .nia/work/job_123/logs/transaction.jsonl | jq 'select(.event_type == "step_e
 
 Each step logs:
 - `step_id`: Step identifier
-- `step_type`: shell, builtin, or agent
+- `type`: shell, builtin, or agent
 - `phase`: pre or post
 - `outcome`: success, failure, or skipped
 - `duration_ms`: Execution time

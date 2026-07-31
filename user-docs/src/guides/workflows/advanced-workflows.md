@@ -559,9 +559,8 @@ on_failure = "handle_error"
 [[workflow.states]]
 name = "check_completion"
 operation = {
-    type = "check",
     id = "check-done",
-    check_type = "tasks_complete",
+    type = "tasks_complete",
     on_false = "fail"
 }
 on_success = "review_code"        # All done, exit loop
@@ -665,9 +664,8 @@ The `tasks_complete` check type automatically detects when all tasks in `tasks.m
 [[workflow.states]]
 name = "check_tasks"
 operation = {
-    type = "check",
     id = "tasks-done",
-    check_type = "tasks_complete",
+    type = "tasks_complete",
     # path defaults to {job_dir}/code/tasks.md
     on_false = "fail"
 }
@@ -678,9 +676,8 @@ on_failure = "continue_work"      # Still have [ ] markers
 **With explicit path:**
 ```toml
 operation = {
-    type = "check",
     id = "tasks-done",
-    check_type = "tasks_complete",
+    type = "tasks_complete",
     path = ".nia/work/job_392/code/tasks.md",
     on_false = "fail"
 }

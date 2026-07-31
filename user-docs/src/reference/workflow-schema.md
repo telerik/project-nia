@@ -164,7 +164,7 @@ on_success = "check_tasks"
 [[workflow.states]]
 name = "check_tasks"
 max_visits = 15              # Another override
-operation = { type = "check", id = "tasks-done", check_type = "tasks_complete", on_false = "fail" }
+operation = { id = "tasks-done", type = "tasks_complete", on_false = "fail" }
 on_success = "code_review"
 on_failure = "create_code"   # Loop back
 ```
@@ -217,7 +217,7 @@ Execute one operation per state:
 ```toml
 [[workflow.states]]
 name = "setup"
-operation = { type = "step", id = "create-dir", step_type = "builtin", action = "make_directory", path = "output" }
+operation = { id = "create-dir", type = "builtin", action = "make_directory", path = "output" }
 on_success = "next"
 on_failure = "failed"
 ```
@@ -230,9 +230,9 @@ Execute a sequence of operations in one state:
 [[workflow.states]]
 name = "setup-and-validate"
 operations = [
-    { type = "step", id = "create-dir", step_type = "builtin", action = "make_directory", path = "output" },
-    { type = "check", id = "verify-dir", check_type = "file_exists", path = "output", on_false = "fail" },
-    { type = "step", id = "set-env", step_type = "builtin", action = "set_env", env_name = "READY", env_value = "true" },
+    { id = "create-dir", type = "builtin", action = "make_directory", path = "output" },
+    { id = "verify-dir", type = "file_exists", path = "output", on_false = "fail" },
+    { id = "set-env", type = "builtin", action = "set_env", env_name = "READY", env_value = "true" },
 ]
 on_success = "next"
 on_failure = "failed"
@@ -246,7 +246,18 @@ on_failure = "failed"
 
 ### Operation Types
 
-Operations come in three types: `step`, `check`, and `command`.
+An operation is one of three kinds: **step**, **check**, or **command**. The kind is
+inferred from the operation's fields — there is no separate `kind` field:
+
+| Operation is a… | When… |
+|-----------------|-------|
+| Command | it has a `target` field |
+| Step | `type` is `shell`, `builtin`, or `agent` |
+| Check | `type` is one of the check types listed below |
+
+> **Important**: `type` holds the concrete operation type directly. Do not write
+> `type = "step"` or `type = "check"`, and do not use a separate `step_type` or
+> `check_type` field — those forms are rejected during workflow validation.
 
 #### Step Operations
 
@@ -254,31 +265,43 @@ Execute a step (shell command, builtin action, or AI agent):
 
 **Shell Step**:
 ```toml
-operation = { type = "step", id = "run-tests", step_type = "shell", command = "cargo test" }
+operation = { id = "run-tests", type = "shell", command = "cargo test" }
 ```
 
 **Built-in Directory Creation**:
 ```toml
-operation = { type = "step", id = "create-output", step_type = "builtin", action = "make_directory", path = "output" }
+operation = { id = "create-output", type = "builtin", action = "make_directory", path = "output" }
 ```
 
 **Environment Variable**:
 ```toml
-operation = { type = "step", id = "set-mode", step_type = "builtin", action = "set_env", env_name = "MODE", env_value = "production" }
+operation = { id = "set-mode", type = "builtin", action = "set_env", env_name = "MODE", env_value = "production" }
+```
+
+**Agent Step**:
+```toml
+operation = { id = "send-initial", type = "agent", prompt = "Send the initial response.", context = ["ticket"] }
 ```
 
 **Step Fields**:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | String | Yes | Always "step" |
 | `id` | String | Yes | Unique step identifier |
-| `step_type` | String | Yes | "shell", "builtin", or "agent" |
+| `type` | String | Yes | "shell", "builtin", or "agent" |
 | `command` | String | For shell | Shell command to execute |
 | `action` | String | For builtin | Built-in action name |
+| `prompt` | String | For agent | Prompt sent to the AI agent |
+| `context` | Array | No | Context to inject into an agent prompt |
+| `share_session_with` | String | No | State name whose agent session to reuse |
 | `timeout_seconds` | Number | No | Execution timeout (default: 300) |
 | `retry_count` | Number | No | Number of retries (default: 0) |
 | `retry_delay_seconds` | Number | No | Delay between retries (default: 1) |
+
+**Agent Context Values**:
+
+`context` accepts only these values: `issue`, `code`, `pr`, `security`, `ticket`.
+An unrecognized value makes the operation fail workflow validation.
 
 **Built-in Actions**:
 - `make_directory`: Create directory (`path` field required)
@@ -292,21 +315,20 @@ Evaluate a condition and control workflow based on result:
 
 **File Exists**:
 ```toml
-operation = { type = "check", id = "config-exists", check_type = "file_exists", path = ".nia/config.toml", on_false = "fail" }
+operation = { id = "config-exists", type = "file_exists", path = ".nia/config.toml", on_false = "fail" }
 ```
 
 **Environment Equals**:
 ```toml
-operation = { type = "check", id = "mode-check", check_type = "env_equals", env_name = "MODE", env_value = "production", on_false = "skip" }
+operation = { id = "mode-check", type = "env_equals", env_name = "MODE", env_value = "production", on_false = "skip" }
 ```
 
 **Check Fields**:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | String | Yes | Always "check" |
 | `id` | String | Yes | Unique check identifier |
-| `check_type` | String | Yes | Type of validation (see below) |
+| `type` | String | Yes | Type of validation (see below) |
 | `on_false` | String | Yes | "fail" or "skip" |
 | `timeout_seconds` | Number | No | Execution timeout (default: 30) |
 | `retry_count` | Number | No | Number of retries (default: 0) |
@@ -316,11 +338,14 @@ operation = { type = "check", id = "mode-check", check_type = "env_equals", env_
 
 | Type | Description | Required Fields |
 |------|-------------|-----------------|
-| `file_exists` | File or directory exists | `path` |
+| `file_exists` | File exists | `path` |
+| `directory_exists` | Directory exists | `path` |
+| `path_exists` | File or directory exists | `path` |
 | `env_exists` | Environment variable is set | `env_name` |
 | `env_equals` | Environment variable equals value | `env_name`, `env_value` |
 | `file_contains` | File contains string | `path`, `content` |
 | `file_matches` | File matches regex pattern | `path`, `pattern` |
+| `command_exists` | Command is available in `PATH` | `command` |
 | `command_success` | Shell command exits with 0 | `command` |
 | `tasks_complete` | All tasks in tasks.md are complete | `path` (optional) |
 | `counter_matches` | Loop counter matches expression | `counter_name`, `counter_expression` |
@@ -342,9 +367,8 @@ Verifies that all tasks in a `tasks.md` file are complete by scanning for unchec
 
 ```toml
 operation = {
-    type = "check",
     id = "all-tasks-done",
-    check_type = "tasks_complete",
+    type = "tasks_complete",
     on_false = "fail"
 }
 ```
@@ -352,9 +376,8 @@ operation = {
 With explicit path:
 ```toml
 operation = {
-    type = "check",
     id = "all-tasks-done",
-    check_type = "tasks_complete",
+    type = "tasks_complete",
     path = ".nia/work/job_123/code/tasks.md",
     on_false = "fail"
 }
@@ -414,9 +437,8 @@ Evaluates arithmetic expressions on loop counters for conditional logic.
 
 ```toml
 operation = {
-    type = "check",
     id = "every-third",
-    check_type = "counter_matches",
+    type = "counter_matches",
     counter_name = "code_iterations",
     counter_expression = "% 3 == 0",
     on_false = "skip"
@@ -484,8 +506,8 @@ Environment variables set by steps persist across operations and states:
 [[workflow.states]]
 name = "multi-op"
 operations = [
-    { type = "step", id = "set-var", step_type = "builtin", action = "set_env", env_name = "JOB_ID", env_value = "123" },
-    { type = "step", id = "use-var", step_type = "shell", command = "echo $JOB_ID" },
+    { id = "set-var", type = "builtin", action = "set_env", env_name = "JOB_ID", env_value = "123" },
+    { id = "use-var", type = "shell", command = "echo $JOB_ID" },
 ]
 ```
 
@@ -493,12 +515,12 @@ operations = [
 ```toml
 [[workflow.states]]
 name = "configure"
-operation = { type = "step", id = "set-id", step_type = "builtin", action = "set_env", env_name = "JOB_ID", env_value = "123" }
+operation = { id = "set-id", type = "builtin", action = "set_env", env_name = "JOB_ID", env_value = "123" }
 on_success = "process"
 
 [[workflow.states]]
 name = "process"
-operation = { type = "step", id = "use-id", step_type = "shell", command = "echo \"Processing $JOB_ID\"" }
+operation = { id = "use-id", type = "shell", command = "echo \"Processing $JOB_ID\"" }
 on_success = "done"
 ```
 

@@ -207,13 +207,13 @@ sensitive.
 # ❌ DANGEROUS: Literal secrets in config
 [[workflows.targets.operations.pre]]
 kind = "step"
-step_type = "shell"
+type = "shell"
 command = "curl -H 'Authorization: ******' ..."  # Secret in version control!
 
 # ✅ SAFE: Reference environment variable
 [[workflows.targets.operations.pre]]
 kind = "step"
-step_type = "shell"
+type = "shell"
 command = "curl -H \"Authorization: $API_TOKEN\" ..."
 ```
 
@@ -221,7 +221,7 @@ command = "curl -H \"Authorization: $API_TOKEN\" ..."
 ```toml
 [[workflows.targets.operations.pre]]
 kind = "step"
-step_type = "builtin"
+type = "builtin"
 action = "set_env"
 env_name = "SECRET_KEY"
 env_value = "actual-secret"  # ❌ Persists in environment, may leak to agent
@@ -280,13 +280,13 @@ Shell hooks execute arbitrary commands with your user's permissions.
 # ❌ DANGEROUS: Interpolating variables without quoting
 [[workflows.targets.operations.pre]]
 kind = "step"
-step_type = "shell"
+type = "shell"
 command = "echo $USER_INPUT"  # If USER_INPUT contains "; rm -rf /", disaster
 
 # ✅ SAFER: Use built-in actions when possible
 [[workflows.targets.operations.pre]]
 kind = "step"
-step_type = "builtin"
+type = "builtin"
 action = "write_file"
 path = "output.txt"
 content = "Static content"
@@ -326,7 +326,7 @@ When using checks for security validation, be careful with `on_failure` settings
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "has-credentials"
-check_type = "env_exists"
+type = "env_exists"
 env_name = "DEPLOY_KEY"
 on_failure = "warn"  # Command proceeds without credentials!
 
@@ -334,7 +334,7 @@ on_failure = "warn"  # Command proceeds without credentials!
 [[workflows.targets.operations.pre]]
 kind = "check"
 id = "has-credentials"
-check_type = "env_exists"
+type = "env_exists"
 env_name = "DEPLOY_KEY"
 on_failure = "fail"  # Command blocked if credentials missing
 ```
