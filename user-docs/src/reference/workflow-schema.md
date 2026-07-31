@@ -338,14 +338,14 @@ The `on_false` field controls what happens when a check evaluates to false:
 
 ##### `tasks_complete` Check
 
-Verifies that all tasks in a `tasks.md` file are complete (no `- [ ]` markers remaining).
+Verifies that all tasks in a `tasks.md` file are complete by scanning for unchecked task markers (`- [ ]`) in task sections only.
 
 ```toml
 operation = {
     type = "check",
     id = "all-tasks-done",
     check_type = "tasks_complete",
-    on_false = "skip"
+    on_false = "fail"
 }
 ```
 
@@ -363,11 +363,36 @@ operation = {
 **Fields**:
 - `path` (optional): Path to tasks.md file. If omitted, defaults to `{job_dir}/code/tasks.md`
 
+**Section-Aware Parsing**:
+
+The check uses intelligent section detection to avoid counting non-task checkboxes:
+
+| Section Type | Detection | Checkbox Behavior |
+|--------------|-----------|-------------------|
+| Task sections | Headers without exclusion keywords | Counted |
+| Non-task sections | Headers containing "acceptance", "criteria", "summary", "requirement", "validation", etc. | Ignored |
+| Code blocks | Content between ``` or ~~~ | Ignored |
+
+**Example**:
+```markdown
+# Implementation Tasks
+- [ ] Create config file        ← Detected as incomplete
+- [x] Update documentation      ← Ignored (complete)
+
+## Acceptance Criteria
+- [ ] Feature works as expected ← Ignored (non-task section)
+
+## Example Code
+~~~~
+```
+- [ ] Example checkbox          ← Ignored (code block)
+```
+~~~~
+
 **Behavior**:
-- Check passes (success) when all tasks are complete (no `- [ ]` markers)
-- Check fails when incomplete tasks remain
-- Use `on_false = "fail"` to trigger `on_failure` transition (e.g., continue loop)
-- Use `on_false = "skip"` to trigger `on_success` transition even if tasks remain
+- Check **passes** when no unchecked tasks remain in task sections
+- Check **fails** when any unchecked task marker (`- [ ]`) exists in a task section
+- Works with both lite plans (no task identifiers) and full plans (with `TASK-`/`TSK-` identifiers)
 
 **Common Pattern - Loop Until Complete**:
 ```toml
