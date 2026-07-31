@@ -336,7 +336,7 @@ Nia provides helper scripts to configure OpenSearch with the correct index templ
 
 ```bash
 # Clone nia repository (if not already)
-git clone https://github.com/Telerik/project-nia.git
+git clone https://github.com/telerik/project-nia.git
 cd nia/opensearch
 
 # Set environment variables
@@ -381,7 +381,7 @@ curl -X PUT "${OPENSEARCH_URL}/_index_template/nia-system-logs" \
   -d @opensearch/templates/nia-system-logs.json
 ```
 
-See the [template files on GitHub](https://github.com/Telerik/project-nia/tree/main/opensearch/templates) for the complete schema definitions.
+See the [template files on GitHub](https://github.com/telerik/project-nia/tree/main/opensearch/templates) for the complete schema definitions.
 
 ### 2. Configure Environment Variables
 
@@ -1084,13 +1084,13 @@ ENV NIA_USER_EMAIL="buildbot@company.com"
 
 ### OpenSearch Resources
 
-These resources are available in the [`opensearch/`](https://github.com/Telerik/project-nia/tree/main/opensearch) directory:
+These resources are available in the [`opensearch/`](https://github.com/telerik/project-nia/tree/main/opensearch) directory:
 
 | Resource | Description |
 |----------|-------------|
-| [`opensearch/README.md`](https://github.com/Telerik/project-nia/blob/main/opensearch/README.md) | Admin guide with detailed script usage |
-| [`opensearch/templates/`](https://github.com/Telerik/project-nia/tree/main/opensearch/templates) | Index template JSON files |
-| [`opensearch/dashboards/`](https://github.com/Telerik/project-nia/tree/main/opensearch/dashboards) | Dashboard NDJSON export files |
-| [`opensearch-init.sh`](https://github.com/Telerik/project-nia/blob/main/opensearch/opensearch-init.sh) | Initialize OpenSearch |
-| [`opensearch-clear.sh`](https://github.com/Telerik/project-nia/blob/main/opensearch/opensearch-clear.sh) | Clear nia data |
-| [`opensearch-destroy.sh`](https://github.com/Telerik/project-nia/blob/main/opensearch/opensearch-destroy.sh) | Remove all nia configuration |
+| [`opensearch/README.md`](https://github.com/telerik/project-nia/blob/main/opensearch/README.md) | Admin guide with detailed script usage |
+| [`opensearch/templates/`](https://github.com/telerik/project-nia/tree/main/opensearch/templates) | Index template JSON files |
+| [`opensearch/dashboards/`](https://github.com/telerik/project-nia/tree/main/opensearch/dashboards) | Dashboard NDJSON export files |
+| [`opensearch-init.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-init.sh) | Initialize OpenSearch |
+| [`opensearch-clear.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-clear.sh) | Clear nia data |
+| [`opensearch-destroy.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-destroy.sh) | Remove all nia configuration |

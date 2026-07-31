@@ -318,7 +318,7 @@ chmod +x collect-diagnostic.sh
 - Check logs for confidential data before sharing
 
 **Where to Report**:
-- GitHub Issues: https://github.com/Telerik/project-nia/issues
+- GitHub Issues: https://github.com/telerik/project-nia/issues
 - Include `[BUG]` in title
 - Use bug report template if available
 - Tag with appropriate labels (agent, workflow, configuration)

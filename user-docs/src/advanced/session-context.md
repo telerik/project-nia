@@ -252,4 +252,4 @@ If you have multiple projects with the same job ID numbers, you may encounter du
 3. In the project where you deleted the session, run `nia <target> <operation> --clear` to create a session with a unique suffix
 4. Resume work in that project
 
-> **Note**: This is a temporary workaround. Running `--clear` in other projects will cause clashes again. See [Issue #670](https://github.com/Telerik/project-nia/issues/670) for the permanent fix tracking this scenario.
+> **Note**: This is a temporary workaround. Running `--clear` in other projects will cause clashes again. See [Issue #670](https://github.com/telerik/project-nia/issues/670) for the permanent fix tracking this scenario.

@@ -1,69 +1,22 @@
 # Installation Issues
 
-### GitHub CLI Uses an Environment Token Instead of Stored Credentials
+### GitHub CLI Authentication for Installer Download
 
-**Problem**: `gh auth login` does not prompt to store credentials because GitHub CLI is already using a token from the current environment.
+**Problem**: `gh release download` shows a rate-limit warning or prompts for authentication.
 
-**Error Message**:
-```text
-The value of the GITHUB_TOKEN environment variable is being used for authentication.
-To have GitHub CLI store credentials instead, first clear the value from the environment.
-```
-
-**Cause**: A token is already present in the shell environment. Nia supports token-based installer downloads with `GITHUB_TOKEN`, and the install scripts also recognize `GH_TOKEN` as an alternative. When one of these variables is set, GitHub CLI can use the environment token instead of prompting to store credentials.
+**Cause**: The Nia release repository is public. `gh release download` works without authentication, but unauthenticated requests are subject to a lower GitHub API rate limit (60 requests/hour per IP). GitHub CLI may warn about this or prompt you to log in.
 
 **Solution**:
 
-1. **Check whether a token is already set**:
-   ```bash
-   # Linux/macOS
-   echo "$GITHUB_TOKEN"
-   echo "$GH_TOKEN"
+Authenticate GitHub CLI to avoid rate-limit warnings:
+```bash
+gh auth login
+gh auth status
+```
 
-   # Windows (PowerShell)
-   $env:GITHUB_TOKEN
-   $env:GH_TOKEN
-   ```
+Once authenticated, `gh release download` works without further prompts.
 
-2. **Clear the token from the current shell if you want `gh auth login` to store credentials**:
-   ```bash
-   # Linux/macOS
-   unset GITHUB_TOKEN
-   unset GH_TOKEN
-
-   # Windows (PowerShell)
-   Remove-Item Env:GITHUB_TOKEN -ErrorAction SilentlyContinue
-   Remove-Item Env:GH_TOKEN -ErrorAction SilentlyContinue
-   ```
-
-3. **Run GitHub CLI authentication again**:
-   ```bash
-   gh auth login
-   gh auth status
-   ```
-
-4. **Use token-based authentication intentionally when appropriate**:
-   ```bash
-   # Linux/macOS installer download
-   curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
-     -o install.sh \
-     https://github.com/telerik/project-nia/releases/latest/download/install.sh
-   sh install.sh
-   ```
-
-   ```powershell
-   # Windows installer download
-   $headers = @{Authorization = "token $env:GITHUB_TOKEN"}
-   Invoke-WebRequest -Headers $headers `
-     -Uri 'https://github.com/telerik/project-nia/releases/latest/download/install.ps1' `
-     -OutFile install.ps1
-   .\install.ps1
-   ```
-
-**Prevention**:
-- Use `gh auth login` when you want GitHub CLI to manage stored credentials for interactive use.
-- Use `GITHUB_TOKEN` or `GH_TOKEN` only in shells where you want token-based authentication to take precedence.
-- Clear inherited environment variables when switching between CI-style token auth and local interactive auth.
+**Prevention**: Run `gh auth login` once on any machine where you use GitHub CLI.
 
 **Related**: [Installation Guide](../getting-started/installation.md)
 
@@ -237,21 +190,9 @@ Error: Permission denied: .nia/work/
    sudo yum update
    ```
 
-3. **Build from source** (for older systems):
-   ```bash
-   # Install Rust
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+3. **Use a supported host or container image** with a compatible glibc version, or contact the Nia team for platform support.
 
-   # Clone and build
-   git clone https://github.com/Telerik/project-nia.git
-   cd nia
-   cargo build --release
-
-   # Install
-   sudo cp target/release/nia /usr/local/bin/
-   ```
-
-**Prevention**: Check system requirements before downloading pre-built binaries, or build from source for full compatibility.
+**Prevention**: Check system requirements before downloading a release asset.
 
 ---
 
@@ -282,7 +223,7 @@ Error: Permission denied: .nia/work/
    nia --version
    ```
 
-**Prevention**: Build from source or wait for signed releases.
+**Prevention**: Install the latest signed release and verify its checksum before running it.
 
 ---
 
@@ -310,15 +251,9 @@ This app might harm your PC
    Add-MpPreference -ExclusionPath "C:\path\to\nia.exe"
    ```
 
-3. **Or build from source**:
-   ```powershell
-   # Install Rust from https://rustup.rs
-   git clone https://github.com/Telerik/project-nia.git
-   cd nia
-   cargo build --release
-   ```
+3. **Verify and reinstall the latest release asset** from [`telerik/project-nia`](https://github.com/telerik/project-nia/releases).
 
-**Prevention**: Build from source or wait for signed releases with verified publisher certificates.
+**Prevention**: Use the latest signed release with a verified publisher certificate.
 
 ---
 
@@ -460,7 +395,7 @@ Access is denied.
 **Enterprise Resolution**:
 - Request IT to add Nia to approved software list
 - Provide GPG signature and SHA256 checksum for security review
-- Consider building from source in a trusted build environment
+- Mirror a verified public release artifact in an approved internal package repository
 
 ---
 
@@ -491,7 +426,7 @@ Running this app might put your PC at risk.
 2. **Verify file integrity first** (recommended before unblocking):
    ```powershell
    # Download checksum file
-   gh release download --repo Telerik/project-nia --pattern '*.sha256'
+   gh release download --repo telerik/project-nia --pattern '*.sha256'
 
    # Compare checksums
    $expected = (Get-Content nia-*-x86_64-windows.exe.sha256).Split(' ')[0]
@@ -508,7 +443,7 @@ Running this app might put your PC at risk.
 
 **Prevention**:
 - Verify checksums before running
-- Build from source for highest trust
+- Use signed release assets from the public Nia repository
 - Request enterprise IT to pre-approve via GPO
 
 ---
@@ -606,13 +541,7 @@ Running this app might put your PC at risk.
 2. **For WDAC**: Request addition to CI policy
    - Provide signed policy fragment or hash
 
-3. **Alternative**: Build from source
-   ```powershell
-   # In trusted build environment
-   git clone https://github.com/Telerik/project-nia.git
-   cd nia
-   cargo build --release
-   ```
+3. **Alternative**: Deploy a verified public release through your organization's approved software distribution process.
 
 ---
 
@@ -660,9 +589,9 @@ For IT administrators deploying Nia across Windows Server environments:
 1. **Download and verify binary**:
    ```powershell
    # Download
-   gh release download --repo Telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
-   gh release download --repo Telerik/project-nia --pattern '*.sha256'
-   gh release download --repo Telerik/project-nia --pattern '*.asc'
+   gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+   gh release download --repo telerik/project-nia --pattern '*.sha256'
+   gh release download --repo telerik/project-nia --pattern '*.asc'
 
    # Verify SHA256
    $expected = (Get-Content nia-*-x86_64-windows.exe.sha256).Split(' ')[0]

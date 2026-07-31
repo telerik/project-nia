@@ -7,12 +7,12 @@ Nia CLI is a Rust-based command-line utility for agentic software development li
 Use the following sequence to complete the installation:
 
 1. Check the prerequisites and confirm your platform support tier.
-2. Authenticate to the private Nia release repository.
-3. Choose the recommended quick install, a manual release asset, a Linux package, or a source build.
+2. Download Nia from the public release repository.
+3. Choose the recommended quick install, a manual release asset, or a Linux package.
 4. Install any required companion software described in this article.
 5. Verify that the `nia` command runs in a new terminal.
 
-The quick-install scripts are the recommended option for most users. Use the manual, package, source, or container procedures when your environment requires them.
+The quick-install scripts are the recommended option for most users. Use the manual, package, or container procedures when your environment requires them.
 
 ## Prerequisites
 
@@ -127,55 +127,28 @@ Nia CLI is available for the following platforms:
 
 ### Use the Quick Installer
 
-The quick installer detects the release asset for your platform and provides the shortest installation path. The Nia release repository is private, so authenticate with GitHub CLI or a token before running one of these methods.
+The quick installer detects the release asset for your platform and provides the shortest installation path. Nia releases are published in the public [`telerik/project-nia`](https://github.com/telerik/project-nia) repository.
 
 #### Install with GitHub CLI
 
 *Linux/macOS:*
 ```bash
-# Requires: gh CLI authenticated (run 'gh auth login' first)
-gh release download --repo Telerik/project-nia --pattern 'install.sh' && sh install.sh
+gh release download --repo telerik/project-nia --pattern 'install.sh' && sh install.sh
 ```
 
 *Windows (PowerShell 6+):*
 ```powershell
-# Requires: gh CLI authenticated (run 'gh auth login' first)
-gh release download --repo Telerik/project-nia --pattern 'install.ps1'
+gh release download --repo telerik/project-nia --pattern 'install.ps1'
 .\install.ps1
 ```
-
-#### Install with a GitHub Token
-
-*Linux/macOS:*
-```bash
-# Requires: GITHUB_TOKEN environment variable
-curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
-  -o install.sh \
-  https://github.com/Telerik/project-nia/releases/latest/download/install.sh
-sh install.sh
-```
-
-*Windows (PowerShell 6+):*
-```powershell
-# Requires: GITHUB_TOKEN environment variable
-$headers = @{Authorization = "token $env:GITHUB_TOKEN"}
-Invoke-WebRequest -Headers $headers `
-  -Uri 'https://github.com/Telerik/project-nia/releases/latest/download/install.ps1' `
-  -OutFile install.ps1
-.\install.ps1
-```
-
-> **Authentication required**: This repository is private. Choose one method:
-> - **GitHub CLI**: Run `gh auth login` first, then use the GitHub CLI method.
-> - **Token**: Set the `GITHUB_TOKEN` environment variable, then use the token method.
 
 #### Choose Installer Options
 
 After downloading the installer, pass options to select a release channel, version, destination, or output mode:
 
-*Linux/macOS with gh CLI:*
+*Linux/macOS:*
 ```bash
-gh release download --repo Telerik/project-nia --pattern 'install.sh'
+gh release download --repo telerik/project-nia --pattern 'install.sh'
 sh install.sh --version 4.0.1              # Install specific version
 sh install.sh --pre-release                 # Install pre-release
 sh install.sh --install-dir ~/.local/bin   # Custom directory
@@ -183,17 +156,9 @@ sh install.sh --skip-verify                # Skip verification (not recommended)
 sh install.sh --quiet                      # Quiet mode for CI/CD
 ```
 
-*Linux/macOS with token:*
-```bash
-curl -fsSL -H "Authorization: token $GITHUB_TOKEN" \
-  -o install.sh \
-  https://github.com/Telerik/project-nia/releases/latest/download/install.sh
-sh install.sh --version 4.0.1 --quiet
-```
-
 *Windows PowerShell:*
 ```powershell
-gh release download --repo Telerik/project-nia --pattern 'install.ps1'
+gh release download --repo telerik/project-nia --pattern 'install.ps1'
 .\install.ps1 -Version '4.0.1'             # Install specific version
 .\install.ps1 -PreRelease                  # Install pre-release
 .\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\nia"  # Custom directory
@@ -210,7 +175,7 @@ Use a binary release when you need to manage the executable yourself or distribu
 #### Install on Linux (x86_64)
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-x86_64-linux'
+gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux'
 chmod +x nia-*-x86_64-linux
 sudo mv nia-*-x86_64-linux /usr/local/bin/nia
 nia --version
@@ -221,7 +186,7 @@ nia --version
 For ARM64 Linux systems (e.g., AWS Graviton, Raspberry Pi 4+, Linux containers on Apple Silicon):
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-aarch64-linux'
+gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-linux'
 chmod +x nia-*-aarch64-linux
 sudo mv nia-*-aarch64-linux /usr/local/bin/nia
 nia --version
@@ -243,7 +208,7 @@ uname -m
 For Intel Macs:
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-x86_64-darwin'
+gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-darwin'
 
 # Make executable
 chmod +x nia-*-x86_64-darwin
@@ -267,7 +232,7 @@ nia --version
 For Apple Silicon Macs (M1/M2/M3/M4):
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-aarch64-darwin'
+gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-darwin'
 
 # Make executable
 chmod +x nia-*-aarch64-darwin
@@ -298,7 +263,7 @@ nia --version
 
 ```powershell
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
 
 # Create programs directory if it doesn't exist
 New-Item -ItemType Directory -Force -Path "$env:LOCALAPPDATA\Programs"
@@ -339,10 +304,10 @@ Windows Server editions (2019, 2022, 2025) use the same binary as Windows 11 but
 
 ```powershell
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
 ```
 
-If `gh` (GitHub CLI) is not available, download manually from [GitHub Releases](https://github.com/Telerik/project-nia/releases).
+If `gh` (GitHub CLI) is not available, download manually from [GitHub Releases](https://github.com/telerik/project-nia/releases).
 
 ##### Create the Installation Directory
 
@@ -473,7 +438,7 @@ If `nia` is not recognized:
    & (Get-Command nia.exe).Source --version
    ```
 
-**Note:** Requires [GitHub CLI](https://cli.github.com/) installed and authenticated.
+**Note:** The `gh release download` examples require an authenticated [GitHub CLI](https://cli.github.com/). The repository and its release assets are public; use the direct-download quick installer if you do not use GitHub CLI.
 
 ### Install a Linux Package
 
@@ -483,7 +448,7 @@ For supported Linux distributions, use the package that matches your architectur
 
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia_*_amd64.deb'
+gh release download --repo telerik/project-nia --pattern 'nia_*_amd64.deb'
 
 # Install package
 sudo dpkg -i nia_*_amd64.deb
@@ -496,7 +461,7 @@ nia --version
 
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia_*_arm64.deb'
+gh release download --repo telerik/project-nia --pattern 'nia_*_arm64.deb'
 
 # Install package
 sudo dpkg -i nia_*_arm64.deb
@@ -509,7 +474,7 @@ nia --version
 
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*x86_64.rpm'
+gh release download --repo telerik/project-nia --pattern 'nia-*x86_64.rpm'
 
 # Install package (Fedora/RHEL 8+)
 sudo dnf install ./nia-*x86_64.rpm
@@ -525,7 +490,7 @@ nia --version
 
 ```bash
 # Download latest release
-gh release download --repo Telerik/project-nia --pattern 'nia-*aarch64.rpm'
+gh release download --repo telerik/project-nia --pattern 'nia-*aarch64.rpm'
 
 # Install package (Fedora/RHEL 8+)
 sudo dnf install ./nia-*aarch64.rpm
@@ -535,29 +500,6 @@ sudo rpm -i nia-*aarch64.rpm
 
 # Verify installation
 nia --version
-```
-
-### Build from Source
-
-Build from source when you need to work from a repository checkout or when a release asset is not suitable for your environment. This option requires Rust and a local clone of the repository.
-
-```bash
-# Clone the repository
-git clone https://github.com/Telerik/project-nia.git
-cd nia
-
-# Build and install
-cargo install --path .
-```
-
-This will install the `nia` binary to `~/.cargo/bin/`, which should be in your PATH.
-
-### Install with Cargo
-
-Once the package is published to crates.io, install it directly with Cargo:
-
-```bash
-cargo install nia
 ```
 
 ## Install GitHub Copilot CLI on Windows
@@ -689,7 +631,7 @@ RUN dnf install -y curl ca-certificates
 
 # Download and install nia (ARM64)
 RUN curl -fsSL -o /tmp/nia.rpm \
-    $(curl -s https://api.github.com/repos/Telerik/project-nia/releases/latest \
+   $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | grep "browser_download_url.*aarch64.rpm" | cut -d'"' -f4) \
     && dnf install -y /tmp/nia.rpm \
     && dnf clean all \
@@ -709,7 +651,7 @@ RUN apt-get update && apt-get install -y curl ca-certificates
 
 # Download and install nia (ARM64)
 RUN curl -fsSL -o /tmp/nia.deb \
-    $(curl -s https://api.github.com/repos/Telerik/project-nia/releases/latest \
+   $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | grep "browser_download_url.*arm64.deb" | cut -d'"' -f4) \
     && apt-get install -y /tmp/nia.deb \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/nia.deb
@@ -729,7 +671,7 @@ For production deployments, use multi-stage builds to reduce final image size:
 FROM fedora:latest as builder
 RUN dnf install -y curl jq
 RUN curl -fsSL -o /tmp/nia.rpm \
-    $(curl -s https://api.github.com/repos/Telerik/project-nia/releases/latest \
+   $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | jq -r '.assets[] | select(.name | contains("aarch64.rpm")) | .browser_download_url')
 
 # Runtime stage - minimal image
@@ -746,7 +688,7 @@ RUN nia --version
 FROM ubuntu:latest as builder
 RUN apt-get update && apt-get install -y curl jq
 RUN curl -fsSL -o /tmp/nia.deb \
-    $(curl -s https://api.github.com/repos/Telerik/project-nia/releases/latest \
+   $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | jq -r '.assets[] | select(.name | contains("arm64.deb")) | .browser_download_url')
 
 # Runtime stage - minimal image
@@ -811,7 +753,7 @@ Method 3 - System Settings (macOS 13+):
 4. Click "Open Anyway" next to the blocked app message
 5. Re-run the binary
 
-**Why this happens**: Nia binaries are not signed with an Apple Developer certificate (by design, as nia is an internal tool). All binaries are GPG signed for authenticity verification.
+**Why this happens**: macOS applies Gatekeeper checks to downloaded applications. Nia release assets include signatures and checksums for authenticity verification.
 
 ---
 
@@ -962,7 +904,7 @@ sudo chmod 755 /usr/local/bin/nia
 
 2. Download and install the aarch64-darwin binary:
    ```bash
-   gh release download --repo Telerik/project-nia --pattern 'nia-*-aarch64-darwin'
+   gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-darwin'
    # Follow installation instructions above
    ```
 
@@ -977,7 +919,7 @@ sudo chmod 755 /usr/local/bin/nia
 1. Import the public GPG key:
    ```bash
    # Download public key from release
-   gh release download --repo Telerik/project-nia --pattern 'public-key.asc'
+   gh release download --repo telerik/project-nia --pattern 'public-key.asc'
    gpg --import public-key.asc
    ```
 
@@ -996,21 +938,12 @@ sudo chmod 755 /usr/local/bin/nia
 
 **Solution**:
 
-1. Authenticate using GitHub CLI (recommended):
+1. Authenticate using GitHub CLI:
    ```bash
    gh auth login
    ```
 
-2. Or set a GitHub token environment variable:
-   ```bash
-   # Using GITHUB_TOKEN
-   export GITHUB_TOKEN="your-personal-access-token"
-
-   # Or using GH_TOKEN
-   export GH_TOKEN="your-personal-access-token"
-   ```
-
-3. Verify authentication works:
+2. Verify authentication works:
    ```bash
    gh auth status
    ```
