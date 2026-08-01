@@ -80,7 +80,7 @@
 - Add context to shell profile for active sprints
 - Document context requirements in team workflows
 
-**Related**: [Workflow Commands](../cli-api/workflow-commands.md), [Issue Management](../workflows/issue.md), [Pull Requests](../workflows/pr.md)
+**Related**: [Workflow Commands](../cli-api/workflow-commands.md), [Issue Management](../commands/issue.md), [Pull Requests](../commands/pr.md)
 
 ---
 

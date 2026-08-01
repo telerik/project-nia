@@ -448,7 +448,7 @@ nia workflow run issue-to-pr --dry-run
 nia workflow run issue-to-pr --start-from create_code
 ```
 
-The workflow pauses at approval gates so you stay in control, and it resumes automatically if a run is interrupted. See [Introduction to Workflows](./guides/workflows/introduction.md) for the built-in workflows, states, and transitions.
+The workflow pauses at approval gates so you stay in control, and it resumes automatically if a run is interrupted. See [Introduction to Workflows](./workflows/introduction.md) for the built-in workflows, states, and transitions.
 
 ## Summary
 
@@ -456,9 +456,9 @@ You installed NIA, connected an AI coding agent, initialized NIA in a project, c
 
 ## Next steps
 
-- [Automate the Issue-to-PR lifecycle](./guides/workflows/introduction.md) with `nia workflow run issue-to-pr` instead of running each step by hand.
+- [Automate the Issue-to-PR lifecycle](./workflows/introduction.md) with `nia workflow run issue-to-pr` instead of running each step by hand.
 - [Configure an AI coding agent](./agents/setup.md) to change agents, commands, models, or prompt formats.
 - [Configure project metadata](./configuration/project.md) for monorepos, shared context, configuration locks, and custom fields.
-- [Explore issue workflows](./workflows/issue.md) to review, plan, publish, or split issues.
+- [Explore issue workflows](./commands/issue.md) to review, plan, publish, or split issues.
 - [Review the command reference](./reference/commands.md) for targets, operations, flags, and modifiers.
 - [Troubleshoot common issues](./troubleshooting/common-issues.md) when installation, configuration, or workflow execution fails.

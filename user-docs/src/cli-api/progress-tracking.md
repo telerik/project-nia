@@ -49,11 +49,11 @@ Error: Required input files missing: README.md, research.md
 Hint: Run 'nia issue plan' to generate implementation plan
 ```
 
-The workflow exits with a clear error message when required files are missing.
+The workflow command exits with a clear error message when required files are missing.
 
 ## Fallback Behavior
 
-Some workflows define fallback instructions for missing inputs. When a fallback exists, the workflow continues even if files are missing:
+Some workflow commands define fallback instructions for missing inputs. When a fallback exists, the workflow continues even if files are missing:
 
 ```
 Required Inputs:

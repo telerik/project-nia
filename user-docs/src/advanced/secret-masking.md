@@ -504,7 +504,7 @@ nia ask "test" 2>&1 | grep "Loaded.*patterns"
 ## See Also
 
 - [Security Guide](../reference/security.md) - Comprehensive security reference covering data flow, sensitive files, and safe customization (complements secret masking with input/configuration security)
-- [Security Workflow](../workflows/security.md) - SAST integration and vulnerability scanning
+- [Security Workflow](../commands/security.md) - SAST integration and vulnerability scanning
 - [Configuration Hierarchy](../configuration/hierarchical.md) - How config files are discovered
 - [Session Context](./session-context.md) - Session management and optimization
 

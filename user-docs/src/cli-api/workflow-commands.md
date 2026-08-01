@@ -80,7 +80,6 @@ Nia includes 5 built-in workflow targets:
 | `pr` | Pull requests | draft, review, merge, ask |
 | `docs` | Documentation | create, build, ask |
 
-See [Built-in Workflows](../workflows/issue.md) for detailed documentation.
 
 ## Context Requirements
 

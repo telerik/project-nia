@@ -374,5 +374,5 @@ This ensures each repository receives the correct portion of work without manual
 ## See Also
 
 - [Monorepo Support](./monorepo.md) - Working with monolithic repositories containing multiple services
-- [Workflow Customization](./workflow-customization.md) - Customizing workflows for your team
+- [Command Customization](./command-customization.md) - Customizing workflows for your team
 - [Context Usage Patterns](./context-usage.md) - Advanced context management strategies

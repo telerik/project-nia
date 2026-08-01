@@ -129,5 +129,5 @@ Continue with the [Quick Start](./quick-start.md) to configure NIA in your own p
 
 - [Set up NIA in your own project](./quick-start.md) with your issue tracker and code platform.
 - [Configure an AI coding agent](./agents/setup.md) to change agents, models, or prompt formats.
-- [Explore the built-in workflows](./guides/workflows/introduction.md) that power the tutorials you just ran.
+- [Explore the built-in workflows](./workflows/introduction.md) that power the tutorials you just ran.
 - [Review the command reference](./reference/commands.md) for every target, operation, flag, and modifier.

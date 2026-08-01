@@ -1,6 +1,6 @@
-# Workflow Customization
+# Command Customization
 
-Nia allows you to customize workflow behavior through configuration files in `.nia/config/commands.toml`.
+Nia allows you to customize workflow command behavior through configuration files in `.nia/config/commands.toml`.
 
 ## Quick Start
 
@@ -52,7 +52,7 @@ task = "thorough_code_review"
 - At least one of `role` or `task` must be specified
 - Referenced prompts must exist in `.nia/prompts/` or be built-in
 
-### Option 2: Define Custom Workflows
+### Option 2: Define Custom Commands
 
 Use `[[custom_commands]]` to add new operations or entirely new targets.
 
@@ -82,7 +82,7 @@ description = "Plan a deployment"
 
 Usage: `nia deployment plan`
 
-**Example: Custom workflow with modifiers**
+**Example: Custom command with modifiers**
 
 ```toml
 [[custom_commands]]
@@ -148,7 +148,7 @@ description = "Test suite for validation"
 
 **When to Use:**
 
-- Adding documentation or templates to existing workflows
+- Adding documentation or templates to existing workflow commands
 - Including project-specific files for better AI context
 - Simple customizations that don't require changing prompts or behavior
 
@@ -344,7 +344,7 @@ Common validation errors:
 
 ## Best Practices
 
-1. **Start Simple**: Use `[[prompt_overrides]]` before creating custom workflows
+1. **Start Simple**: Use `[[prompt_overrides]]` before creating custom commands
 2. **Export First**: Use `nia config export --commands` for a template
 3. **Validate Often**: Run `nia config validate` after each change
 4. **Lock in CI**: Use `nia config lock` for reproducible builds
@@ -352,7 +352,7 @@ Common validation errors:
 
 ## Protected Targets
 
-The following targets are reserved and cannot be used for custom workflows:
+The following targets are reserved and cannot be used for custom commands:
 
 - `config` - Configuration management
 - `guide` - User guide access
@@ -365,7 +365,7 @@ The following targets are reserved and cannot be used for custom workflows:
 ### "Target not found" Error
 
 ```
-Error: Target 'isue' not found in built-in workflows
+Error: Target 'isue' not found in built-in workflow commands
   Did you mean: 'issue'?
 ```
 

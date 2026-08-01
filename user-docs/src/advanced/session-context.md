@@ -99,7 +99,7 @@ command has the necessary context on first execution.
 - Export prompts with `nia config export --prompts` to see both init and delta variants
 - Delta prompts are located in `.nia/prompts/{xml,markdown}/{target}/`
 - You can customize delta prompts separately from init prompts for fine-grained control
-- See [Workflow Customization](./workflow-customization.md#creating-custom-prompts) for more details
+- See [Command Customization](./command-customization.md#creating-custom-prompts) for more details
 
 ### Role and Context Optimization
 

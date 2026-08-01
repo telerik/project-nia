@@ -818,6 +818,6 @@ If validation fails, you'll see detailed error messages with line numbers and su
 
 ## See Also
 
-- [Creating Your First Workflow](../guides/workflows/simple-workflow.md)
-- [Loops and Retries](../guides/workflows/loops-retries.md)
-- [Advanced Patterns](../guides/workflows/advanced-workflows.md)
+- [Creating Your First Workflow](../workflows/simple-workflow.md)
+- [Loops and Retries](../workflows/loops-retries.md)
+- [Advanced Patterns](../workflows/advanced-workflows.md)

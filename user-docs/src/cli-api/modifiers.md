@@ -108,7 +108,7 @@ nia issue plan --lite
 - Documentation updates
 - Configuration changes
 
-See [Issue Workflows - Simplified Workflow](../workflows/issue.md#simplified-workflow-lite) for detailed guidance.
+See [Issue Commands - Lite Mode](../commands/issue.md#lite-mode) for detailed guidance.
 
 ---
 
@@ -145,7 +145,7 @@ nia issue plan --lite-edit "Prioritize backward compatibility"
 - Want to iterate quickly on draft/plan content
 - Require custom focus within lite mode constraints
 
-See [Issue Workflows - Combined Modifiers](../workflows/issue.md#combined-lite--edit-lite-edit) for detailed examples.
+See [Issue Commands - Lite Mode](../commands/issue.md#lite-mode) for detailed examples.
 
 ---
 

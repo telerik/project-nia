@@ -29,14 +29,18 @@ Workflows are ideal for:
 
 ## Built-in Workflows
 
-Nia includes 6 production-ready workflows you can use immediately:
+Nia includes 10 production-ready workflows you can use immediately:
 
 | Workflow | Description | Use Case |
 |----------|-------------|----------|
+| `code-to-review` | Iterative code generation with review and auto-fix | Code development |
+| `issue-to-plan` | Issue and requirements drafting with implementation planning | Planning phase |
 | `issue-to-pr` | Complete issue-to-PR lifecycle with iterative code generation | End-to-end development |
 | `issue-to-pr-lite` | Lightweight issue-to-PR with streamlined approval gates | Tutorials and simple tasks |
-| `issue-to-plan` | Issue and requirements drafting with implementation planning | Planning phase |
-| `code-to-review` | Iterative code generation with review and auto-fix | Code development |
+| `issue-to-review` | Full issue resolution with comprehensive code review | Complex issues requiring review |
+| `issue-to-review-lite` | Lightweight issue resolution with streamlined review | Quick fixes and simple issues |
+| `pr-create-publish` | Create PR from existing changes and publish | PR creation from local changes |
+| `pr-review-merge` | Review existing PR and merge | PR review workflow |
 | `pr-to-merge` | Handles PR creation, remediation and merging | PR management |
 | `ticket-to-response` | Complete ticket triage and response workflow | Support tickets |
 

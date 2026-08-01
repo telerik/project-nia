@@ -88,7 +88,7 @@ nia issue --help             # List operations for issue target
 nia issue draft --help       # Help for specific operation
 ```
 
-## Workflow Context
+## Command Context
 
 Most workflow commands require context to execute properly:
 
@@ -120,8 +120,6 @@ nia issue draft --<TAB>      # Shows available modifiers
 See [Shell Completions](../getting-started/completions.md) for installation.
 
 ## Application Commands
-
-_New in version 4.2_
 
 Application commands enable executing nia operations across multiple related repositories as a coordinated unit. This is useful for:
 
@@ -173,7 +171,7 @@ Application commands use two execution modes depending on the operation's `app_w
 
 #### Direct Execution (Default)
 
-Commands WITHOUT `app_workflow` configuration execute once at the application level with full application context:
+Commands without `app_workflow` configuration execute once at the application level with full application context:
 
 ```bash
 nia app issue draft              # Executes once with all repo metadata
@@ -194,7 +192,7 @@ nia app code review              # Reviews entire feature across repos
 
 #### Workflow Execution (Opt-In)
 
-Commands WITH `app_workflow` configuration execute a workflow in each child repository independently:
+Commands with `app_workflow` configuration execute a workflow in each child repository independently:
 
 ```bash
 nia app issue plan               # Runs workflow in each repo
@@ -214,7 +212,7 @@ nia app pr create                # Runs workflow in each repo
 - PR creation (create PRs for each repo's changes)
 - Test execution (run tests across all repos)
 
-### Workflow Configuration
+### Command Configuration
 
 Configure which commands use workflow execution via `commands.toml`:
 
@@ -239,7 +237,7 @@ description = "Draft issue plan"
 - **Extensibility**: Any new command automatically works via direct execution
 - **User override**: Users can override via `.nia/config/commands.toml`
 
-#### Built-in Workflow Mappings
+#### Built-in Execution Method Mappings
 
 | Command | app_workflow | Execution Mode |
 |---------|--------------|----------------|
@@ -301,7 +299,7 @@ nia app issue plan --max-workers 5            # Parallel execution limit
 **Rejected flags** (with helpful error messages):
 - `--model`, `--agent`, `--role`: Model/agent selection is defined in workflow configuration
 - `--context-file`: Context is propagated via `.nia/context.toml`, not flags
-- `--edit`, `--fix`: Workflows run non-interactively across multiple repositories
+- `--edit`, `--fix`: Workflow run non-interactively across multiple repositories
 - `--clear`: Workflow context is managed per child repository
 - `--lite`: Never supported for app commands
 
@@ -373,7 +371,7 @@ nia app issue plan --max-workers 5
 nia app issue plan --quiet --bypass-approvals
 ```
 
-#### Example 4: Custom Workflow Commands
+#### Example 4: Custom App Workflow Commands
 
 Users can add custom commands with workflow execution:
 
@@ -395,7 +393,7 @@ nia app deploy staging    # Runs custom workflow in each repo
 
 ### Status Tracking
 
-Workflow execution shows per-repository progress:
+Command execution shows per-repository progress:
 
 ```
 Executing workflow 'issue-to-plan' in 3 repositories
@@ -463,5 +461,5 @@ nia app issue plan
 ### Related Documentation
 
 - [Multi-Repository Applications](../configuration/hierarchical.md#multi-repository-applications) - Setup and configuration
-- [Workflow Commands](./workflow-commands.md) - Workflow system overview
+- [Workflow Commands](./workflow-commands.md) - Command system overview
 - [Context Sources](../configuration/context.md) - Context management

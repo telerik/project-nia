@@ -21,11 +21,11 @@ Next Steps:
   → nia issue ask           - Ask questions about this issue
 ```
 
-## Workflow Progressions
+## Command Progressions
 
 Hints are based on common SDLC patterns:
 
-### Issue Workflows
+### Issue Commands
 
 | After Running | Suggested Next Commands |
 |--------------|------------------------|
@@ -34,7 +34,7 @@ Hints are based on common SDLC patterns:
 | `nia issue review` | `issue plan`, `issue ask` |
 | `nia issue plan` | `issue plan --edit`, `code create`, `code ask` |
 
-### Code Workflows
+### Code Commands
 
 | After Running | Suggested Next Commands |
 |--------------|------------------------|
@@ -42,21 +42,21 @@ Hints are based on common SDLC patterns:
 | `nia code test` | `code create`, `code create --fix`, `code review`, `code ask` |
 | `nia code review` | `code review --auto-fix issues`, `code create`, `code create --fix`, `pr draft`, `docs create`, `code ask` |
 
-### PR Workflows
+### PR Commands
 
 | After Running | Suggested Next Commands |
 |--------------|------------------------|
 | `nia pr draft` | `pr draft --edit`, `pr review`, `pr ask` |
 | `nia pr review` | `pr merge`, `pr merge --fix` |
 
-### Backlog Workflows
+### Backlog Commands
 
 | After Running | Suggested Next Commands |
 |--------------|------------------------|
 | `nia backlog create` | `backlog review`, `backlog ask` |
 | `nia backlog rank` | `backlog create`, `backlog review`, `backlog ask` |
 
-### Documentation Workflows
+### Documentation Commands
 
 | After Running | Suggested Next Commands |
 |--------------|------------------------|
