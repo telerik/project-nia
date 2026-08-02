@@ -8,30 +8,49 @@ This guide is the quickest path from zero to productive. Each tutorial executes 
 
 ## Prerequisites
 
-* A **GitHub account** and the **GitHub CLI** authenticated (`gh auth status`). Install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh`, then run `gh auth login`.
-* The tutorials run against a **personal fork** of the sample app.
+* A **GitHub account** — required for repository access and authentication.
+* The tutorials run against a **clone** of the sample app (see Step 1).
 
 ### Using the Dev Container (recommended)
 
-The sample app ships a **Dev Container** that installs Node.js, the GitHub CLI, the supported AI coding agents, and NIA for you — so you can skip manual installation entirely. To launch it, you need **one** of the following:
+The sample app includes a **Dev Container** that installs Node.js, the GitHub CLI (`gh`), supported AI coding agents, and NIA automatically. This is the recommended approach because:
 
-* **Locally:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (running), [Visual Studio Code](https://code.visualstudio.com/), and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). Then choose **Reopen in Container** when prompted.
-* **In the cloud:** A GitHub account with **Codespaces** enabled — start a Codespace from your fork. Nothing to install locally.
+- **Zero manual installation** — all dependencies are pre-configured.
+- **Isolated environment** — protects your local system from unintended changes.
+- **Consistent experience** — eliminates "works on my machine" issues.
 
-On first create, the container downloads the coding agents and the latest NIA release, so an **internet connection** is required. After setup, you still authenticate the GitHub CLI (`gh auth login`) and your chosen coding agent — see [Configure your coding agent](#2-configure-your-coding-agent) below.
+> **⚠️ Agent Isolation**: AI coding agents execute commands and modify files autonomously. Running them inside a Dev Container, VM or sandbox provides essential isolation that prevents accidental changes to your local system or other projects. We strongly recommend using the Dev Container for the NIA tutorials to ensure safe and reliable execution.
 
-> **Not using the Dev Container?** Install Node.js, the GitHub CLI, your coding agent, and NIA manually by following the standard [Quick Start](./quick-start.md).
+To launch the Dev Container with VS Code, choose **one** of the following:
 
-## 1. Fork and open the sample app
+* **Local Dev Container:** Install [Docker Engine](https://docs.docker.com/engine/install/) and [Visual Studio Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). After cloning the repository (Step 1), open the folder in VS Code and choose **Reopen in Container** when prompted.
 
-Fork and clone the repository, then open it:
+* **Custom Container Build:** the **Dev Container** format is well suported by other build systems and cloud platforms, feel free to use the one you're most familiar with.
+
+On first launch, the container downloads the supported coding agents and the latest NIA release, so an **internet connection** is required. After setup completes, authenticate the GitHub CLI (`gh auth login`) and your chosen coding agent — see [Configure your coding agent](#2-configure-your-coding-agent) for more details if you have trouble authenticating your chosen agent.
+
+### Manual Setup (without Dev Container)
+
+If you prefer not to use the Dev Container, you can configure the environment on your own VM or test system:
+
+* **Node.js 18+** — the coding agents install via npm. Get it from [nodejs.org](https://nodejs.org).
+* **GitHub CLI** — install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh`, then authenticate with `gh auth login`.
+* **AI Coding Agent** — GitHub Copilot CLI, Claude Code, or OpenCode (see [Agent Setup](./agents/setup.md)).
+* **NIA** — follow the installation steps in the standard [Quick Start](./quick-start.md).
+
+> **Note**: When running outside a Dev Container, take care to understand what commands the AI agent will execute, as they run directly on your system.
+
+## 1. Clone and open the sample app
+
+Clone the repository to your system:
 
 ```bash
-gh repo fork telerik/healthcare-app-angular --clone
+git clone https://github.com/telerik/healthcare-app-angular.git
+# Or use the SSH URI - git clone git@github.com:telerik/healthcare-app-angular.git
 cd healthcare-app-angular
 ```
 
-Open the folder in VS Code and choose **Reopen in Container** when prompted, or start a **Codespace** from your fork. The Dev Container provisions every dependency the tutorials need.
+Open the folder in VS Code and choose **Reopen in Container** when prompted. The Dev Container provisions every dependency the tutorials need.
 
 Confirm NIA is available:
 
@@ -39,7 +58,7 @@ Confirm NIA is available:
 nia --version
 ```
 
-The terminal prints a NIA version number, for example `nia 4.2.1`.
+The terminal prints a NIA version number, for example `nia 4.3.5`.
 
 ## 2. Configure your coding agent
 
@@ -55,6 +74,12 @@ This command:
 - Prompts you to select a coding agent — **GitHub Copilot CLI**, **Claude Code**, or **OpenCode**.
 - Runs `nia config init --agent <agent> --models stable` for you.
 - Extracts the offline documentation to `.nia/cache/docs/`.
+
+The `--models stable` flag configures NIA to use specific, optimised models rather than automatic model selection. This ensures consistent, predictable behavior across your tutorials and workflows.
+
+ > **Why not use automatic model selection?** While agents support an `auto` option that dynamically selects models, this can lead to inconsistent output quality and unpredictable costs. The `stable` profile provides reliable behavior that's been validated with NIA's prompts. For advanced model configuration, see [AI Model Selection](./agents/model-selection.md).
+
+ > **Additional OpenCode note:** Replace `auto` with `provider/claude-sonnet-4.5`, and set `"issue.plan"` to `provider/claude-opus-4.5`.
 
 Make sure the agent you pick is authenticated. GitHub Copilot CLI reuses your `gh` authentication; Claude Code and OpenCode authenticate on first launch (`claude` or `opencode auth login`). Verify everything with:
 
@@ -74,13 +99,13 @@ The seven tutorials build on one another, from a two-minute question to a full s
 
 | # | Tutorial | Command shown | What you learn | ~Time |
 |---|----------|---------------|----------------|-------|
-| 1 | Architecture Overview | `nia ask` | Explore an unfamiliar codebase with natural-language questions | 2 min |
-| 2 | Developer Guide | `nia ask` | Generate developer documentation straight from code | 2 min |
-| 3 | RFA Investigation | `ticket-to-response` workflow | Triage a support ticket and draft a response | 10 min |
-| 4 | Input Validation Fix | `issue-to-pr-lite` workflow | Resolve an issue end to end with a lightweight workflow | 8 min |
-| 5 | Code Refactoring | `issue-to-pr-lite` workflow | Apply a routine refactor with tests and an audit trail | 6 min |
-| 6 | Security Review | `issue-to-pr` workflow | Run a long-horizon threat-modeling task | 20 min |
-| 7 | Backlog Creation | `nia backlog create` | Turn repository analysis into a prioritized backlog | 15 min |
+| 1 | Architecture Overview | `nia ask` | Simple Q&A demonstrating code base comprehension | ~2 min |
+| 2 | Developer Guide | `nia ask` | Simple Q&A requesting developer how-to documentation for the project | ~2 min |
+| 3 | RFA Investigation | `ticket-to-response` workflow | Investigate support tickets using ticket-to-response workflow | ~20 min |
+| 4 | Input Validation Fix | `issue-to-review-lite` workflow | Fix input validation issue using streamlined workflows | ~10 min |
+| 5 | Code Refactoring | `issue-to-review-lite` workflow | Simple refactoring task using streamlined workflows | ~6 min |
+| 6 | Security Review | `issue-to-review` workflow | Complex security analysis with a long horizon workflow | 90+ min |
+| 7 | Backlog Creation | `nia backlog create` | Plan a phased implementation from your backlog | ~5 min |
 
 ## 4. Run the tutorials in sequence
 
@@ -92,7 +117,7 @@ nia learn next
 
 Every run follows the same guided pattern:
 
-1. **Validates your environment** — GitHub CLI authentication, agent authentication, and that you are inside your fork.
+1. **Validates your environment** — GitHub CLI authentication, agent authentication, and that you are inside a clone of the Demo App repo.
 2. **Explains what you'll learn** — the concept, the value NIA adds, and links to the relevant documentation.
 3. **Runs the real command** — the exact `nia` command is printed, then executed against the sample app.
 4. **Tracks your progress** — completion status is saved to `.nia/config/learn.toml`, so `nia learn next` always resumes where you left off.
@@ -121,7 +146,7 @@ You have completed this guide when all of the following are true:
 
 ## You're ready for your own project
 
-> **Congratulations — you are now proficient with NIA.** You have driven `nia ask`, the full `issue-to-pr` workflow, ticket triage, a long-horizon security review, and backlog planning against a real codebase. The natural next step is to **set up NIA in your own local repository**: initialize configuration with `nia config init`, describe your project in `.nia/config/project.toml`, and run your first workflow on code you own.
+> **Congratulations — you are now proficient with NIA.** You have used `nia ask`, the `issue-to-review-lite` and `issue-to-review` workflows, ticket triage, a long-horizon security review, and backlog planning against a real codebase. The next step is to **set up NIA in your own project**: initialize configuration with `nia config init`, describe your project in `.nia/config/project.toml`, and run your first workflow on code you own.
 
 Continue with the [Quick Start](./quick-start.md) to configure NIA in your own project and automate an issue from planning to pull request with `nia workflow run issue-to-pr`.
 
