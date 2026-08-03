@@ -112,6 +112,8 @@ Nia collects usage telemetry in two consent-gated tiers:
 - Environment variables or secrets
 - Repository names or paths
 
+Telemetry covers every `nia` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same consent-gated `init`/`complete` events.
+
 Telemetry is managed in `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`.
 
 See: `src/telemetry/usage.rs` for implementation details.
