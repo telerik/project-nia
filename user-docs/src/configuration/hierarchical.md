@@ -351,6 +351,47 @@ name = "api-service"
 path = "./services/api"
 ```
 
+### Initializing with Additional Configuration
+
+The `--app` flag can be combined with other configuration flags to create a complete setup in one command:
+
+#### Application with Issue Tracker and Code Platform
+
+```bash
+nia config init --app --issues github_issues --code github
+```
+
+This creates:
+- `.nia/config/application.toml` - Application metadata and repository discovery
+- `.nia/config/toolchain.toml` - Issue tracker and code platform configuration
+
+#### Application with AI Agent Configuration
+
+```bash
+nia config init --app --agent github_copilot --models balanced
+```
+
+This creates:
+- `.nia/config/application.toml` - Application metadata
+- `.nia/config/agents.toml` - AI agent and model selection
+
+#### Complete Application Setup
+
+```bash
+nia config init --app \
+    --issues github_issues \
+    --code github \
+    --agent github_copilot \
+    --models balanced
+```
+
+This creates all configuration files at once:
+- `.nia/config/application.toml` - Application metadata
+- `.nia/config/toolchain.toml` - Development toolchain
+- `.nia/config/agents.toml` - AI agent configuration
+
+This is particularly useful for bootstrapping new multi-repository applications where child repositories will inherit these shared configurations.
+
 ### Repository Opt-In
 
 Each repository that should be part of the application must explicitly opt-in by adding the application ID to its `project.toml`:
