@@ -89,6 +89,12 @@ Make sure the agent you pick is authenticated. GitHub Copilot CLI reuses your `g
 nia status
 ```
 
+## Set your user identity
+
+```bash
+nia config user --email "john@company.com"
+```
+
 ## See the tutorials
 
 List every tutorial along with its status and estimated time:

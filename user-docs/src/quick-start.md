@@ -183,7 +183,13 @@ After initialization, confirm that these files exist:
 - `.nia/config/project.toml`, which contains project metadata that you must complete.
 - `.nia/config/toolchain.toml` when you selected an issue tracker or code platform.
 
-6. Configure Project Metadata.
+6. Set Your User Identity.
+
+```bash
+nia config user --email "john@company.com"
+```
+
+7. Configure Project Metadata.
 
 Open `.nia/config/project.toml` and replace the sample values with details about your project. NIA uses this metadata to give the agent reliable information about your language, framework, tests, and package manager.
 
@@ -224,7 +230,7 @@ If validation succeeds, NIA reports:
 Configuration is valid
 ```
 
-7. View Available Commands.
+8. View Available Commands.
 
 Nia includes a command-line interface (CLI) that provides access to its available features and operations. You can use the built-in help system to discover available commands, view command descriptions, and learn how to use specific functionality.
 
