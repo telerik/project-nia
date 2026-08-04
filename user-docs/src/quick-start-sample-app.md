@@ -1,4 +1,4 @@
-# Quick Start with the Sample App
+# Quick Start with Sample App
 
 The fastest way to learn NIA is to run its built-in, guided tutorials against a real codebase. The `nia learn` command walks you through a hands-on curriculum on the [healthcare-app-angular](https://github.com/telerik/healthcare-app-angular) sample app: it validates your environment, explains what each command does, runs the real NIA workflow, and tracks your progress as you go.
 
@@ -23,11 +23,13 @@ The sample app includes a **Dev Container** that installs Node.js, the GitHub CL
 
 To launch the Dev Container with VS Code, choose **one** of the following:
 
-* **Local Dev Container:** Install [Docker Engine](https://docs.docker.com/engine/install/) and [Visual Studio Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). After cloning the repository (Step 1), open the folder in VS Code and choose **Reopen in Container** when prompted.
+* **Local Dev Container:** Install [Docker Engine](https://docs.docker.com/engine/install/) and [Visual Studio Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers). After cloning the repository (see [Clone and open the sample app](#clone-and-open-the-sample-app)), open the folder in VS Code and choose **Reopen in Container** when prompted.
+
+* **GitHub Codespaces:** Run the sample app in the cloud without installing anything locally. On the [healthcare-app-angular](https://github.com/telerik/healthcare-app-angular) repository, choose **Code → Codespaces → Create codespace on main**. The codespace builds the same Dev Container automatically, giving you an isolated, preconfigured environment in your browser or in VS Code.
 
 * **Custom Container Build:** the **Dev Container** format is well suported by other build systems and cloud platforms, feel free to use the one you're most familiar with.
 
-On first launch, the container downloads the supported coding agents and the latest NIA release, so an **internet connection** is required. After setup completes, authenticate the GitHub CLI (`gh auth login`) and your chosen coding agent — see [Configure your coding agent](#2-configure-your-coding-agent) for more details if you have trouble authenticating your chosen agent.
+On first launch, the container downloads the supported coding agents and the latest NIA release, so an **internet connection** is required. After setup completes, authenticate the GitHub CLI (`gh auth login`) and your chosen coding agent — see [Configure your coding agent](#configure-your-coding-agent) for more details if you have trouble authenticating your chosen agent.
 
 ### Manual Setup (without Dev Container)
 
@@ -40,7 +42,7 @@ If you prefer not to use the Dev Container, you can configure the environment on
 
 > **Note**: When running outside a Dev Container, take care to understand what commands the AI agent will execute, as they run directly on your system.
 
-## 1. Clone and open the sample app
+## Clone and open the sample app
 
 Clone the repository to your system:
 
@@ -60,7 +62,7 @@ nia --version
 
 The terminal prints a NIA version number, for example `nia 4.3.5`.
 
-## 2. Configure your coding agent
+## Configure your coding agent
 
 Run the one-time setup for the learning environment:
 
@@ -87,7 +89,7 @@ Make sure the agent you pick is authenticated. GitHub Copilot CLI reuses your `g
 nia status
 ```
 
-## 3. See the tutorials
+## See the tutorials
 
 List every tutorial along with its status and estimated time:
 
@@ -107,7 +109,7 @@ The seven tutorials build on one another, from a two-minute question to a full s
 | 6 | Security Review | `issue-to-review` workflow | Complex security analysis with a long horizon workflow | 90+ min |
 | 7 | Backlog Creation | `nia backlog create` | Plan a phased implementation from your backlog | ~5 min |
 
-## 4. Run the tutorials in sequence
+## Run the tutorials in sequence
 
 Start the next incomplete tutorial. Run this command again after each one to progress through the curriculum in order:
 

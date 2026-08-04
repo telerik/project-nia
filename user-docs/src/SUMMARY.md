@@ -3,11 +3,13 @@
 [Introduction](./README.md)
 
 - [Quick Start]()
-  - [Quick Start with the Sample App](./quick-start-sample-app.md)
-  - [Quick Start on Your Project](./quick-start.md)
+  - [Overview](./quick-start-overview.md)
+  - [Guided Demo App](./quick-start-sample-app.md)
+  - [Your Own Project](./quick-start.md)
 
 - [Getting Started]()
   - [Installation](./getting-started/installation.md)
+  - [Licensing](./getting-started/licensing.md)
   - [Shell Completions](./getting-started/completions.md)
 
 - [Configuration]()
