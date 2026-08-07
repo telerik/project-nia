@@ -64,7 +64,7 @@ Configuration valid
 
 Export built-in workflows, prompts, and skills for customization.
 
-**Note:** You must specify what to export using `--commands`, `--prompts`, `--workflows`, `--skills`, or `--all`.
+**Note:** You must specify what to export using `--commands`, `--prompts`, `--workflows`, `--skills`, `--security`, or `--all`.
 
 ```bash
 nia config export --all          # Export commands, prompts, and workflows
@@ -72,6 +72,7 @@ nia config export --commands     # Export only commands.toml
 nia config export --prompts      # Export only prompt files
 nia config export --workflows    # Export only workflow files
 nia config export --skills       # Export only skill files
+nia config export --security     # Export only security configs (e.g. prompt-safety)
 ```
 
 Creates:
@@ -88,6 +89,7 @@ Creates:
   - `pr-to-merge.toml` - PR review and merge workflow
   - `ticket-to-response.toml` - Support ticket workflow
 - `.agents/skills/` - Built-in skill files (with `--skills` only)
+- `.nia/config/.prompt-safety.toml` - Built-in prompt-injection detection rules (with `--security` only)
 
 **Use Case:** Bootstrap your custom workflow configuration by exporting defaults.
 

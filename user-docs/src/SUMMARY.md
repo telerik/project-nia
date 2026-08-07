@@ -58,6 +58,7 @@
   - [Session Context & Token Optimization](./advanced/session-context.md)
   - [Context Usage Patterns](./advanced/context-usage.md)
   - [Secret Masking](./advanced/secret-masking.md)
+  - [Prompt Safety](./advanced/prompt-safety.md)
   - [Command Customization](./advanced/command-customization.md)
   - [Command Hooks](./advanced/command-hooks.md)
   - [Local Mode](./advanced/local-mode.md)
