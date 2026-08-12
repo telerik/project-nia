@@ -281,6 +281,8 @@ if ($userPath -notlike "*$env:LOCALAPPDATA\Programs*") {
 nia --version
 ```
 
+> **Without the GitHub CLI:** Download the `nia-<version>-x86_64-windows.exe` asset directly from the [telerik/project-nia releases page](https://github.com/telerik/project-nia/releases/latest). The repository is public, so no GitHub sign-in is required. After downloading, move the file to `%LOCALAPPDATA%\Programs`, **rename it to `nia.exe`** (so you can run it as `nia`), then add that folder to your `PATH`. You can do this through the Start menu: search for **"Edit the system environment variables"**, click **Environment Variables**, select **Path** under **User variables**, click **Edit → New**, and add the folder path. Open a new terminal and run `nia --version` to confirm.
+
 #### Install on Windows Server
 
 Windows Server editions (2019, 2022, 2025) use the same binary as Windows 11 but require additional steps due to stricter default security policies.

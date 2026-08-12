@@ -23,10 +23,15 @@ Make the `nia` command available in a new terminal.
 <div class="nia-tabs" data-group="os">
 <div class="nia-tab" data-title="Windows (PowerShell)">
 
+Requires **PowerShell 6+** (PowerShell 7 recommended). `$PSVersionTable.PSVersion.Major` must be 6 or higher; install PowerShell with `winget install Microsoft.PowerShell` and open a new `pwsh` terminal. If you have the GitHub CLI, run:
+
 ```powershell
 gh release download --repo telerik/project-nia --pattern 'install.ps1'
-.\install.ps1
+# Install to a user-writable location so no administrator rights are needed:
+.\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\Nia"
 ```
+
+> **No GitHub CLI, or the installer is blocked?** See [Install on Windows 11 Client](./getting-started/installation.md#install-on-windows-11-client) for manual binary download and PATH setup steps.
 
 </div>
 <div class="nia-tab" data-title="Linux / macOS">
