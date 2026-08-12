@@ -78,7 +78,7 @@ Agent not found in PATH
 **Verification**:
 ```powershell
 # Install via npm
-npm install -g @githubnext/github-copilot-cli
+npm install -g @github/copilot
 
 # Verify auto-discovery works
 nia status --verbose
@@ -143,7 +143,7 @@ nia status
 
 ```powershell
 # Install via npm
-npm install -g @githubnext/github-copilot-cli
+npm install -g @github/copilot
 
 # Nia will automatically parse the wrapper
 nia status --verbose
@@ -166,7 +166,10 @@ nia status --verbose
 **Note**: The gh CLI itself works fine for other purposes (managing repos, PRs, etc.). Only the Copilot extension integration with nia is affected by command-line limitations.
 
 **Related**: [Installation Guide](../getting-started/installation.md), [Configuration Reference](../reference/config-fields.md)
-# <prefix>\node_modules\@githubnext\github-copilot-cli\bin\copilot.exe
+
+Example path:
+```
+<prefix>\node_modules\@github\copilot\bin\copilot.exe
 ```
 
 Configure this path in `.nia/config/agents.toml`:
@@ -178,7 +181,7 @@ schema_version = "2.1.0"
 default = "github_copilot"
 
 [agent.github_copilot]
-command = "C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@githubnext\\github-copilot-cli\\bin\\copilot.exe"
+command = "C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@github\\copilot\\bin\\copilot.exe"
 ```
 
 **Why This Happens**:
@@ -186,7 +189,7 @@ command = "C:\\Users\\YourUsername\\AppData\\Roaming\\npm\\node_modules\\@github
 When npm installs a package globally on Windows, it creates `.cmd` wrapper scripts that call the actual JavaScript or binary. For example, `copilot.cmd` might contain:
 
 ```batch
-@"%~dp0\node_modules\@githubnext\github-copilot-cli\bin\copilot.exe" %*
+@"%~dp0\node_modules\@github\copilot\bin\copilot.exe" %*
 ```
 
 When Windows executes a `.cmd` file, it passes arguments through `cmd.exe`, which interprets special characters:

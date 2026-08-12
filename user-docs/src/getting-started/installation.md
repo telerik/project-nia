@@ -545,7 +545,7 @@ integration with nia is affected.
 You can install GitHub Copilot CLI via npm:
 
 ```powershell
-npm install -g @githubnext/github-copilot-cli
+npm install -g @github/copilot
 ```
 
 **Automatic Wrapper Discovery**: Nia automatically detects npm installations and
