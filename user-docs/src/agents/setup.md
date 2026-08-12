@@ -319,6 +319,108 @@ Follow these practices when you configure and run AI coding agents:
 - Inspect the generated changes, command output, and session records before accepting results.
 - Keep the selected agent and model documented for reproducible team workflows.
 
+## CI/CD Environment Setup
+
+When running Nia in CI/CD pipelines, you must acknowledge beta software terms
+by setting an environment variable. This is required because interactive
+consent prompts are not possible in automated environments.
+
+### Why This Is Required
+
+Nia has autonomous capabilities that can modify files, execute commands, and
+create commits. Before allowing these actions, Nia requires explicit
+acknowledgement that you understand and accept these capabilities.
+
+In interactive terminals, Nia presents a consent prompt. In CI/CD environments
+where no terminal is available, you must set the `NIA_ACCEPT_BETA_RISK`
+environment variable to confirm your acknowledgement.
+
+### Setting the Environment Variable
+
+Set `NIA_ACCEPT_BETA_RISK` to a truthy value (`true`, `1`, `yes`, or `on`):
+
+#### GitHub Actions
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NIA_ACCEPT_BETA_RISK: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Nia
+        run: nia code review
+```
+
+#### GitLab CI
+
+```yaml
+variables:
+  NIA_ACCEPT_BETA_RISK: "true"
+
+review:
+  script:
+    - nia code review
+```
+
+#### Azure Pipelines
+
+```yaml
+variables:
+  NIA_ACCEPT_BETA_RISK: 'true'
+
+steps:
+  - script: nia code review
+    displayName: 'Run Nia Review'
+```
+
+#### Jenkins
+
+```groovy
+pipeline {
+    environment {
+        NIA_ACCEPT_BETA_RISK = 'true'
+    }
+    stages {
+        stage('Review') {
+            steps {
+                sh 'nia code review'
+            }
+        }
+    }
+}
+```
+
+#### CircleCI
+
+```yaml
+version: 2.1
+jobs:
+  review:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      NIA_ACCEPT_BETA_RISK: true
+    steps:
+      - checkout
+      - run: nia code review
+```
+
+### Troubleshooting CI/CD Issues
+
+If you see "Beta acknowledgement required" errors in your pipeline:
+
+1. Verify the environment variable is set in the correct scope
+2. Check that the value is truthy (true, 1, yes, on)
+3. Ensure the variable is available to the step running Nia
+4. Check for typos in the variable name: `NIA_ACCEPT_BETA_RISK`
+
+Common mistakes:
+- Setting the variable in a different job or stage than where Nia runs
+- Using incorrect YAML syntax for your CI platform
+- Variable not exported to child processes
+
 ## Limitations and Considerations
 
 NIA does not provide the external agent executable, model service, account, subscription, or credentials. Each provider can change its installation, authentication, command-line options, and model availability independently of NIA.
