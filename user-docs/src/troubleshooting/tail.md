@@ -1,5 +1,51 @@
 # Tail Issues
 
+## Formatted Output
+
+The `nia --tail` command now formats JSONL output from agents (OpenCode, Claude Code, and Gemini CLI when available/re-enabled) into human-readable text. This makes it easier to follow agent progress during execution.
+
+### Example: OpenCode Agent
+
+**Before (raw JSONL)**:
+```json
+{"type":"text","sessionID":"ses_abc","part":{"text":"I'll help you implement that feature."}}
+{"type":"tool_use","sessionID":"ses_abc","part":{"tool":"read","state":{"input":{"filePath":"src/main.rs"},"status":"completed"}}}
+{"type":"step_finish","sessionID":"ses_abc","part":{"tokens":{"input":100,"output":50}}}
+```
+
+**After (formatted `--tail` display)**:
+```
+[assistant] I'll help you implement that feature.
+🔧 read: src/main.rs
+--- Step complete ---
+```
+
+### Example: Claude Code Agent
+
+**Before (raw JSONL)**:
+```json
+{"type":"system","subtype":"init","session_id":"ses_1","model":"claude-sonnet-4-5"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Let me analyze the code."}]},"session_id":"ses_1"}
+{"type":"result","subtype":"success","session_id":"ses_1","usage":{"input_tokens":10,"output_tokens":5}}
+```
+
+**After (formatted `--tail` display)**:
+```
+--- Claude Code (claude-sonnet-4-5) ---
+[assistant] Let me analyze the code.
+--- Complete ---
+```
+
+
+### Important Notes
+
+- **Trace files on disk remain unchanged** - The raw JSONL is preserved in `.nia/work/job_*/traces/*.trace.md` for debugging and analysis
+- **Formatting only affects live `--tail` display** - The actual trace files are never modified
+- **Plain-text agents unaffected** - Agents like GitHub Copilot CLI that output plain text are displayed unchanged
+- **Graceful fallback** - If an agent cannot be resolved or a line cannot be parsed, the raw line is displayed
+
+---
+
 ### "No active job context found"
 
 **Problem**: Error when running `nia <target> <operation> --tail` without setting job context.
