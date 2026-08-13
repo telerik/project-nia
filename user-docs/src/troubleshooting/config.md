@@ -91,6 +91,115 @@ ls -l .nia/config.toml
 
 ---
 
+## Configuration Propagation Errors
+
+### "Configuration not available for workflow execution"
+
+**Symptom**: Workflow commands fail with detailed error about configuration not being available.
+
+**Error Example**:
+```
+❌ Error: Configuration not available for workflow execution.
+
+This is an internal error indicating a bug in configuration propagation.
+The configuration was expected to be discovered at command startup,
+but it was not available when the workflow handler executed.
+
+Debug information:
+Command: issue draft
+Execution context: Project
+Working directory: /path/to/project
+```
+
+**Note**: This error typically surfaces when executing workflow step commands like `issue draft`, `backlog plan`, or `code review` rather than direct `workflow run` commands.
+
+**Possible Causes**:
+
+1. **Missing Configuration** (Most Common):
+   - Project not initialized with nia configuration
+   - **Solution**: Run `nia config init` to create project configuration
+   - **Verification**: Check if `.nia/config/project.toml` exists
+
+2. **Wrong Directory**:
+   - Not in a project root directory
+   - **Solution**: Navigate to the directory containing `.nia/config/`
+   - **Verification**: Run `pwd` and ensure you're in the project root
+
+3. **Internal Propagation Bug** (Rare):
+   - Configuration discovered but lost during command execution
+   - **Action**: Report to https://github.com/Progress-Copilot/nia/issues
+   - **Include**: The full error message with debug information
+
+**Debug Steps**:
+
+1. **Check configuration exists**:
+   ```bash
+   # For project context
+   ls -la .nia/config/project.toml
+
+   # For application context
+   ls -la .nia/config/application.toml
+   ```
+
+2. **Verify you're in the right directory**:
+   ```bash
+   pwd
+   nia config show-context
+   ```
+
+3. **Test with simple command**:
+   ```bash
+   nia status
+   nia config validate
+   ```
+
+4. **If config exists but error persists**:
+   - This indicates an internal bug
+   - Include all debug information when reporting
+   - Note the exact command that failed
+   - Include working directory and execution context
+
+### "Configuration discovery failed"
+
+**Symptom**: Commands fail with "Configuration discovery failed. This is an internal error."
+
+**Difference from "not available"**: This error occurs earlier in the process, at initial discovery rather than during command execution.
+
+**Solutions**:
+
+1. **Not in a project directory**:
+   ```bash
+   # Navigate to your project
+   cd /path/to/your/project
+
+   # Verify project structure
+   ls .nia/config/
+   ```
+
+2. **Missing configuration files**:
+   ```bash
+   # Initialize configuration
+   nia config init
+   ```
+
+3. **Permission errors**:
+   ```bash
+   # Check permissions
+   ls -la .nia/config/
+
+   # Fix if needed
+   chmod 644 .nia/config/*.toml
+   ```
+
+**When to Report**:
+If you have valid configuration files with correct permissions and are in the right directory, this may be a bug. Include:
+- Output of `ls -la .nia/config/`
+- Your current working directory (`pwd`)
+- The exact command that failed
+- Any relevant trace logs (`RUST_LOG=nia=trace nia <command>`)
+
+---
+
 ### Lock File Corruption
 
 **Problem**: Lock file cannot be parsed

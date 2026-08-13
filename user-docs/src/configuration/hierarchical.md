@@ -313,8 +313,6 @@ The lockfile includes hashes from all sources, so changes to user/system configs
 
 ## Multi-Repository Applications
 
-_New in version 4.2_
-
 Nia supports managing multiple related repositories as a single application. This is useful for:
 
 - Microservices architectures with separate repositories per service
@@ -490,6 +488,107 @@ With an application, the configuration hierarchy becomes:
 | 0 | Default | Built-in | Default values |
 
 Higher priority settings override lower priority ones.
+
+### External Configuration Sources
+
+Applications can configure external sources in `application.toml` to control whether nia loads configuration from user and system profile directories:
+
+```toml
+[external_sources]
+enabled = true
+agents = true
+toolchain = true
+commands = true
+workflows = true
+```
+
+When configured at the application level, these settings apply to:
+- Direct application commands (`nia app <app-name> <command>`)
+- All child repositories that opt-in via `allow_app`
+
+#### Inheritance Model
+
+When a repository opts into an application using `allow_app`, it inherits the application's `external_sources` settings:
+
+```toml
+# child-repo/project.toml
+[project]
+name = "child-repo"
+allow_app = "550e8400-e29b-41d4-a716-446655440000"
+
+# Note: This [config.external_sources] section will be IGNORED
+# because the application's settings take precedence
+[config.external_sources]
+enabled = false  # <-- Ignored when allow_app is set
+```
+
+**Inheritance Rules:**
+
+1. **Application settings override project settings** when `allow_app` is set
+2. A warning is logged when project settings are ignored
+3. If the repository is not connected to the application, project settings apply normally
+
+This design allows applications to centrally manage external configuration policies for all child repositories.
+
+#### Centralized Configuration (Recommended)
+
+Configure once in `application.toml`, inherited by all child repos:
+
+```toml
+# application.toml
+[application]
+id = "550e8400-e29b-41d4-a716-446655440000"
+name = "my-multi-repo-app"
+
+[external_sources]
+enabled = true
+agents = true
+toolchain = true
+
+[[repositories]]
+name = "service-a"
+path = "../service-a"
+
+[[repositories]]
+name = "service-b"
+path = "../service-b"
+```
+
+Both `service-a` and `service-b` will inherit these settings when they set `allow_app` to the application's UUID.
+
+#### Per-Repository Configuration (Standalone)
+
+For standalone repositories not part of an application:
+
+```toml
+# project.toml
+[project]
+name = "standalone-repo"
+# No allow_app = uses own settings
+
+[config.external_sources]
+enabled = true
+agents = true
+```
+
+#### Troubleshooting External Sources
+
+**Warning: Project external_sources ignored**
+
+If you see:
+```
+WARN: Project 'repo-name' has [config.external_sources] configured but is
+opting into application 'app-name' via allow_app.
+```
+
+**Resolution**: Remove the `[config.external_sources]` section from the project's `project.toml`. The application controls this setting.
+
+**External sources not working in child repository**
+
+1. Check that `enabled = true` is set in the application's `application.toml`
+2. Verify `allow_app` in the child repo's `project.toml` matches the application UUID
+3. Check that the repository is listed in `[[repositories]]` in `application.toml`
+4. Run `nia config show --sources` to see the effective configuration
 
 ### Viewing Application Context
 
