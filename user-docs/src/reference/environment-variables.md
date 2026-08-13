@@ -55,6 +55,53 @@ Override the default telemetry configuration file path.
 
 ---
 
+## Agent Retry
+
+### `NIA_RETRY_DISABLED`
+
+Disable retry logic for transient agent failures.
+
+**Valid Values**: `true` to disable retries
+
+**Default**: not set (retries enabled)
+
+### `NIA_RETRY_MAX_ATTEMPTS`
+
+Maximum number of retry attempts for transient agent failures.
+
+**Default**: `2` (3 total attempts including initial execution)
+
+**Special Case**: set to `0` to disable retries.
+
+### `NIA_RETRY_INITIAL_DELAY`
+
+Initial retry delay in seconds.
+
+**Default**: `1`
+
+### `NIA_RETRY_MAX_DELAY`
+
+Maximum retry delay cap in seconds.
+
+**Default**: `30`
+
+### `NIA_RETRY_BACKOFF_FACTOR`
+
+Exponential backoff multiplier for successive retries.
+
+**Default**: `2.0`
+
+**Example**:
+```bash
+NIA_RETRY_MAX_ATTEMPTS=4 \
+NIA_RETRY_INITIAL_DELAY=2 \
+NIA_RETRY_MAX_DELAY=20 \
+NIA_RETRY_BACKOFF_FACTOR=1.5 \
+nia issue plan 781
+```
+
+---
+
 ## Context
 
 ### `NIA_ISSUE_ID`
