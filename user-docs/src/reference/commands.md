@@ -856,8 +856,18 @@ Initializing .nia directory structure...
   - .nia/prompts/  (custom prompts)
   Project root: /path/to/project
 
-⚠  Reminder: Add .nia/work/ to .gitignore
-  You may want to commit .nia/config/ and .nia/prompts/
+⚙  .gitignore patterns for nia:
+    .nia/logs/
+    .nia/cache/
+    .nia/.context.lock
+    .nia/.workflow.lock
+    .nia/work/**/traces/.heartbeat
+    .nia/config/opensearch.toml
+    .nia/config/telemetry.toml
+    # .nia/work/              (team decision - see docs)
+
+  ℹ Commit: .nia/config/ and .nia/prompts/
+  For detailed guidance: https://telerik.github.io/project-nia/configuration/version-control
 
 ✓ Initialization complete!
 ```
@@ -879,6 +889,8 @@ Initializing .nia directory structure...
 - Setting up Nia in a new project (git or non-git)
 - Reinitializing after directory structure changes
 - Creating temporary testing environments
+
+**Version Control**: See [Version Control Setup](../configuration/version-control.md) for comprehensive `.gitignore` patterns.
 
 ---
 

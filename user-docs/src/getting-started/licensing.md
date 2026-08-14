@@ -23,7 +23,7 @@ The simplest and recommended approach is to place the license file in your proje
 
 NIA finds it automatically the next time you run a workflow command from that project.
 
-> **Tip:** If you keep the license outside version control, add `.nia/license/` to your `.gitignore` so the key is never committed.
+> **Tip:** If you keep the license outside version control, add `.nia/license/` to your `.gitignore` so the key is never committed. See [Version Control Setup](../configuration/version-control.md) for complete `.gitignore` patterns.
 
 ### Full discovery order
 

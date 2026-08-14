@@ -65,6 +65,8 @@ enforce = false
 .nia/config/opensearch.toml
 ```
 
+See [Version Control Setup](../configuration/version-control.md) for complete `.gitignore` patterns and security best practices.
+
 #### 3. User Configuration
 
 Store credentials in your user profile for use across all projects:
