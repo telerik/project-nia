@@ -40,6 +40,7 @@
 
 - [Workflow Commands]()
   - [Ask (General Q&A)](./commands/ask.md)
+  - [Run (Standalone Task Execution)](./commands/run.md)
   - [Issue Management](./commands/issue.md)
   - [Backlog Planning](./commands/backlog.md)
   - [Code Operations](./commands/code.md)
