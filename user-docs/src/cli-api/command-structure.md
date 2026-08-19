@@ -17,6 +17,43 @@ nia <target> <operation> [--modifier] [--options]
 - **Modifier**: Optional flags that customize behavior (e.g., `--edit`, `--fix`)
 - **Options**: Additional arguments (e.g., `--complexity high`)
 
+## Global Flags
+
+Global flags apply to the entire nia invocation, not just specific commands.
+
+### --tail
+
+Stream trace file content in real-time during agent execution:
+
+```bash
+export NIA_ISSUE_ID=42
+nia --tail
+```
+
+Requires an active job context (NIA_ISSUE_ID).
+
+### --continue
+
+Used with `--tail` to enable persistent monitoring across commands:
+
+```bash
+nia --tail --continue
+```
+
+When active:
+- Automatically detects and switches to newer tracefiles
+- Monitors both job traces/ directory and global locations (e.g., `nia ask`)
+- Adapts when context changes (NIA_ISSUE_ID)
+- Never exits due to inactivity (requires Ctrl+C)
+
+### --quiet (-q)
+
+Suppress all output except errors. Available on all commands.
+
+```bash
+nia issue draft --quiet
+```
+
 ## Command Types
 
 ### Utility Commands

@@ -389,3 +389,101 @@ This is typically **not a bug**, but if updates are very delayed:
 **Related**: [Workflow Commands](../reference/commands.md#workflow-commands)
 
 ---
+
+## Continuous Mode (--continue)
+
+Add `--continue` to automatically follow new tracefiles across commands:
+
+```bash
+nia --tail --continue
+```
+
+### What Continuous Mode Does
+
+1. **Automatic tracefile following**: When you run successive nia commands, `--continue`
+   automatically switches to the newest tracefile without manual intervention.
+
+2. **Context awareness**: If you change `NIA_ISSUE_ID` (or `NIA_TICKET_ID`, when no
+   Issue ID is set) in another terminal, the tail command detects this and switches to
+   the new job's trace directory.
+
+3. **Standalone commands are also monitored**: `nia ask` and `nia run` write tracefiles
+   to a fixed location (`.nia/work/ask/traces/`, `.nia/work/run/traces/`) that is
+   independent of the active job context. Continuous mode polls these directories
+   alongside the active job's own `traces/` directory, so it will detect and switch to
+   a tracefile from `nia ask` or `nia run` when it becomes the most recent one.
+
+### Timing Behavior
+
+| Event | Interval |
+|-------|----------|
+| Content polling | 500ms |
+| Tracefile discovery (when idle) | 10s |
+| Idle threshold before discovery | 10s |
+
+### Example Session
+
+```bash
+# Terminal 1: Start continuous tail
+$ export NIA_ISSUE_ID=42
+$ nia --tail --continue
+Continuous tail mode active. Press Ctrl+C to stop.
+[2026-08-13 14:30:00] Starting trace: 2026-08-13_143000_issue.trace.md
+... agent output ...
+
+# Terminal 2: Run another command
+$ export NIA_ISSUE_ID=42
+$ nia issue draft "Add user authentication"
+# Creates new tracefile
+
+# Terminal 1: Automatically switches
+[2026-08-13 14:31:22] → Switching to newer tracefile: 2026-08-13_143122_issue.trace.md
+... new agent output ...
+```
+
+### Exiting
+
+Press `Ctrl+C` to stop continuous monitoring (exits within 1 second).
+
+---
+
+### Continuous mode doesn't see new tracefiles
+
+**Problem**: Running `--continue` but it doesn't switch to new tracefiles.
+
+**Cause**: New tracefiles are only detected during idle periods (no content for 10s).
+
+**Solution**: Wait for the current tracefile to finish streaming, then the tail
+will automatically discover newer files within the next polling cycle (10 seconds).
+
+---
+
+### Context changes not detected
+
+**Problem**: Changed `NIA_ISSUE_ID` (or `NIA_TICKET_ID`) but tail is still monitoring
+old context.
+
+**Cause**: Context is re-checked on its own fixed 10-second interval, independent of
+whether the current tracefile is idle or actively streaming.
+
+**Solution**: Wait up to 10 seconds after changing `NIA_ISSUE_ID`/`NIA_TICKET_ID` for
+the tail to adapt - this happens even while content is actively streaming, so no idle
+wait is required.
+
+---
+
+### Missed tracefiles during rapid commands
+
+**Problem**: Ran multiple commands quickly, some tracefiles were skipped.
+
+**Cause**: Continuous mode follows the "latest" tracefile, not all tracefiles.
+
+**Expected behavior**: This is by design. The tail always follows the most recent
+tracefile. Intermediate files can be viewed manually:
+
+```bash
+ls -la .nia/work/job_42/traces/
+cat .nia/work/job_42/traces/<filename>.trace.md
+```
+
+---
