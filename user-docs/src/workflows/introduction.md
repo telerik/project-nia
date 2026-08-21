@@ -91,6 +91,73 @@ nia workflow run issue-to-pr --dry-run
 nia workflow run issue-to-pr --start-from create_code
 ```
 
+## Validating Workflows
+
+Before running a workflow, validate its definition to catch errors early:
+
+```bash
+# Validate a workflow
+nia workflow validate <workflow-name>
+
+# Example
+nia workflow validate issue-to-pr
+```
+
+### What Gets Validated
+
+The validate command performs comprehensive checks:
+
+- **Syntactic Validation**: TOML structure and required fields
+- **Semantic Validation**: State reachability, cycle detection, terminal states
+- **Escape Conditions**: Loop states have proper escape mechanisms
+
+### Why Validate?
+
+✅ **Catch errors before execution** - Find configuration issues without running the workflow  
+✅ **No execution context required** - Validate without setting `NIA_ISSUE_ID` or `NIA_PR_ID`  
+✅ **Detailed feedback** - Get specific error messages for each validation issue  
+✅ **Development tool** - Perfect for testing workflow definitions during development  
+
+### Example Output
+
+When validation passes:
+
+```
+✓ Workflow 'issue-to-pr' is valid
+
+  Version:       2.0.0
+  States:        38
+  Terminal:      completed (success), draft_failed (failed)
+  Source:        built-in (<built-in>/issue-to-pr.toml)
+
+Validation checks passed:
+  ✓ Schema structure valid
+  ✓ All states reachable from 'draft_issue'
+  ✓ Terminal states reachable
+  ✓ No direct self-loops detected
+  ✓ Escape conditions valid
+```
+
+When validation fails:
+
+```
+Error: Unknown workflow: 'my-workflow'
+
+Available workflows:
+  - issue-to-pr
+  - issue-to-pr-lite
+  - code-to-review
+  ...
+
+Did you mean: 'issue-to-pr'?
+```
+
+### See Also
+
+- [`nia workflow list`](#built-in-workflows) - List available workflows
+- [`nia workflow graph`](../reference/commands.md#nia-workflow-graph) - Generate workflow diagram
+- [Troubleshooting Workflows](../troubleshooting/workflow.md) - Common validation errors
+
 ## Key Concepts
 
 ### States

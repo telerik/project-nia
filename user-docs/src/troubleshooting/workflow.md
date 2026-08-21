@@ -149,6 +149,129 @@
 
 ---
 
+## Validating Workflow Definitions
+
+Before running a workflow, validate its definition to catch errors early:
+
+```bash
+nia workflow validate <workflow-name>
+```
+
+### Why Validate?
+
+- **Catch errors before execution** - Find configuration issues without running the workflow
+- **No execution context required** - Validate without setting `NIA_ISSUE_ID` or `NIA_PR_ID`
+- **Detailed feedback** - Get specific error messages for each validation issue
+- **Development tool** - Perfect for testing workflow definitions during development
+
+### Common Validation Errors
+
+#### No terminal state reachable
+
+**Error Message**:
+```
+✗ No terminal state is reachable from initial state
+```
+
+**Cause**: The workflow has no path from the initial state to any terminal state (success, failed, or cancelled).
+
+**Solution**: Ensure your workflow states have `on_success` and `on_failure` transitions that eventually lead to a terminal state.
+
+```toml
+[[workflow.states]]
+name = "process_data"
+on_success = "success"    # Terminal state
+on_failure = "failed"     # Terminal state
+
+[[workflow.states]]
+name = "success"
+# Terminal state (no transitions)
+
+[[workflow.states]]
+name = "failed"
+# Terminal state (no transitions)
+```
+
+#### Loop state has no escape conditions
+
+**Error Message**:
+```
+✗ Loop state 'retry_loop' has no escape conditions
+```
+
+**Cause**: A state with `loop_enabled = true` doesn't have any escape conditions defined.
+
+**Solution**: Add at least one escape condition with action `abort` or `transition`:
+
+```toml
+[[workflow.states]]
+name = "retry_loop"
+loop_enabled = true
+loop_counter = "attempts"
+
+# Add escape condition to prevent infinite loops
+[[workflow.states.escape_conditions]]
+counter_value = 3
+action = "abort"
+error_message = "Maximum iterations exceeded"
+
+# Or transition to another state
+[[workflow.states.escape_conditions]]
+counter_value = 10
+action = "transition"
+target_state = "success"
+```
+
+#### Unreachable state (warning)
+
+**Error Message**:
+```
+⚠ State 'unused_state' is unreachable from initial state 'start'
+```
+
+**Cause**: A state is defined but cannot be reached through any transition path.
+
+**Solution**: Either remove the unused state or add a transition to it from another state:
+
+```toml
+# Option 1: Remove the unreachable state
+# Delete the state definition
+
+# Option 2: Add transition to the state
+[[workflow.states]]
+name = "some_state"
+on_success = "unused_state"  # Now reachable
+```
+
+### Validation vs. Execution Errors
+
+- **Validation errors** are structural issues caught by `nia workflow validate`
+  - TOML syntax errors
+  - Missing required fields
+  - Unreachable states
+  - Missing terminal states
+  - Invalid escape conditions
+
+- **Execution errors** occur at runtime and may depend on context, data, or external systems
+  - Missing environment variables
+  - Failed commands
+  - Network issues
+  - Permission problems
+
+Always validate your workflow definitions before testing with `nia workflow run`.
+
+### Quick Validation Workflow
+
+1. Edit your workflow file
+2. Validate: `nia workflow validate my-workflow`
+3. If errors, fix and repeat step 2
+4. Visualize: `nia workflow graph my-workflow`
+5. Test: `nia workflow run my-workflow --dry-run`
+
+**Related**: [Workflow Introduction](../workflows/introduction.md#validating-workflows), [Workflow Commands Reference](../reference/commands.md#nia-workflow-validate)
+
+---
+
 ### Command Not Found Errors
 
 **Problem**: Referenced command or workflow doesn't exist.

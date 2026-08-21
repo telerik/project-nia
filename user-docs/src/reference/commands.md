@@ -1388,6 +1388,74 @@ Did you mean one of these?
 
 ---
 
+#### `nia workflow validate`
+
+**Description**: Validate a workflow definition without executing it.
+
+**Usage Example**:
+```bash
+# Validate a built-in workflow
+nia workflow validate issue-to-pr
+
+# Validate a custom workflow
+nia workflow validate my-custom-flow
+```
+
+**Validation Checks**:
+
+Performs both syntactic and semantic validation:
+
+- **Syntactic**: TOML structure and required fields
+- **Semantic**: State reachability, cycle detection, terminal states, escape conditions
+
+**Key Features**:
+
+- ✅ **No execution context required** - Works without `NIA_ISSUE_ID`, `NIA_PR_ID`, or `NIA_TICKET_ID`
+- ✅ **Detailed feedback** - Specific error messages for each validation issue
+- ✅ **Development tool** - Perfect for testing workflow definitions
+- ✅ **Suggestions** - Suggests similar workflow names for typos
+
+**Example Output**:
+
+Success:
+```
+✓ Workflow 'issue-to-pr' is valid
+
+  Version:       2.0.0
+  States:        38
+  Terminal:      completed (success), draft_failed (failed)
+  Source:        built-in (<built-in>/issue-to-pr.toml)
+
+Validation checks passed:
+  ✓ Schema structure valid
+  ✓ All states reachable from 'draft_issue'
+  ✓ Terminal states reachable
+  ✓ No direct self-loops detected
+  ✓ Escape conditions valid
+```
+
+Unknown workflow:
+```
+Error: Unknown workflow: 'my-workflow'
+
+Available workflows:
+  - issue-to-pr
+  - code-to-review
+  ...
+
+Did you mean: 'issue-to-pr'?
+```
+
+**Common Use Cases**:
+- Validating workflow definitions during development
+- Catching configuration errors before execution
+- Learning about workflow structure
+- Troubleshooting workflow issues
+
+**Related Commands**: `workflow run`, `workflow graph`, `workflow list`
+
+---
+
 ## Global Workflow Flags
 
 The following flags are available on all workflow commands (`issue`, `code`, `pr`, `docs`, `backlog`, `ticket`) but NOT on utility commands (`config`, `guide`, `shell`, `status`, `workflow`).
