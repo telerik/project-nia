@@ -47,6 +47,32 @@ nia-job:
 
 ## Telemetry
 
+### `NIA_TELEMETRY_DISABLED`
+
+Disable all usage telemetry. Takes precedence over configuration files.
+
+**Purpose**: Allows users to disable telemetry via environment variable,
+useful for CI/CD pipelines or organizational policies.
+
+**Valid Values**: `true`, `1`, `yes`, `on` (case-insensitive)
+
+**Default**: Not set (telemetry enabled)
+
+**Example - Disable telemetry**:
+```bash
+export NIA_TELEMETRY_DISABLED=1
+```
+
+**Example - GitHub Actions**:
+```yaml
+jobs:
+  build:
+    env:
+      NIA_TELEMETRY_DISABLED: 1
+```
+
+---
+
 ### `NIA_TELEMETRY_PATH`
 
 Override the default telemetry configuration file path.

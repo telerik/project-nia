@@ -1234,6 +1234,51 @@ The status command shows how Nia detected your project root:
 
 ---
 
+### telemetry
+
+Manage usage telemetry collection.
+
+| Subcommand | Description |
+|------------|-------------|
+| `status` | Show current telemetry enablement status |
+| `on` | Enable telemetry |
+| `off` | Disable telemetry |
+
+#### telemetry status
+
+Show current telemetry status, including:
+- Whether telemetry is enabled or disabled
+- Source of configuration (env var, config file, or default)
+- Data types collected when enabled
+- Telemetry destination
+
+**Example:**
+```bash
+nia telemetry status
+```
+
+#### telemetry on
+
+Enable usage telemetry. Writes `[usage] enabled = true` to telemetry.toml.
+
+**Example:**
+```bash
+nia telemetry on
+```
+
+#### telemetry off
+
+Disable usage telemetry. Writes `[usage] enabled = false` to telemetry.toml.
+
+**Example:**
+```bash
+nia telemetry off
+```
+
+**Alternative:** Set `NIA_TELEMETRY_DISABLED=1` environment variable.
+
+---
+
 ### workflow
 
 Workflow definition management and visualization tools.

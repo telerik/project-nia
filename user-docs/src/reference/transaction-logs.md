@@ -155,7 +155,7 @@ The `model`, `role`, and `custom_agent` fields capture the effective AI agent co
 
 ### Utility Event
 
-Logs utility command execution (e.g., `nia config show`, `nia guide`). In addition to the local JSONL log, this event is forwarded to App Insights (consent-gated), the same way workflow events are.
+Logs utility command execution (e.g., `nia config show`, `nia guide`). In addition to the local JSONL log, this event is forwarded to App Insights (when telemetry is enabled), the same way workflow events are.
 
 ```json
 {

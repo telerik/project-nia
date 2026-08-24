@@ -25,13 +25,13 @@ This guide explains what data nia transmits to AI agents and external services, 
 | **Context paths** | Validates paths stay within repository | Agent can read any file it has permission to access |
 | **Prompt injection** | Escapes description fields (500 char limit) | Custom prompts can override behavior |
 | **Secrets in hooks** | None (you control hook content) | Shell commands execute with your permissions |
-| **Telemetry** | Consent-gated, anonymous by default | None (no code/prompts transmitted) |
+| **Telemetry** | Config-based opt-out, enabled by default | None (no code/prompts transmitted) |
 
 ## What Data Is Sent to AI Agents
 
 When you run nia commands, data flows through two independent paths:
 1. **Prompt data** → your configured AI agent
-2. **Telemetry data** → Progress/Azure App Insights (consent-gated)
+2. **Telemetry data** → Progress/Azure App Insights (opt-out)
 
 ### Prompt Data
 
@@ -99,12 +99,16 @@ This shows the composed prompt without executing, allowing security review.
 
 ### Telemetry Data
 
-Nia collects usage telemetry in two consent-gated tiers:
+Nia collects usage telemetry to help improve the product. Telemetry is **enabled by default** and can be disabled via configuration.
 
-| Tier | Data Collected | Consent Required |
-|------|----------------|------------------|
-| Anonymous | Command, version, OS, agent name, model | Notice shown |
-| Personalized | MachineId, User ID | Explicit consent |
+| Data Collected | When |
+|----------------|------|
+| Command name (e.g., 'issue draft') | Always when enabled |
+| Version and operating system | Always when enabled |
+| AI agent and model name | Always when enabled |
+| Success/failure status | Always when enabled |
+| Hashed machine ID | Always when enabled |
+| User ID (if available) | Always when enabled |
 
 **What is NOT transmitted**:
 - Your code or file contents
@@ -112,9 +116,34 @@ Nia collects usage telemetry in two consent-gated tiers:
 - Environment variables or secrets
 - Repository names or paths
 
-Telemetry covers every `nia` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same consent-gated `init`/`complete` events.
+Telemetry covers every `nia` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same `init`/`complete` events.
 
-Telemetry is managed in `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`.
+### Disabling Telemetry
+
+**Option 1: Configuration file**
+
+Edit `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`:
+
+```toml
+[usage]
+enabled = false
+```
+
+**Option 2: Environment variable**
+
+```bash
+export NIA_TELEMETRY_DISABLED=1
+```
+
+The environment variable takes precedence over configuration files.
+
+**Option 3: CLI command**
+
+```bash
+nia telemetry off
+```
+
+Telemetry configuration is managed in `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`.
 
 See: `src/telemetry/usage.rs` for implementation details.
 
@@ -168,7 +197,7 @@ these files carefully in code review.
 | `.nia/config/.prompt-safety.toml` | Prompt injection detection rules | Medium |
 | `.nia/work/<job_id>/traces/*` | Session execution traces | Medium |
 | `.nia/work/<job_id>/logs/*` | Job execution logs | Medium |
-| `.nia/config/telemetry.toml` | Telemetry consent | Low |
+| `.nia/config/telemetry.toml` | Telemetry configuration | Low |
 
 ### project.toml Context Security
 
@@ -479,5 +508,5 @@ Custom prompts should follow a code review process:
 **Source code references**:
 - `src/context/security.rs` - Path validation and description escaping
 - `src/telemetry/usage.rs` - Telemetry architecture
-- `src/telemetry/usage/consent.rs` - Consent management
+- `src/telemetry/usage/enablement.rs` - Telemetry enablement logic
 - `src/telemetry/usage/progress_sink.rs` - Data transmission implementation

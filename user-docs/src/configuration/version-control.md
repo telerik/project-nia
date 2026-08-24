@@ -126,7 +126,7 @@ Never commit files containing credentials:
 
 | File | Contains | Risk |
 |------|----------|------|
-| `.nia/config/telemetry.toml` | Endpoint configuration, consent state | Medium - privacy concern |
+| `.nia/config/telemetry.toml` | Telemetry configuration | Medium - privacy concern |
 | `.nia/license/*.txt` | License keys | Medium - license violation |
 
 ### If You Accidentally Committed Credentials
