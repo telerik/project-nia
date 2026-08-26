@@ -269,6 +269,283 @@ Skills are available globally across all your projects.
 - [Agent Skills Configuration Guide](../configuration/skills.md) - Complete guide to skills
 - [Toolchain Configuration](../configuration/toolchain.md) - Configure `method = "skill"`
 
+### init
+
+Initialize nia configuration for a repository.
+
+```bash
+nia config init                    # Manual initialization (prompts for all values)
+nia config init --interactive      # AI-assisted with per-field approval
+nia config init -i                 # Short form of --interactive
+```
+
+Creates `.nia/config/project.toml` with project metadata used by AI agents for context and decision-making.
+
+#### Manual Initialization (default)
+
+Prompts for each configuration value:
+
+```bash
+$ nia config init
+Enter project name: my-service
+Enter description: User authentication microservice
+Select language: Rust
+Select framework: axum
+Select testing framework: cargo test
+Select package manager: cargo
+
+✓ Configuration created at .nia/config/project.toml
+```
+
+**Best for:**
+- Full control over all metadata
+- Projects with non-standard structure
+- Critical repositories requiring precise configuration
+
+#### Interactive Mode (`--interactive`)
+
+AI-assisted initialization with per-field approval:
+
+```bash
+$ nia config init --interactive
+
+Interactive project configuration...
+
+ℹ Analyzing repository...
+
+name: 'my-project' (detected from directory name)
+Accept? [Press Enter] or enter custom value:
+✓ Accepted: my-project
+
+description: 'A Rust web service using Axum' (inferred from README.md)
+Accept? [Press Enter] or enter custom value: My custom description here
+✓ Accepted: My custom description here
+
+language: 'Rust' (detected from Cargo.toml)
+Accept? [Press Enter] or enter custom value:
+✓ Accepted: Rust
+
+framework: 'axum' (detected from Cargo.toml dependencies)
+Accept? [Press Enter] or enter custom value:
+✓ Accepted: axum
+
+testing_framework: 'cargo test' (detected from Cargo.toml)
+Accept? [Press Enter] or enter custom value:
+✓ Accepted: cargo test
+
+package_manager: 'cargo' (detected from Cargo.toml)
+Accept? [Press Enter] or enter custom value:
+✓ Accepted: cargo
+
+Creating .nia/config/project.toml...
+✓ Configuration created successfully
+
+Summary:
+  name: my-project
+  description: My custom description here
+  language: Rust
+  framework: axum
+  testing_framework: cargo test
+  package_manager: cargo
+```
+
+This mode:
+1. Lets the configured AI agent explore the repository's documentation, manifests, build files, and configuration
+2. Writes and validates a complete `project.toml` using the same checks as `nia config validate`
+3. Presents each project field with an AI-suggested value
+4. Accepts suggestions (press Enter) or custom overrides
+5. Preserves additional generated configuration after all fields are approved
+
+When the agent finds a monorepo, it can also enable `[monorepo]` and add a
+`[[monorepo.services]]` entry for each independently buildable component. These
+sections are preserved while you review or override the project fields. Review
+the generated service names and relative paths, then run `nia config validate`.
+See [Monorepo Configuration Support](../advanced/monorepo.md) for the complete
+configuration format.
+
+**Best for:**
+- Single-project and monorepo setup
+- When you want to verify AI suggestions before committing
+- Projects whose structure and configuration the agent can inspect
+- First-time nia users
+
+**Protection:**
+- Prompts when config already exists (Option C)
+- Offers to edit existing config or cancel
+- Validates all inputs before writing configuration
+
+#### Editing Existing Configuration
+
+When you run `--interactive` on a repository that already has `project.toml`, you'll be prompted:
+
+```
+⚠ Configuration already exists at .nia/config/project.toml
+
+Would you like to:
+  [E] Edit existing configuration interactively
+  [C] Cancel
+
+Choice [E/C]:
+```
+
+**Edit mode** (choose `E`):
+1. Loads current configuration values
+2. Analyzes repository for AI suggestions
+3. For each field, you choose:
+   - `[K]eep` - Keep current value (default)
+   - `[A]ccept` - Accept AI suggestion
+   - `[C]ustom` - Enter your own value
+4. Shows before → after summary for modified fields
+
+**Example edit session:**
+```
+name
+  Current:  my-service
+  AI suggests: my-microservice
+
+  Choice [K/A/C] (default: Keep): A
+  ✓ Accepted AI: my-microservice
+
+description
+  Current:  Old description
+  AI suggests: Modern REST API service
+
+  Choice [K/A/C] (default: Keep): C
+  Enter custom value: My custom description
+  ✓ Custom: My custom description
+```
+
+**Cancel** (choose `C`): Exits without making changes.
+
+#### Comparison: When to Use Each Mode
+
+| Mode | Command | Use Case | Accuracy | Setup Time |
+|------|---------|----------|----------|------------|
+| Interactive | `--interactive` | Single repo, AI assistance with validation | 95%+ | 1-2 min |
+| Manual | (default) | Full control, non-standard projects | 100% | 2-5 min |
+
+#### Troubleshooting Interactive Mode
+
+Common issues and solutions:
+
+**AI analysis takes too long (>30 seconds)**
+
+1. Check agent connectivity: `nia status`
+2. Verify your AI agent is configured: `nia config show-context`
+3. Fall back to manual mode: `nia config init` (without `--interactive`)
+
+```bash
+# Check if agent is responding
+nia status
+
+# If agent is slow, use manual mode instead
+nia config init
+```
+
+**AI suggests incorrect framework/language**
+
+The AI makes suggestions based on:
+- Manifest files (`Cargo.toml`, `package.json`, `go.mod`)
+- Directory structure
+- README content
+
+If suggestions are wrong:
+1. Simply type the correct value when prompted
+2. Framework detection works best for well-known frameworks
+3. Consider updating your manifest files for better detection
+
+**"Interactive mode requires user input" error**
+
+Interactive mode reads field values from stdin and requires actual user input. A closed or empty stdin (EOF) is rejected with an explicit error rather than silently accepting suggested values, so it cannot be scripted by piping empty input.
+
+```bash
+# These will fail (no user to provide input):
+echo "" | nia config init --interactive       # Error: EOF detected
+cat /dev/null | nia config init --interactive # Error: EOF detected
+
+# Solutions for non-interactive environments:
+nia config init                 # Manual mode - prompts for each field
+nia config init --app           # App mode - minimal prompts
+nia config init --name "myapp"  # Explicit values via flags
+```
+
+**Why this restriction?**
+
+Interactive mode is designed for guided human interaction. Auto-accepting AI suggestions without explicit user approval would violate the principle of informed consent - users should knowingly approve each configuration value.
+
+**"Configuration already exists"**
+
+When `project.toml` already exists:
+
+```
+⚠ Configuration already exists at .nia/config/project.toml
+
+Would you like to:
+  [E] Edit existing configuration interactively
+  [C] Cancel
+```
+
+Choose `E` to modify existing values while preserving unchanged fields.
+
+**Validation errors on custom input**
+
+Custom values must meet these requirements:
+- **name**: Non-empty, ≤100 characters, no control characters
+- **description**: Non-empty, ≤250 characters, no control characters
+- **All fields**: No TOML-unsafe characters
+
+```bash
+# Invalid inputs:
+name: "my-project\n"      # Control character (newline)
+description: ""            # Empty not allowed
+name: "x" * 101           # Exceeds 100 char limit
+```
+
+#### Privacy & Data
+
+**What data is sent to the AI agent?**
+
+Interactive mode sends the following to your configured AI agent:
+
+| Data Type | Content | Purpose |
+|-----------|---------|---------|
+| File listing | Top 100 file/directory names | Detect language and structure |
+| Manifest contents | Cargo.toml, package.json, go.mod (first 3 found) | Extract name, dependencies |
+| README excerpt | First 50 lines of README.md | Generate description |
+
+**What is NOT sent:**
+
+- Source code contents (only manifest files)
+- Environment variables
+- Git history or commits
+- Credentials or secrets
+- Files in `.gitignore`
+
+**Data flow:**
+
+```
+Repository → nia CLI → Your AI Agent → Suggestions → Local config file
+             (local)    (configured)    (returned)    (.nia/config/)
+```
+
+All data is processed by the AI agent you have configured (GitHub Copilot, Gemini, Claude, or OpenCode). Review your agent's privacy policy for data handling details.
+
+**Disabling AI analysis:**
+
+If you prefer not to send repository structure to AI:
+
+```bash
+# Use manual mode instead
+nia config init
+
+# Or use app mode with explicit values
+nia config init --app
+```
+
+**See Also:**
+- [Project Configuration](../configuration/project.md) - Configuration file reference
+- [Hierarchical Loading](../configuration/hierarchical.md) - Multi-source configuration
+
 ### user
 
 Set user identity for OpenSearch enterprise reporting.

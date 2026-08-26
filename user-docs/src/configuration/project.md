@@ -41,6 +41,8 @@ Complete the following steps from the project root.
 
 Run `config init` to create the `.nia/` configuration structure and a default `.nia/config/project.toml` file.
 
+#### Manual Initialization
+
 For a local-only project configuration, run:
 
 ```bash
@@ -60,6 +62,8 @@ nia config init --agent github_copilot --models balanced
 ```
 
 NIA creates the project file and reports `project.toml` in the command output. When you provide issue, ticket, or code-platform options, it also creates the corresponding toolchain configuration. The `--code` option requires at least one tracker option, such as `--issues` or `--tickets`.
+
+#### Verify Configuration
 
 Verify that the project file exists:
 
