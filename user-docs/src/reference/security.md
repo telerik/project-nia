@@ -99,22 +99,43 @@ This shows the composed prompt without executing, allowing security review.
 
 ### Telemetry Data
 
-Nia collects usage telemetry to help improve the product. Telemetry is **enabled by default** and can be disabled via configuration.
+Nia has two independent telemetry destinations with very different data sets. Read
+both rows before assuming what leaves your machine. Telemetry is **enabled by
+default** and can be disabled via configuration — see "Disabling Telemetry" below.
 
-| Data Collected | When |
-|----------------|------|
-| Command name (e.g., 'issue draft') | Always when enabled |
-| Version and operating system | Always when enabled |
-| AI agent and model name | Always when enabled |
-| Success/failure status | Always when enabled |
-| Hashed machine ID | Always when enabled |
-| User ID (if available) | Always when enabled |
+| Destination | Enabled by | Data collected |
+|-------------|-----------|-----------------|
+| Progress Analytics (App Insights) | On by default, config-gated | Command, version, OS, agent name, model, invocation source, success, hashed machine ID, user ID |
+| Self-hosted OpenSearch | Off unless you configure a backend in `telemetry.toml` | Every transaction event nia writes locally, plus completed trace files and system logs |
+| Self-hosted OTEL | Off unless you configure a backend in `telemetry.toml` | Transaction events converted to OTLP spans — trace files, system logs and approval PII are OpenSearch-only, they are never sent to OTEL |
 
-**What is NOT transmitted**:
-- Your code or file contents
-- Prompt content or context files
+**What is never transmitted to either destination**:
+- Your source code or arbitrary file contents
 - Environment variables or secrets
-- Repository names or paths
+
+**What is not transmitted to Progress Analytics** — but *does* reach a self-hosted
+OpenSearch/OTEL backend when you configure one:
+- Repository name, owner and remote URL
+- Git `user.name` and `user.email`
+- Start and end commit SHAs
+- Workflow engine events: `workflow_started`, `workflow_state_transition`, `branch_evaluated`, `step_execution`, `check_evaluation`, `approval`
+- `instance_id` and the `callers` chain of ancestor instance ids for every execution, which reconstruct the full call tree (which command invoked which workflow invoked which step). Query this data with `callers`, not `invocation_source` — the latter is a low-cardinality label kept only for App Insights.
+
+**OpenSearch-only — never reaches the OTEL backend, even when both are configured**:
+- Trace files, which contain the composed prompt and the agent session transcript
+- System logs
+- Approver email addresses and approval codes: the `approval` event's OTLP span carries the same workflow/gate/step fields as OpenSearch, but not `approver_email` or `approval_code`
+
+> **Approval events carry PII.**
+> `approval` documents include `approver_email` and `approval_code`. They are
+> uploaded to your self-hosted OpenSearch backend only — the OTEL span for the
+> same event omits both fields. The App Insights sink filters to `workflow` and
+> `utility` events, so approval identity never reaches Progress Analytics either.
+> This is a deliberate boundary — widening it would be a new data-collection
+> decision, not a refactor.
+>
+> Set `[privacy] strict_privacy = true` in `telemetry.toml` to hash repository, git
+> user and approver identity fields before they are uploaded.
 
 Telemetry covers every `nia` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same `init`/`complete` events.
 

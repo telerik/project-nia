@@ -170,7 +170,13 @@ Uploads happen immediately after local logging, with minimal impact on workflow 
 4. Upload failures are logged as warnings but never block workflow completion
 5. Local logging always succeeds regardless of OpenSearch state
 
-**Performance Note:** Synchronous uploads add minimal latency (typically <1 second per event) when OpenSearch is healthy. This matches nia's usage pattern of 1-2 events per workflow execution.
+**Performance Note:** Each event blocks on its own OpenSearch request (typically
+<1 second when OpenSearch is healthy) before workflow execution continues. This
+per-event cost is small, but it is not free: a full `nia workflow run` emits on
+the order of 100 events, so the cumulative added latency can reach tens of
+seconds even when every request succeeds. The circuit breaker bounds the
+worst case when OpenSearch is unhealthy, but does not remove the per-event cost
+when it is healthy.
 
 ### Circuit Breaker
 
@@ -199,7 +205,7 @@ Transaction events capture workflow execution metadata:
 | Field | Type | Description |
 |-------|------|-------------|
 | `@timestamp` | date | Event timestamp (not upload time) |
-| `event_type` | keyword | Event type (e.g., `workflow`, `validation`) |
+| `event_type` | keyword | Event type (see the table below) |
 | `job_id` | keyword | Unique job identifier |
 | `command` | keyword | Workflow command executed |
 | `repository` | keyword | Repository name |
@@ -207,6 +213,8 @@ Transaction events capture workflow execution metadata:
 | `repository_remote` | keyword | Git remote URL (sanitized) |
 | `user_name` | keyword | Git user.name |
 | `user_email` | keyword | Git user.email |
+| `instance_id` | keyword | Globally unique id of the execution that emitted this document (`<type>-<uuid>`) |
+| `callers` | keyword | Ancestor instance ids, root first. Absent for a root execution; `callers[0]` is the root, `callers.last()` is the direct parent, `callers.length` is the depth |
 | `start_time` | date | Workflow start timestamp |
 | `end_time` | date | Workflow end timestamp |
 | `success` | boolean | Whether workflow succeeded |
@@ -221,6 +229,57 @@ Transaction events capture workflow execution metadata:
 | `workflow_type` | keyword | Workflow source: `builtin` or `custom` |
 | `role_prompt_type` | keyword | Role prompt source: `builtin` or `custom` |
 | `task_prompt_type` | keyword | Task prompt source: `builtin` or `custom` |
+| `workflow_id` | keyword | Work item the workflow is running against |
+| `gate_id` | keyword | Approval gate identifier (`approval` events) |
+| `step` | keyword | Workflow state the approval gate belongs to (`approval` events) |
+| `approver_email` | keyword | Email of the approver (`approval` events). Hashed when `[privacy] strict_privacy = true` |
+| `approval_code` | keyword | Approval code used to release the gate (`approval` events) |
+| `approval_method` | keyword | `manual` or `auto_bypassed` (`approval` events) |
+| `parameters` | object | Event-specific payload (state names, step/check ids, durations, conditions) |
+| `context` | object | Job context captured on the first transition (job dir, issue/PR/ticket id) |
+| `invocation_source` | (dynamic) | `manual` or `flow`, derived from `callers`. No explicit mapping is defined for this field \u2014 it exists for the App Insights sink, not for OpenSearch aggregation |
+
+> **Querying invocation chains:** use `callers`, not `invocation_source`, for
+> OpenSearch queries and aggregations. `callers.is_empty()` (or the field being
+> absent) means a root execution; `callers[0]` is the root instance id;
+> `callers.length` is the depth. `invocation_source` only carries the same
+> `manual`/`flow` distinction as a low-cardinality string for App Insights and has
+> no explicit mapping in the index template.
+
+> **An ancestor id does not guarantee an ancestor document.** Commands that only
+> orchestrate — `nia workflow run`, `nia app <target> <op>`, `nia learn run` —
+> appear in `callers` but emit no transaction document of their own, so
+> `callers[0]` is often an id with no matching `instance_id`. Treat `callers` as
+> the authoritative chain and do not assume a lookup will resolve. In OTEL the
+> same thing shows up as a trace whose root span is missing.
+
+#### Event Types
+
+| `event_type` | Emitted by | Notes |
+|---|---|---|
+| `workflow` | AI-workflow commands | Start and completion of a command |
+| `utility` | Utility commands (`config`, `status`, ...) | Config mutations without job context |
+| `config_change` | Configuration writes | Old/new value pairs |
+| `validation` | Input validation | Context file counts |
+| `output_tracking` | Output validation | Expected vs. produced files |
+| `auto_retry` | Auto-retry trigger | Missing output count |
+| `workflow_started` | Workflow engine | One per `nia workflow run` execution |
+| `workflow_state_transition` | Workflow engine | One per state change, including approval outcomes |
+| `branch_evaluated` | Workflow engine | Condition result and target state |
+| `step_execution` | Workflow engine and command hooks | Shell, builtin and agent steps |
+| `check_evaluation` | Workflow engine and command hooks | Check result and `on_false` action |
+| `approval` | Workflow engine | Carries `approver_email` and `approval_code` |
+
+> **Volume:** the six workflow engine event types are uploaded in full, without
+> sampling. A typical `nia workflow run issue-to-pr` produces roughly 86 documents
+> (~30 KB) instead of the ~26 produced by command-level events alone.
+
+> **PII:** `approval` documents carry `approver_email` and `approval_code`. These
+> reach your self-hosted OpenSearch cluster only — the App Insights sink filters to
+> `workflow` and `utility` events, so approval identity is never sent to Progress
+> Analytics. Enable `[privacy] strict_privacy = true` in `telemetry.toml` to hash
+> repository, git user and approver identity before upload. See
+> [Security Model](../reference/security.md) for the full data-flow statement.
 
 > **Agent Field Values:**
 > - `copilot` - GitHub Copilot CLI
@@ -869,7 +928,9 @@ accept_invalid_certs = true
 - **No retry:** Failed uploads are not retried within a single workflow
 - **Circuit breaker:** After 3 consecutive failures, uploads pause for 60 seconds
 - **Trace file size:** Traces larger than 10MB are skipped
-- **Synchronous latency:** Each upload adds brief latency (~1-5 seconds when healthy)
+- **Synchronous latency:** Each upload blocks on its own request (~1-5 seconds
+  when healthy); this adds up across the ~100 events a typical workflow run
+  emits, since uploads are not batched
 - **No ILM:** Index Lifecycle Management not included (configure manually if needed)
 
 ## User Identity Configuration

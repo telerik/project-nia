@@ -17,6 +17,28 @@ Nia maintains a machine-readable transaction log in JSON Lines (JSONL) format at
 
 Each line in the transaction log is a JSON object representing a single event. Events are written as they occur during workflow execution.
 
+### Execution Identity Fields
+
+Every *uploaded* document, regardless of event type, carries two fields that
+identify the execution that emitted it:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `instance_id` | string | Globally unique id of the emitting execution, `<type>-<uuid>` (e.g. `workflow-3f2a9c81-...`). Omitted only for synthetic contexts that emit nothing. |
+| `callers` | array of strings | Ancestor instance ids, root first. Omitted for a root execution (a command typed directly by a user); `callers[0]` is the root, the last element is the direct parent, and the length is the depth. |
+
+> **These two fields are not written to the local file.** The local JSONL records
+> the raw event; the identity is attached when the event is turned into a
+> document for OpenSearch and OTEL. Reconstruct call trees from the backend, not
+> from `transaction.jsonl`. Locally, `.nia/work/<job_id>/` already scopes events
+> to one job.
+
+These are the fields to use when reconstructing or querying a call tree (which
+command triggered which workflow triggered which step). Do not use
+`invocation_source` for this — it is a low-cardinality `manual`/`flow` label
+derived from `callers` for the App Insights sink only, and OpenSearch has no
+explicit mapping for it.
+
 ## Event Types
 
 ### Workflow Event
@@ -165,6 +187,46 @@ Logs utility command execution (e.g., `nia config show`, `nia guide`). In additi
   "success": true
 }
 ```
+
+### Workflow Engine Events
+
+`nia workflow run` writes six further event types as the state machine advances.
+They are routed through the same pipeline as workflow and utility events, so they
+also reach a self-hosted OpenSearch/OTEL backend when one is configured. They are
+**not** forwarded to App Insights, which only accepts `workflow` and `utility`
+events.
+
+| `event_type` | Written when | Key fields |
+|---|---|---|
+| `workflow_started` | A workflow execution begins | `workflow_type`, `workflow_id`, `execution_id`, `initial_state` |
+| `workflow_state_transition` | The state machine changes state | `from_state`, `to_state`, `outcome`, `execution_id`, `command` |
+| `branch_evaluated` | A branch condition is evaluated | `from_state`, `to_state`, `condition_desc`, `result` |
+| `step_execution` | A step (shell, builtin or agent) finishes | `step_id`, `step_type`, `phase`, `outcome`, `duration_ms` |
+| `check_evaluation` | A check finishes | `check_id`, `check_type`, `phase`, `result`, `action` |
+| `approval` | An approval gate is released or bypassed | `gate_id`, `step`, `approver_email`, `approval_code`, `method` |
+
+```json
+{
+  "event_type": "approval",
+  "timestamp": "2026-04-20T23:38:02.000Z",
+  "workflow_id": "392",
+  "workflow_type": "issue-to-pr",
+  "execution_id": "20260420_233418",
+  "gate_id": "code_review_gate",
+  "step": "code_review",
+  "approver_email": "dev@example.com",
+  "approval_code": "LGTM",
+  "method": "manual",
+  "success": true
+}
+```
+
+> **Privacy.** `approval` events are the only transaction events carrying an
+> approver identity. When uploaded, `approver_email` is hashed if
+> `[privacy] strict_privacy = true` is set in `telemetry.toml`; `approval_code` is
+> uploaded verbatim. Do not use secrets as approval codes. Deliberately, this data
+> reaches only your own OpenSearch/OTEL backend — never Progress Analytics. See
+> [Security Model](security.md#telemetry-data).
 
 ## Example Log File
 
