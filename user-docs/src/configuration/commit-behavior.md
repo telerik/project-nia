@@ -179,12 +179,13 @@ NIA enables commit instructions by default for operations that create or modify 
 | `code review --edit` or `code review --auto-fix` | Commit instructions enabled because the operation can modify files. |
 | `docs create` and edit variants | Commit instructions enabled. |
 | `docs build --fix` | Commit instructions enabled. |
+| `pr review` and review variants | Commit instructions enabled because review can apply safe feedback locally. |
 | `pr merge` and fix variants | Commit instructions enabled. |
 | `sec patch` and edit variants | Commit instructions enabled. |
 
-All other operations use explicit no-commit instructions by default. Examples include ordinary code review, issue planning, issue review, pull request drafting and review, security audits, and other operations that are not listed above.
+All other operations use explicit no-commit instructions by default. Examples include ordinary code review, issue planning, issue review, pull request drafting, security audits, and other operations that are not listed above.
 
-The internal operation names for modifier variants use names such as `create_fix`, `refactor_fix`, `review_edit`, and `review_auto_fix`. Use the command syntax shown in the command help and command reference when invoking them.
+The internal operation names for modifier variants use names such as `create_fix`, `refactor_fix`, `review_edit`, and `review_lite-edit`. When operation names contain hyphens (e.g., `review_lite-edit`), they must be quoted in TOML configuration files: `"review_lite-edit" = "enabled"`. Use the command syntax shown in the command help and command reference when invoking them.
 
 ## Verify the Effective Configuration
 

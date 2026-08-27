@@ -82,7 +82,9 @@ If the file is missing, the operation aborts and reports that it cannot find the
 
 ### Review
 
-Review the pull request and produce actionable analysis of status checks, code quality findings, reviewer comments, and merge conflicts. Standard review writes these files:
+Review the pull request, retrieve current platform metadata and all existing reviewer feedback, and apply safe, in-scope fixes locally. Review includes Copilot feedback, inline and conversation comments, and review-thread state. It records every actionable item and whether it was applied, deferred, or intentionally not changed.
+
+Before assessing conflicts, `NIA` uses the pull request's declared target branch, base and head commits, and hosting-platform merge state. It does not assume the target branch is `main` or rely on stale local branches. Safe fixes are validated and committed locally according to the configured commit behavior. Review does not push, modify remote PR metadata, reply to or resolve remote review threads, or commit generated review files. Standard review writes these files:
 
 ```text
 .nia/work/job_<issue_id>/pr/pr_<pr_id>/status_check_fixes.md
@@ -106,14 +108,14 @@ The default role for `review` is `software_architect`.
 
 ### Merge
 
-Prepare a pull request for a safe merge. This operation reviews pull request metadata and existing review reports, applies fixes for status checks, code quality issues, and minor conflicts when possible, and leaves high-risk conflict resolutions for escalation. It does not perform the merge.
+Prepare a pull request for a safe merge. `NIA` first retrieves the current PR metadata, verifies that the local checkout is the PR source branch with a clean worktree, fetches the PR's declared target branch, and rebases the local branch onto it. It then applies safe fixes for status checks, code quality issues, and review feedback, validates locally, and commits the resulting project changes.
 
 ```bash
 nia pr merge
 nia pr merge --fix           # Fix merge issues using your instructions
 ```
 
-Use `--fix` with instructions for targeted fixes. `NIA` does not implement high-risk conflict resolutions, force-push, or perform the final merge. Validate the resulting changes and status checks before merging through your code management system.
+Use `--fix` with instructions for targeted fixes. `NIA` resolves only non-destructive rebase conflicts. For high-risk or ambiguous conflicts, it aborts the rebase and reports the base/head details and conflicted files for human resolution. It never force-pushes, pushes, performs the final merge, changes remote PR metadata, or resolves remote review threads. Validate the resulting local commits and status checks before publishing and merging through your code management system.
 
 The default role for `merge` is `software_engineer`.
 
