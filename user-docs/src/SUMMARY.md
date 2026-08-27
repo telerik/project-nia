@@ -22,6 +22,7 @@
   - [Hierarchical Loading](./configuration/hierarchical.md)
   - [Agent Skills](./configuration/skills.md)
   - [Version Control Setup](./configuration/version-control.md)
+  - [Update Check](./configuration/update-check.md)
 
 - [AI Coding Agents]()
   - [Agent Setup](./agents/setup.md)
