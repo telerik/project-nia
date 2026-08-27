@@ -36,6 +36,12 @@ Open a new terminal so the updated `PATH` takes effect, then verify:
 nia --version
 ```
 
+Next, configure your email:
+
+```bash
+nia config user --email "john@company.com"
+```
+
 Next, from the root of your project:
 
 ```bash
