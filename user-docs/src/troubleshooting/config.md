@@ -513,3 +513,91 @@ name = "my-command"
 3. **Start Simple**: Minimal config first
 4. **Test Incrementally**: After each change
 5. **Follow Examples**: Use provided examples
+
+## Automatic Configuration (`nia app discover --auto`)
+
+### "AI analysis failed for repository X"
+
+**Cause**: The AI could not analyze the repository structure.
+
+**Solutions**:
+1. Ensure the repository has a manifest file (Cargo.toml, package.json, go.mod, etc.)
+2. Add a README.md with project description to provide context
+3. Check that the repository has actual source code in typical locations
+4. Use `nia config init --interactive` for manual setup of that repository
+
+### "Invalid UUID in application.toml"
+
+**Cause**: The `id` field in your `application.toml` is not a valid UUID format.
+
+**Solution**: Ensure the UUID follows RFC 4122 format:
+```toml
+[application]
+id = "550e8400-e29b-41d4-a716-446655440000"  # Valid UUID v4 format
+# Not: "my-app-id" or "12345" (these are invalid)
+```
+
+Generate a new UUID if needed:
+```bash
+# Linux/Mac
+uuidgen
+
+# Or use online generator: https://www.uuidgenerator.net/
+```
+
+### "Skipping X repositories with existing project.toml"
+
+**Behavior**: This is **expected** and **safe**. The `--auto` flag never overwrites existing configurations.
+
+**If you want to regenerate**:
+1. Back up the existing configuration if it has custom values
+2. Delete the existing `project.toml`: `rm .nia/config/project.toml`
+3. Run `nia app discover --auto` again
+
+**Alternative**: Use `nia config init --interactive` in that specific repository to correct individual fields with AI assistance and user approval.
+
+### "Generated configuration has incorrect values"
+
+**Cause**: AI analysis may misidentify framework, testing tools, or other metadata.
+
+**Solutions**:
+1. **Per-field correction**: Run `nia config init --interactive` in the affected repository to review and correct each field interactively
+2. **Manual edit**: Edit `.nia/config/project.toml` directly and run `nia config validate` to verify
+3. **Full regeneration**: Delete the config and run `nia app discover --auto` again
+
+**Common corrections needed:**
+- Framework detection (e.g., "actix" vs "axum" for Rust web frameworks)
+- Testing framework (especially for projects with multiple test runners)
+- Package manager (especially for monorepos)
+
+### "Running in CI environment" or "non-interactive mode" error
+
+**Cause**: The command requires user confirmation but is running non-interactively (piped input or CI environment).
+
+**Solution**: Set the bypass environment variable:
+```bash
+NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
+```
+
+**Why this matters**: Bulk AI-generated configurations should be reviewed. The environment variable confirms you understand the risks in automated environments.
+
+### "No child repositories found to initialize"
+
+**Possible causes**:
+1. Application root doesn't have child directories with manifest files
+2. All child repositories already have `project.toml`
+3. Discovery is disabled in `application.toml`
+
+**Solutions**:
+```bash
+# Check discovery is enabled
+cat .nia/config/application.toml
+# Should have: [discovery]
+#              enabled = true
+
+# Check for child repos
+find . -maxdepth 3 \( -name "Cargo.toml" -o -name "package.json" -o -name "go.mod" \)
+
+# If repos exist with configs, they'll be skipped (expected)
+find . -name "project.toml"
+```

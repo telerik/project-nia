@@ -4,6 +4,94 @@
 
 The `nia app` command enables coordination of development workflows across multiple repositories that make up a single application. Instead of manually running commands in each repository, `nia app` orchestrates operations at the application level.
 
+## Automated Repository Setup
+
+Before running multi-repository commands, child repositories need `project.toml` configuration with the correct `allow_app` UUID. nia provides automated setup via AI analysis.
+
+### Automatic Configuration (`nia app discover --auto`)
+
+Automatically generate `project.toml` for all discovered child repositories:
+
+```bash
+cd /path/to/app-parent
+nia app discover --auto
+```
+
+**What it does:**
+1. Discovers child repositories in your application
+2. Filters to repositories without existing `project.toml`
+3. Uses AI to analyze each repository and generate appropriate metadata
+4. Creates `project.toml` with the correct `allow_app` UUID from parent application
+
+**Warning Prompt**: AI-generated configurations may contain inaccuracies. You will be prompted to confirm before proceeding:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        ⚠️  AI AUTOMATION WARNING                     │
+├─────────────────────────────────────────────────────────────────────┤
+│ AI analysis will be used to populate project.toml files.           │
+│                                                                     │
+│ AI hallucinations in project.toml may cause:                        │
+│ • Incorrect framework detection                                     │
+│ • Wrong testing framework configuration                             │
+│ • Invalid package manager settings                                  │
+│ • Quality issues in dependent workflows                             │
+│                                                                     │
+│ Generated configurations should be reviewed after completion.       │
+└─────────────────────────────────────────────────────────────────────┘
+
+Do you want to proceed? [y/N]:
+```
+
+**Example Output:**
+```
+Warning bypassed via NIA_ACCEPT_AUTO_RISK environment variable.
+
+Analyzing service-rust...
+  ✓ Created project.toml
+Analyzing service-node...
+  ✓ Created project.toml
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Bulk Initialization Complete                                    │
+├─────────────────────────────────────────────────────────────────┤
+│ Initialized: 2                                                  │
+│ Skipped:     0                                                  │
+│ Failed:      0                                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+⚠️  Review generated configurations before using.
+   Run `nia config init --interactive` in specific repos to fix issues.
+```
+
+**CI/CD Usage**: Bypass the interactive prompt in automated environments:
+```bash
+NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
+```
+
+**Important Notes:**
+- **Never overwrites** existing `project.toml` files (AC-007)
+- Creates **only** `project.toml`, not `agents.toml` or `toolchain.toml`
+- Failed repositories don't stop processing of others
+- Review generated configurations and correct as needed
+
+**When to use:**
+- Initial setup of multi-repository applications
+- Adding new repositories to existing applications
+- Regenerating configurations after cleanup
+
+**When not to use:**
+- For single-repository setup (use `nia config init --interactive` instead)
+- When repositories already have `project.toml` (skipped automatically)
+- For fine-grained control over each field (use interactive mode)
+
+**Related Commands:**
+- `nia config init --interactive` - Interactive initialization for single repos with per-field approval
+- `nia app discover` - Discover and save repositories without initialization
+- `nia app discover --force` - Re-discover and overwrite repository list in application.toml
+
+---
+
 ## Prerequisites
 
 1. **Application Configuration**: Create `.nia/config/application.toml` in a parent directory:
