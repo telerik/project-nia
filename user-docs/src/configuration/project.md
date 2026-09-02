@@ -63,6 +63,23 @@ nia config init --agent github_copilot --models balanced
 
 NIA creates the project file and reports `project.toml` in the command output. When you provide issue, ticket, or code-platform options, it also creates the corresponding toolchain configuration. The `--code` option requires at least one tracker option, such as `--issues` or `--tickets`.
 
+Use `--force` to replace only the configuration selected by explicit options. For example, this
+regenerates `agents.toml` without changing `project.toml` or `toolchain.toml`:
+
+```bash
+nia config init --agent github_copilot --models balanced --force
+```
+
+Similarly, tool options combined with `--force` replace `toolchain.toml`. To edit an existing
+`project.toml` without the initial edit/cancel confirmation, run:
+
+```bash
+nia config init --interactive --force
+```
+
+Interactive field review still occurs. The `--force` option cannot be used by itself or combined
+with `--app`.
+
 #### Verify Configuration
 
 Verify that the project file exists:

@@ -830,6 +830,12 @@ nia config init --agent opencode --models stable
 
 # Agent with default profile (stable)
 nia config init --agent github_copilot
+
+# Replace an existing agents.toml with a generated profile
+nia config init --agent github_copilot --models balanced --force
+
+# Edit an existing project.toml without the initial confirmation
+nia config init --interactive --force
 ```
 
 **Flags**:
@@ -844,6 +850,12 @@ nia config init --agent github_copilot
 - `--issues <TRACKER>` - Issue tracker integration
 - `--tickets <PLATFORM>` - Ticketing system integration  
 - `--code <HOST>` - Code hosting platform integration
+- `--force` - Replace files selected by explicit initialization options
+
+`--force` cannot be used alone or with `--app`. It affects only files selected by the other
+options: `--agent` selects `agents.toml`, tool options select `toolchain.toml`, and
+`--interactive` selects `project.toml`. In interactive mode, it skips the initial edit/cancel
+confirmation but keeps the per-field review prompts.
 
 **Output**:
 

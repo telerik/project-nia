@@ -42,10 +42,10 @@ The generated defaults and operation overrides for `github_copilot` are:
 
 | Profile | Default model | Operation overrides |
 |---|---|---|
-| `lite` | `claude-haiku-4.5` | `issue.draft`, `issue.plan`, `issue.review`, `pr.review`, and `pr.merge` use `claude-sonnet-4-5`. |
-| `balanced` | `claude-sonnet-4.5` | The five operations above use `claude-opus-4.5`. |
-| `stable` | `claude-sonnet-4.5` | Only `issue.plan` uses `claude-opus-4.5`. |
-| `heavy` | `claude-opus-4.5` | No operation overrides are generated. |
+| `lite` | `gpt-5.4-mini` | `issue.draft`, `issue.plan`, `issue.review`, `pr.review`, and `pr.merge` use `gpt-5.4`. |
+| `balanced` | `gpt-5.4` | The five operations above use `gpt-5.5`. |
+| `stable` | `claude-sonnet-5` | Only `issue.plan` uses `claude-opus-5`. |
+| `heavy` | `gpt-5.5` | No operation overrides are generated. |
 
 ### OpenCode Profile Mappings
 
@@ -53,7 +53,7 @@ OpenCode supports multiple model providers as a backend so we fallback to a valu
 
 The generated default and operation model for every `opencode` profile is `auto`. The `lite`, `balanced`, and `stable` profiles generate overrides for `issue.draft`, `issue.plan`, `issue.review`, `pr.review`, and `pr.merge`; `heavy` generates no operation overrides.
 
-We recommend you replace `default` value with `provider/claude-sonnet-4.5` and the target-operation over-rides with `provider/claude-opus-4.5`.
+We recommend you replace `default` value with `provider/claude-sonnet-5` and the target-operation overrides with `provider/claude-opus-5`.
 
 ### Claude Code Profile Mappings
 
@@ -61,12 +61,12 @@ The generated defaults and operation overrides for `claude_code` are:
 
 | Profile | Default model | Operation overrides |
 |---|---|---|
-| `lite` | `claude-haiku-4-5` | `issue.draft`, `issue.plan`, `issue.review`, `pr.review`, and `pr.merge` use `claude-sonnet-4-5`. |
-| `balanced` | `claude-sonnet-4-5` | The five operations above use `claude-opus-4-5`. |
-| `stable` | `claude-sonnet-4-5` | Only `issue.plan` uses `claude-opus-4-5`. |
-| `heavy` | `claude-opus-4-5` | No operation overrides are generated. |
+| `lite` | `claude-haiku-5` | `issue.draft`, `issue.plan`, `issue.review`, `pr.review`, and `pr.merge` use `claude-sonnet-5`. |
+| `balanced` | `claude-sonnet-5` | The five operations above use `claude-opus-5`. |
+| `stable` | `claude-sonnet-5` | Only `issue.plan` uses `claude-opus-5`. |
+| `heavy` | `claude-opus-5` | No operation overrides are generated. |
 
-Note that Claude Code uses hyphens in the mode version. For example `4-5` instead of `4.5` in the model name.
+Claude Code receives these model aliases directly through its CLI.
 
 ## Configure Model Selection
 
