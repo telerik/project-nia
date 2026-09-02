@@ -206,10 +206,10 @@ schema_version = "1.0.0"
 [project]
 name = "my-project"
 description = "Brief description of your project"
-language = "Rust"
-framework = "clap, tokio"
-testing_framework = "cargo test"
-package_manager = "cargo"
+language = "Unknown"  # Primary language (e.g., TypeScript, C#, Python, Go, Rust, Java)
+framework = "Unknown"  # Framework if any, or "None" (e.g., React, Angular, ASP.NET Core, Django, Gin, axum)
+testing_framework = "Unknown"  # Testing tool (e.g., jest, xUnit, pytest, "go test", "cargo test")
+package_manager = "Unknown"  # Package manager (e.g., npm, NuGet, pip, "go mod", cargo, Maven)
 ```
 
 All fields are *required*. Update them to match your project:
