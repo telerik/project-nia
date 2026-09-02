@@ -71,7 +71,7 @@ nia workflow run issue-to-pr
 | Option | Description |
 |--------|-------------|
 | `--start-from <STEP_NAME>` | Start from a specific step (for recovery) |
-| `--bypass-approvals` | Skip approval gates (for CI/automation) |
+| `--bypass-approvals` | Skip approval gates (for CI/automation); loop-escape approvals still require manual review |
 | `--dry-run` | Validate workflow without executing |
 | `--quiet` / `-q` | Suppress output except errors |
 
