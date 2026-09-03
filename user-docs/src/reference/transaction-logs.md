@@ -55,7 +55,7 @@ Logs the execution of a workflow command (e.g., `nia issue draft`, `nia code imp
   "end_commit_sha": "98cec87b",
   "trace_file": "traces/20260420_233418_issue.trace.md",
   "success": true,
-  "model": "claude-sonnet-4.5",
+  "model": "claude-sonnet-5",
   "role": "product_manager",
   "custom_agent": "none",
   "token_usage": {
@@ -80,7 +80,7 @@ Logs the execution of a workflow command (e.g., `nia issue draft`, `nia code imp
 | `success` | boolean | No | Whether the workflow completed successfully |
 | `error_message` | string | No | Error message if workflow failed |
 | `token_usage` | object | No | Token consumption statistics (see below) |
-| `model` | string | Yes | AI model used (e.g., `"claude-sonnet-4.5"`). Value is `"not set"` for start events or when unavailable |
+| `model` | string | Yes | AI model used (e.g., `"claude-sonnet-5"`). Value is `"not set"` for start events or when unavailable |
 | `role` | string | Yes | Role prompt used (e.g., `"product_manager"`). Value is `"none"` when custom agent is used, `"not set"` for start events |
 | `custom_agent` | string | Yes | Custom agent name (e.g., `"python-expert"`). Value is `"none"` when not configured, `"not set"` for start events |
 
@@ -134,7 +134,7 @@ The `model`, `role`, and `custom_agent` fields capture the effective AI agent co
 {
   "event_type": "workflow",
   "command": "issue draft",
-  "model": "claude-sonnet-4.5",
+  "model": "claude-sonnet-5",
   "role": "product_manager",
   "custom_agent": "none",
   "success": true
@@ -231,7 +231,7 @@ events.
 ## Example Log File
 
 ```jsonl
-{"event_type":"workflow","command":"issue draft","start_time":"2026-04-20T23:34:22.753Z","start_commit_sha":"dd014a85","end_time":"2026-04-20T23:35:45.123Z","end_commit_sha":"98cec87b","trace_file":"traces/20260420_233418_issue.trace.md","success":true,"model":"claude-sonnet-4.5","role":"product_manager","custom_agent":"none","token_usage":{"input_tokens":608900,"cached_tokens":556700,"output_tokens":5100}}
+{"event_type":"workflow","command":"issue draft","start_time":"2026-04-20T23:34:22.753Z","start_commit_sha":"dd014a85","end_time":"2026-04-20T23:35:45.123Z","end_commit_sha":"98cec87b","trace_file":"traces/20260420_233418_issue.trace.md","success":true,"model":"claude-sonnet-5","role":"product_manager","custom_agent":"none","token_usage":{"input_tokens":608900,"cached_tokens":556700,"output_tokens":5100}}
 {"event_type":"workflow","command":"code implement","start_time":"2026-04-20T23:40:10.000Z","start_commit_sha":"98cec87b","end_time":"2026-04-20T23:45:30.500Z","end_commit_sha":"a1b2c3d4","trace_file":"traces/20260420_234010_code.trace.md","success":true,"model":"gpt-5.4","role":"none","custom_agent":"python-expert","token_usage":{"input_tokens":420000,"cached_tokens":380000,"output_tokens":8500}}
 {"event_type":"utility","command":"config show","timestamp":"2026-04-20T23:50:00.000Z","success":true}
 ```

@@ -73,7 +73,7 @@ schema_version = "1.0.0"
 default = "github_copilot"
 
 [models]
-code = "claude-sonnet-4.5"
+code = "claude-sonnet-5"
 docs = "claude-haiku-4.5"
 ```
 
@@ -82,7 +82,7 @@ docs = "claude-haiku-4.5"
 schema_version = "1.0.0"
 
 [models]
-code = "claude-opus-4.5"
+code = "claude-opus-5"
 ```
 
 **Result** (merged):
@@ -91,7 +91,7 @@ code = "claude-opus-4.5"
 default = "github_copilot"              # From system
 
 [models]
-code = "claude-opus-4.5"                # From repository (overrides)
+code = "claude-opus-5"                # From repository (overrides)
 docs = "claude-haiku-4.5"               # From system (preserved)
 ```
 
@@ -211,7 +211,7 @@ schema_version = "1.0.0"
 default = "github_copilot"
 
 [models]
-code = "claude-sonnet-4.5"
+code = "claude-sonnet-5"
 docs = "claude-haiku-4.5"
 EOF
 ```
@@ -228,7 +228,7 @@ Override specific settings while inheriting defaults:
 schema_version = "1.0.0"
 
 [models]
-code = "claude-opus-4.5"  # Use premium model for this critical project
+code = "claude-opus-5"  # Use premium model for this critical project
 ```
 
 The other settings (agent selection, docs model, etc.) will be inherited from user/system configuration.

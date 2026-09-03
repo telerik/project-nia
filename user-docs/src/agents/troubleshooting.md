@@ -436,7 +436,7 @@ Check the format settings in `.nia/config/agents.toml`:
 prompt_format = "markdown"
 
 [agent.github_copilot.targets]
-code = { model = "claude-sonnet-4.5", prompt_format = "xml" }
+code = { model = "claude-sonnet-5", prompt_format = "xml" }
 ```
 
 Use `xml`, `markdown`, or `md` as the format value. Operation settings have higher precedence than target settings, and target settings have higher precedence than the agent-level setting.

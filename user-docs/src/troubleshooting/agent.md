@@ -536,13 +536,13 @@ Temporary workaround:
 3. **Verify the change**:
    ```bash
    cat .nia/config/agents.toml | grep 'model'
-   # Should show: model = "claude-sonnet-4.5"
+   # Should show: model = "claude-sonnet-5"
    ```
 
-**Why This Works**: The `stable` profile uses Claude 4.5 generation models (`claude-sonnet-4.5`, `claude-opus-4.5`) which have been validated for consistent behavior with nia's prompting conventions.
+**Why This Works**: The `stable` profile uses pinned Claude models (`claude-sonnet-5`, `claude-opus-5`) which have been validated for consistent behavior with nia's prompting conventions.
 
 **When to Switch Back to Balanced**:
-- When newer models (Claude 4.6+, GPT-5.x) are confirmed to work reliably with nia
+- When newer models are confirmed to work reliably with nia
 - If you're testing compatibility with latest-generation models
 - If your specific use case benefits from newer model capabilities
 
@@ -550,10 +550,10 @@ Temporary workaround:
 
 | Profile | Default Model | Behavior |
 |---------|--------------|----------|
-| `stable` (default) | claude-sonnet-4.5 | Consistent, predictable |
-| `balanced` | claude-sonnet-4.5 | Latest features, may have inconsistencies |
+| `stable` (default) | claude-sonnet-5 | Consistent, predictable |
+| `balanced` | claude-sonnet-5 | Latest features, may have inconsistencies |
 | `lite` | claude-haiku-4.5 | Cost-optimized, stable |
-| `heavy` | claude-sonnet-4.5 | Premium quality, latest generation |
+| `heavy` | claude-sonnet-5 | Premium quality, latest generation |
 
 **Related**: [AI Model Selection](../agents/model-selection.md), [Model Profiles](../agents/model-selection.md#quick-start-with-model-profiles)
 

@@ -120,7 +120,7 @@ Set different formats for broad workflow targets:
 ```toml
 [agent.github_copilot.targets]
 issue = { model = "gpt-5.4", prompt_format = "markdown" }
-code = { model = "claude-sonnet-4.5", prompt_format = "xml" }
+code = { model = "claude-sonnet-5", prompt_format = "xml" }
 ```
 
 The target setting uses the extended form because it contains both `model` and `prompt_format`. Target settings can also contain the other supported target-level properties, such as commit or custom-agent overrides.
@@ -212,7 +212,7 @@ NIA ignores invalid values instead of treating them as a format. For example, `p
 
 ### The Model Uses an Unexpected Format
 
-Inspect the resolved model name and all format settings. Automatic detection checks whether the model name contains `claude` or `anthropic`, without requiring a specific version or provider. A name such as `claude-sonnet-4.5` selects XML; a name such as `gpt-5.4` selects Markdown.
+Inspect the resolved model name and all format settings. Automatic detection checks whether the model name contains `claude` or `anthropic`, without requiring a specific version or provider. A name such as `claude-sonnet-5` selects XML; a name such as `gpt-5.4` selects Markdown.
 
 Set an explicit global, target, or operation override when automatic detection does not match the prompt files your workflow requires.
 

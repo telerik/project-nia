@@ -318,7 +318,7 @@ All standard flags are passed through to the underlying command:
 
 Example:
 ```bash
-nia app code review --model claude-opus-4.5 --quiet
+nia app code review --model claude-opus-5 --quiet
 ```
 
 ### Workflow Execution Mode
@@ -340,7 +340,7 @@ Example:
 nia app issue plan --quiet --bypass-approvals
 
 # ❌ Not supported (will show helpful error)
-nia app issue plan --model claude-opus-4.5
+nia app issue plan --model claude-opus-5
 # Error: --model flag is not supported for workflow execution commands.
 # Workflow agent models are configured in .nia/config/agents.toml
 ```
@@ -352,8 +352,8 @@ App commands use the standard `agents.toml` configuration with the format `"app.
 ```toml
 # .nia/config/agents.toml
 [agents]
-"app.issue.draft" = "claude-opus-4.5"
-"app.code.review" = "claude-sonnet-4.5"
+"app.issue.draft" = "claude-opus-5"
+"app.code.review" = "claude-sonnet-5"
 ```
 
 ## Parallel Execution

@@ -219,7 +219,7 @@ Transaction events capture workflow execution metadata:
 | `end_time` | date | Workflow end timestamp |
 | `success` | boolean | Whether workflow succeeded |
 | `trace_file` | keyword | Path to trace file (for linking) |
-| `model` | keyword | AI model used (e.g., `claude-sonnet-4.5`). Value is `"not set"` for start events |
+| `model` | keyword | AI model used (e.g., `claude-sonnet-5`). Value is `"not set"` for start events |
 | `role` | keyword | Role prompt used (e.g., `product_manager`). Value is `"none"` when custom agent is used |
 | `custom_agent` | keyword | Custom agent name (e.g., `python-expert`). Value is `"none"` when not configured |
 | `agent` | keyword | AI agent platform (e.g., `copilot`, `opencode`) |

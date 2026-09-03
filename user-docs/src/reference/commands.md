@@ -83,7 +83,7 @@ nia issue draft -a copilot -r software_engineer -m claude-sonnet-4
 nia code review -c docs/design.md -c src/main.rs -m gpt-5.2-codex
 
 # Long flags for scripts (recommended for readability)
-nia issue draft --agent copilot --role software_engineer --model claude-opus-4.5
+nia issue draft --agent copilot --role software_engineer --model claude-opus-5
 ```
 
 ---
@@ -1538,10 +1538,10 @@ The `--model` flag allows you to override the AI model on a per-command basis. T
 nia issue draft --model claude-sonnet-4
 
 # Short form
-nia code create -m claude-opus-4.5
+nia code create -m claude-opus-5
 
 # Combine with other flags
-nia issue plan --model claude-opus-4.5 --role software_architect
+nia issue plan --model claude-opus-5 --role software_architect
 
 # Override for quick fixes
 nia code fix -m claude-haiku-4.5
@@ -1557,9 +1557,9 @@ When `--model` is specified, it takes highest precedence:
 **CLI argument (--model) > Operation config > Target config > Default config**
 
 ```bash
-# Even if agents.toml specifies claude-sonnet-4.5 for issue.draft,
-# this command will use claude-opus-4.5
-nia issue draft --model claude-opus-4.5
+# Even if agents.toml specifies claude-sonnet-5 for issue.draft,
+# this command will use claude-opus-5
+nia issue draft --model claude-opus-5
 ```
 
 #### Available Models
@@ -1567,9 +1567,9 @@ nia issue draft --model claude-opus-4.5
 Available models depend on your configured agent. Use `nia status` to see available models for your agent:
 
 **GitHub Copilot CLI:**
-- Standard: `claude-sonnet-4.5`, `claude-sonnet-4.5`, `gpt-5.2`, `gpt-5.1`
+- Standard: `claude-sonnet-5`, `gpt-5.2`, `gpt-5.1`
 - Fast/Cheap: `claude-haiku-4.5`, `gpt-5-mini`, `gpt-4.1`
-- Premium: `claude-opus-4.5`, `claude-opus-4.5`, `gpt-5.1-codex-max`
+- Premium: `claude-opus-5`, `gpt-5.1-codex-max`
 
 #### Invalid Model Error
 
@@ -1580,8 +1580,8 @@ $ nia issue draft --model nonexistent-model
 Error: Invalid model 'nonexistent-model' for agent 'github_copilot'.
 
 Available models:
-  claude-sonnet-4.5, claude-haiku-4.5,
-  claude-opus-4.5, claude-opus-4.5, gpt-5.2, gpt-5.1, ...
+  claude-sonnet-5, claude-haiku-4.5,
+  claude-opus-5, gpt-5.2, gpt-5.1, ...
 
 Use 'nia status' to see model details and pricing tiers.
 ```
@@ -1607,7 +1607,7 @@ The `--model` flag is independent of configuration file settings:
 ```toml
 # .nia/config/agents.toml
 [agent.github_copilot.operations]
-"issue.draft" = "claude-opus-4.5"  # Config says opus
+"issue.draft" = "claude-opus-5"  # Config says opus
 ```
 
 ```bash

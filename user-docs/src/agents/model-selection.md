@@ -93,7 +93,7 @@ schema_version = "2.1.0"
 default = "github_copilot"
 
 [agent.github_copilot]
-model = "claude-sonnet-4.5"
+model = "claude-sonnet-5"
 ```
 
 The `schema_version` and `agent.default` fields are required. The agent table name must match the selected agent ID.
@@ -109,11 +109,11 @@ schema_version = "2.1.0"
 default = "github_copilot"
 
 [agent.github_copilot]
-model = "claude-sonnet-4.5"  # Default
+model = "claude-sonnet-5"  # Default
 
 [agent.github_copilot.targets]
 issue = "claude-haiku-4.5"  # Use Haiku issues
-code = "claude-opus-4.5"       # Use Opus for code
+code = "claude-opus-5"       # Use Opus for code
 ```
 
 The target setting can be a model string or an extended table when you also need commit, custom-agent, or prompt-format settings. The model string form shown above remains supported.
@@ -121,8 +121,8 @@ The target setting can be a model string or an extended table when you also need
 **Result:**
 
 - `nia issue draft` uses `claude-haiku-4.5`.
-- `nia code review` uses `claude-opus-4.5`.
-- `nia pr create` uses `claude-sonnet-4.5` from the default setting.
+- `nia code review` uses `claude-opus-5`.
+- `nia pr create` uses `claude-sonnet-5` from the default setting.
 
 ### Configure Operation-Specific Models
 
@@ -135,13 +135,13 @@ schema_version = "2.1.0"
 default = "github_copilot"
 
 [agent.github_copilot]
-model = "claude-sonnet-4.5"
+model = "claude-sonnet-5"
 
 [agent.github_copilot.targets]
 issue = "claude-haiku-4.5"
 
 [agent.github_copilot.operations]
-"issue.draft" = "claude-opus-4.5"  # Premium for drafting
+"issue.draft" = "claude-opus-5"  # Premium for drafting
 "code.review" = "claude-opus-4.8" # Max for code review
 ```
 
@@ -149,10 +149,10 @@ The operation key uses the form `target.operation`. NIA checks the complete key,
 
 **Result:**
 
-- `nia issue draft` uses `claude-opus-4.5`.
+- `nia issue draft` uses `claude-opus-5`.
 - `nia issue triage` uses `claude-haiku-4.5` from the `issue` target setting.
 - `nia code review` uses `claude-opus-4.8`.
-- `nia code refactor` uses `claude-sonnet-4.5` from the default setting.
+- `nia code refactor` uses `claude-sonnet-5` from the default setting.
 
 ## Use Supported Model Names
 
@@ -218,7 +218,7 @@ The following existing example is valid for GitHub Copilot's accepted model patt
 model = "auto"  # Auto-select for most operations
 
 [agent.github_copilot.operations]
-"issue.plan" = "claude-opus-4.5"  # Force premium for strategic planning
+"issue.plan" = "claude-opus-5"  # Force premium for strategic planning
 "code.fix" = "claude-haiku-4.5"   # Force fast for quick fixes
 ```
 

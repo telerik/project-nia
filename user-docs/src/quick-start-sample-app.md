@@ -81,7 +81,7 @@ The `--models stable` flag configures NIA to use specific, optimised models rath
 
  > **Why not use automatic model selection?** While agents support an `auto` option that dynamically selects models, this can lead to inconsistent output quality and unpredictable costs. The `stable` profile provides reliable behavior that's been validated with NIA's prompts. For advanced model configuration, see [AI Model Selection](./agents/model-selection.md).
 
- > **Additional OpenCode note:** Replace `auto` with `provider/claude-sonnet-4.5`, and set `"issue.plan"` to `provider/claude-opus-4.5`.
+ > **Additional OpenCode note:** Replace `auto` with `provider/claude-sonnet-5`, and set `"issue.plan"` to `provider/claude-opus-5`.
 
 Make sure the agent you pick is authenticated. GitHub Copilot CLI reuses your `gh` authentication; Claude Code and OpenCode authenticate on first launch (`claude` or `opencode auth login`). Verify everything with:
 

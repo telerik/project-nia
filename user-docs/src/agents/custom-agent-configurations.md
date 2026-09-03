@@ -126,7 +126,7 @@ nia pr review --custom-agent code-reviewer
 nia docs generate --custom-agent doc-writer
 
 # Combine custom-agent and model selection
-nia code create --custom-agent python-expert --model claude-opus-4.5
+nia code create --custom-agent python-expert --model claude-opus-5
 ```
 
 The command-line value takes precedence over every value in `agents.toml`.
@@ -221,7 +221,7 @@ This configuration demonstrates target-level resolution:
 
 ```toml
 [agent.github_copilot]
-model = "claude-sonnet-4.5"
+model = "claude-sonnet-5"
 
 [agent.github_copilot.custom_agents]
 issue = "issue-analyst"
@@ -341,16 +341,16 @@ default = "github_copilot"
 
 [agent.github_copilot]
 # Default model for all operations
-model = "claude-sonnet-4.5"
+model = "claude-sonnet-5"
 
 # Default custom agent for all operations
 custom_agent = "general-assistant"
 
 # Target-specific models
 [agent.github_copilot.targets]
-issue = "claude-sonnet-4.5"
+issue = "claude-sonnet-5"
 code = "gpt-5.2-codex"
-pr = "claude-sonnet-4.5"
+pr = "claude-sonnet-5"
 
 # Target-specific custom agents
 [agent.github_copilot.custom_agents]
@@ -360,7 +360,7 @@ pr = "pr-reviewer"
 
 # Operation-specific models (highest precedence)
 [agent.github_copilot.operations]
-"issue.plan" = "claude-opus-4.5"
+"issue.plan" = "claude-opus-5"
 "code.review" = "gpt-5.1-codex-max"
 
 # Operation-specific custom agents (highest precedence)
