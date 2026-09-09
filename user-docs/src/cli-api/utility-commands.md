@@ -595,6 +595,18 @@ See [OpenSearch Integration](../advanced/opensearch.md) for user identity config
 
 ---
 
+## update
+
+Update nia to the latest version. See the [Update
+Command](../commands/update.md) for full details, including `--check`,
+`--version`, and `--force`, package-manager detection, and troubleshooting.
+
+```bash
+nia update
+```
+
+---
+
 ## guide
 
 Access Nia user documentation.

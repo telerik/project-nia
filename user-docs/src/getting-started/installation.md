@@ -657,6 +657,36 @@ You should see output similar to:
 nia 4.1.1
 ```
 
+## Upgrading
+
+Re-running the install script over an existing installation is safe on macOS,
+Linux, and Windows. The script stages the new binary, verifies it, and
+atomically swaps it into place — it never requires you to remove anything by
+hand first.
+
+- **Binary installation** (install script or a downloaded release binary):
+  run `nia update` to upgrade in place. See the [Update
+  Command](../commands/update.md) for `--check`, `--version`, and `--force`
+  options.
+- **Package manager installation**: upgrade through the same package manager
+  you installed with. `nia update` detects a package-managed installation and
+  tells you the exact command to run instead of attempting to replace the
+  binary itself:
+
+  | Installed via | Upgrade with |
+  |---|---|
+  | Homebrew | `brew upgrade nia` |
+  | apt (Debian/Ubuntu) | `sudo apt update && sudo apt install --only-upgrade nia` |
+  | dnf (RHEL/Fedora) | `sudo dnf upgrade nia` |
+  | winget | `winget upgrade nia` |
+  | Scoop | `scoop update nia` |
+  | Chocolatey | `choco upgrade nia` |
+
+On Windows, a file named `.nia.old.<pid>.exe` may briefly appear in the
+install directory if an old `nia` process was still running during the
+swap. It is removed automatically the next time `nia` runs and does not need
+to be deleted by hand.
+
 ## Container Deployment
 
 ### ARM64 Containers on Apple Silicon (Docker/Podman)

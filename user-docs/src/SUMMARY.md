@@ -35,6 +35,7 @@
   - [Command Structure](./cli-api/command-structure.md)
   - [Utility Commands](./cli-api/utility-commands.md)
   - [Diagnose Command](./commands/diagnose.md)
+  - [Update Command](./commands/update.md)
   - [Workflow Commands](./cli-api/workflow-commands.md)
   - [Modifiers](./cli-api/modifiers.md)
   - [Lite Mode Commands](./cli-api/lite-mode.md)
