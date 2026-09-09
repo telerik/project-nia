@@ -169,30 +169,51 @@ Error: Permission denied: .nia/work/
 
 **Error Message**:
 ```
-./nia: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.29' not found
+./nia: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found
 ```
 
-**Cause**: Binary compiled with newer glibc than your system has.
+**Cause**: You downloaded the **standard** Linux binary, which requires glibc 2.39 or
+newer, onto a system with an older glibc. Rocky Linux 8.x, RHEL 8.x, AlmaLinux 8.x and
+CentOS 8 all ship glibc 2.28.
 
 **Solution**:
 
 1. **Check your glibc version**:
    ```bash
-   ldd --version
+   ldd --version | head -n1
    ```
 
-2. **Update system** (if possible):
+2. **If your glibc is 2.28 or newer but older than 2.39, use the legacy assets**, which are
+   built specifically for enterprise Linux 8.x. (If your glibc is 2.39 or newer, prefer the
+   standard assets instead — see the previous section.)
    ```bash
-   # Debian/Ubuntu
-   sudo apt update && sudo apt upgrade
+   # Binary
+   gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux-legacy'
+   chmod +x nia-*-x86_64-linux-legacy
+   sudo mv nia-*-x86_64-linux-legacy /usr/local/bin/nia
+   nia --version
 
-   # RHEL/CentOS
-   sudo yum update
+   # or the RPM
+   gh release download --repo telerik/project-nia --pattern 'nia-*-1.el8.x86_64.rpm'
+   sudo dnf install ./nia-*-1.el8.x86_64.rpm
    ```
 
-3. **Use a supported host or container image** with a compatible glibc version, or contact the Nia team for platform support.
+   Use `nia-*-aarch64-linux-legacy` / `nia-*-1.el8.aarch64.rpm` on ARM64.
 
-**Prevention**: Check system requirements before downloading a release asset.
+3. **Or re-run the installer**, which selects the correct variant automatically from your
+   glibc version:
+   ```bash
+   ./install.sh
+   ```
+
+4. **If your glibc is older than 2.28**, no pre-built binary will work. Build from source —
+   this is supported and links against your local glibc:
+   ```bash
+   cargo build --release
+   ```
+
+**Prevention**: Use `install.sh` rather than downloading assets by hand; it detects glibc
+and picks the matching variant.
 
 ---
 

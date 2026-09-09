@@ -91,8 +91,10 @@ Nia CLI is available for the following platforms:
 
 | Platform | Architecture | Tier | Binary Name |
 |----------|--------------|------|-------------|
-| Linux | x86_64 | Tier 1 | `nia-*-x86_64-linux` |
-| Linux | aarch64 (ARM64) | Tier 2 | `nia-*-aarch64-linux` |
+| Linux (glibc 2.39+) | x86_64 | Tier 1 | `nia-*-x86_64-linux` |
+| Linux (glibc 2.39+) | aarch64 (ARM64) | Tier 2 | `nia-*-aarch64-linux` |
+| Linux legacy (glibc 2.28+) | x86_64 | Tier 2 | `nia-*-x86_64-linux-legacy` |
+| Linux legacy (glibc 2.28+) | aarch64 (ARM64) | Tier 3 | `nia-*-aarch64-linux-legacy` |
 | macOS Intel | x86_64 | Tier 1 | `nia-*-x86_64-darwin` |
 | macOS Apple Silicon | aarch64 | Tier 1 | `nia-*-aarch64-darwin` |
 | Windows 11 | x86_64 | Tier 1 | `nia-*-x86_64-windows.exe` |
@@ -103,6 +105,44 @@ Nia CLI is available for the following platforms:
 | Windows Server 2016 | x86_64 | Tier 3 | `nia-*-x86_64-windows.exe` |
 
 > **Note**: Windows Server editions use the same binary as Windows 11 but may require additional configuration. See [Installing on Windows Server](#windows-server-installation).
+
+### Linux glibc Requirements
+
+Linux binaries are dynamically linked against the GNU C Library (glibc), so a binary cannot
+run on a system whose glibc is older than the one it was built with. Two variants are
+published to cover both modern and enterprise Linux:
+
+| Variant | Minimum glibc | Verified on |
+|---------|---------------|-------------|
+| Standard | 2.39 | Ubuntu 24.04 |
+| Legacy | 2.28 | Rocky Linux 8.6 and 8.10 |
+
+Check your version:
+
+```bash
+ldd --version | head -n1
+# ldd (GNU libc) 2.28        <- use the legacy assets
+# ldd (Ubuntu GLIBC 2.39...) <- use the standard assets
+```
+
+`install.sh` performs this check for you and downloads the matching variant, so the
+recommended installation command is unchanged regardless of your distribution.
+
+To force a specific variant when downloading manually:
+
+```bash
+# Rocky Linux / RHEL 8.x - binary
+gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux-legacy'
+chmod +x nia-*-x86_64-linux-legacy
+sudo mv nia-*-x86_64-linux-legacy /usr/local/bin/nia
+
+# Rocky Linux / RHEL 8.x - RPM
+gh release download --repo telerik/project-nia --pattern 'nia-*-1.el8.x86_64.rpm'
+sudo dnf install ./nia-*-1.el8.x86_64.rpm
+```
+
+If your glibc is older than 2.28, build from source instead; compilation on those systems
+is supported and links against your local glibc.
 
 > **PowerShell Requirement**: All Windows platforms (Windows 10, 11, Server 2016-2025) require **PowerShell 6 or later**. Windows ships with PowerShell 5.1 by default, which is not compatible. See [Prerequisites](#prerequisites) for installation instructions.
 
@@ -710,7 +750,8 @@ RUN nia --version
 | Apple Silicon Mac | Linux ARM64 container | `nia-*-aarch64-linux` or ARM64 packages |
 | Intel Mac | Linux x86_64 container | `nia-*-x86_64-linux` or x86_64 packages |
 | AWS Graviton (ARM64) | Linux ARM64 | `nia-*-aarch64-linux` or ARM64 packages |
-| Standard x86_64 Linux | - | `nia-*-x86_64-linux` or x86_64 packages |
+| Standard x86_64 Linux (glibc 2.39+) | - | `nia-*-x86_64-linux` or x86_64 packages |
+| Rocky Linux / RHEL / AlmaLinux 8.x | - | `nia-*-x86_64-linux-legacy` or `nia-*-1.el8.x86_64.rpm` |
 
 > **Important**: The macOS aarch64 binary (`aarch64-darwin`) is for native macOS execution only. It will **not** work inside Linux containers, even on Apple Silicon Macs. Use the Linux aarch64 binary or packages for container deployments.
 
