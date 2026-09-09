@@ -431,7 +431,7 @@ Model Profile
   3. stable - Predictable behaviour with previous-generation models (default)
   4. heavy - Maximum quality for critical operations
 
-Select (1-4) (default: 3): 
+Select (1-4) (default: 3):
 ✓ Selected: stable
 
 ════════════════════════════════════════════════════════
@@ -463,7 +463,7 @@ Files to be created or replaced:
   ✓ .nia/config/agents.toml
   ✓ .agents/skills/ (skill files for tools using the "skill" access method)
 
-Create these configuration files? [Y/n]: 
+Create these configuration files? [Y/n]:
 ✓ Configuration files created successfully
 ✓ Generated configuration validated
 
@@ -542,7 +542,7 @@ Access method for github_issues
   3. mcp - Agent talks to an MCP server
   4. api - Agent calls the tool's REST API directly
 
-Select (1-4) (default: 1): 
+Select (1-4) (default: 1):
 ✓ Selected: skill
 ```
 

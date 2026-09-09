@@ -63,6 +63,10 @@ nia issue publish
 
 The local file must be at `.nia/work/job_<issue_id>/issue/issue.md`. If the file does not exist, the publish operation aborts and reports that it cannot find the draft.
 
+The draft is transferred to the issue tracker by file reference, so the published
+description is a byte-for-byte copy of the local file and any markup is preserved
+as-authored (rendering depends on the tracker).
+
 ### Review an issue
 
 Review the local issue description for gaps, quality problems, and actionable recommendations. The standard review uses the `product_manager` role and writes `review.md` to `.nia/work/job_<issue_id>/issue/`.

@@ -80,6 +80,12 @@ Before publishing, `NIA` requires this file:
 
 If the file is missing, the operation aborts and reports that it cannot find the draft. Publish updates only the pull request description and preserves its other metadata, such as state, labels, and reviewers. The operation does not create a local output file and has no operation-specific modifier.
 
+The draft is transferred to the code management system by file reference (for the GitHub
+CLI, `gh pr edit <pr_id> --body-file <path>`), so the published description is a
+byte-for-byte copy of the local file. Markdown constructs like headings, blank lines,
+lists, checkboxes, code fences, and collapsible sections are preserved as-authored, and
+no character is re-escaped in transit.
+
 ### Review
 
 Review the pull request, retrieve current platform metadata and all existing reviewer feedback, and apply safe, in-scope fixes locally. Review includes Copilot feedback, inline and conversation comments, and review-thread state. It records every actionable item and whether it was applied, deferred, or intentionally not changed.
