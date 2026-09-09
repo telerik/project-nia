@@ -304,12 +304,25 @@ Select package manager: cargo
 
 #### Interactive Mode (`--interactive`)
 
-AI-assisted initialization with per-field approval:
+The interactive mode provides a guided setup experience that configures your complete nia environment in four phases:
+
+**Phase Flow:**
+1. **Project Configuration** (AI-assisted) - Repository metadata
+2. **Toolchain Configuration** (Selection-based) - Development tools
+3. **Agent Configuration** (Selection-based) - AI coding agent setup
+4. **Summary & Confirmation** - Review and write all configuration files
+
+By default, Phase 2 skips the per-tool access-method choice and uses `skill` for every
+selected tool. Add `--advanced` to be prompted for each tool's access method (`skill`,
+`cli`, `mcp`, `api`) instead — see [Access Methods](#access-methods-interactive-mode).
 
 ```bash
 $ nia config init --interactive
 
-Interactive project configuration...
+════════════════════════════════════════════════════════
+Phase 1: Project Configuration
+AI-assisted project metadata setup
+════════════════════════════════════════════════════════
 
 ℹ Analyzing repository...
 
@@ -337,42 +350,288 @@ package_manager: 'cargo' (detected from Cargo.toml)
 Accept? [Press Enter] or enter custom value:
 ✓ Accepted: cargo
 
-Creating .nia/config/project.toml...
-✓ Configuration created successfully
+════════════════════════════════════════════════════════
+Phase 2: Toolchain Configuration
+Configure your development tools
+════════════════════════════════════════════════════════
 
-Summary:
+Issue Tracker
+  Configure where you track work items and bugs
+
+  1. github_issues - GitHub Issues
+  2. jira - Jira
+  3. azure_devops - Azure DevOps Boards
+  4. shortcut - Shortcut
+  5. local - Local issue tracking
+  6. skip - Skip this configuration
+
+Select (1-6): 1
+✓ Selected: github_issues
+
+ℹ Access method: skill (change it in toolchain.toml, or rerun with --advanced)
+
+Code Platform
+  Configure your source code hosting platform
+
+  1. github - GitHub
+  2. github_enterprise - GitHub Enterprise
+  3. bitbucket - Bitbucket
+  4. azure_devops - Azure DevOps
+  5. local - Local development
+
+Select (1-5): 1
+✓ Selected: github
+
+ℹ Access method: skill (change it in toolchain.toml, or rerun with --advanced)
+
+Ticket Tracker
+  Configure customer support ticket system (optional)
+
+  1. github_issues - GitHub Issues
+  2. jira - Jira
+  3. azure_devops - Azure DevOps Boards
+  4. shortcut - Shortcut
+  5. local - Local ticket tracking
+  6. skip - Skip this configuration
+
+Select (1-6): 6
+✓ Skipped
+
+Security Scanner
+  Configure code security scanning tool (optional)
+
+  1. polaris - Polaris SAST
+  2. github_sast - GitHub Advanced Security
+  3. snyk - Snyk
+  4. skip - Skip this configuration
+
+Select (1-4): 4
+✓ Skipped
+
+════════════════════════════════════════════════════════
+Phase 3: Agent Configuration
+Configure your AI coding agent
+════════════════════════════════════════════════════════
+
+Agent
+  Select the AI coding agent you want to use
+
+  1. claude_code - Claude Code CLI (uses Claude models)
+  2. github_copilot - GitHub Copilot CLI (uses GitHub and BYOK models)
+  3. opencode - OpenCode CLI (uses BYOK models)
+
+Select (1-3): 2
+✓ Selected: github_copilot
+
+Model Profile
+  Choose quality vs. cost trade-off
+
+  1. lite - Minimize costs with fast/cheap models
+  2. balanced - Good performance at reasonable cost
+  3. stable - Predictable behaviour with previous-generation models (default)
+  4. heavy - Maximum quality for critical operations
+
+Select (1-4) (default: 3): 
+✓ Selected: stable
+
+════════════════════════════════════════════════════════
+Phase 4: Summary
+Review your configuration
+════════════════════════════════════════════════════════
+
+Configuration Summary:
+
+[Project Configuration]
   name: my-project
   description: My custom description here
   language: Rust
   framework: axum
   testing_framework: cargo test
   package_manager: cargo
+
+[Toolchain Configuration]
+  issue_tracker: github_issues (via skill)
+  code_platform: github (via skill)
+
+[Agent Configuration]
+  agent: github_copilot
+  model_profile: stable
+
+Files to be created or replaced:
+  ✓ .nia/config/project.toml
+  ✓ .nia/config/toolchain.toml
+  ✓ .nia/config/agents.toml
+  ✓ .agents/skills/ (skill files for tools using the "skill" access method)
+
+Create these configuration files? [Y/n]: 
+✓ Configuration files created successfully
+✓ Generated configuration validated
+
+Configuration complete! Run 'nia config validate' to verify.
 ```
 
-This mode:
-1. Lets the configured AI agent explore the repository's documentation, manifests, build files, and configuration
-2. Writes and validates a complete `project.toml` using the same checks as `nia config validate`
-3. Presents each project field with an AI-suggested value
-4. Accepts suggestions (press Enter) or custom overrides
-5. Preserves additional generated configuration after all fields are approved
+**Phase Details:**
 
-When the agent finds a monorepo, it can also enable `[monorepo]` and add a
-`[[monorepo.services]]` entry for each independently buildable component. These
-sections are preserved while you review or override the project fields. Review
-the generated service names and relative paths, then run `nia config validate`.
-See [Monorepo Configuration Support](../advanced/monorepo.md) for the complete
-configuration format.
+**Phase 1: Project Configuration** (AI-assisted)
+- Analyzes repository structure and manifests
+- Suggests project metadata based on code analysis
+- Supports monorepo detection and configuration
+- Each field can be accepted, modified, or overridden
+
+**Phase 2: Toolchain Configuration** (Selection-based)
+- Issue tracker: Choose from GitHub Issues, Jira, Azure DevOps, Shortcut, or local
+- Code platform: Select GitHub, GitHub Enterprise, Bitbucket, Azure DevOps, or local
+- Ticket tracker: Optional customer support system
+- Security scanner: Optional security analysis tool (Polaris, GitHub SAST, Snyk)
+- Skip option available for optional components
+- Access method: Each non-local tool selected defaults to `skill` without prompting;
+  run with `--advanced` to be prompted per tool instead
+  (see [Access Methods](#access-methods-interactive-mode) below)
+
+**Phase 3: Agent Configuration** (Selection-based)
+- Agent: Choose your AI coding agent (Claude Code, GitHub Copilot, OpenCode)
+- Model profile: Select quality tier (lite, balanced, stable, heavy)
+- Defaults to "stable" profile if not specified
+
+**Phase 4: Summary & Confirmation**
+- Review all selections before writing files
+- Shows complete configuration summary, including each tool's access method and any
+  files being preserved rather than overwritten
+- Creates all files atomically (all or none)
+- No partial configuration on cancellation
+- Validates the generated `toolchain.toml`/`agents.toml` immediately after writing and
+  reports "Generated configuration validated" (or a hint to run `nia config validate`
+  if a problem is detected)
+
+#### Access Methods (Interactive Mode)
+
+Choosing between `skill`, `cli`, `mcp`, and `api` is an expert decision, so whether Phase 2
+prompts for it depends on `--advanced`:
+
+| Method | Description |
+|--------|-------------|
+| `skill` | Agent skill (recommended, default). Exports a skill file to `.agents/skills/` that teaches the agent to use the tool's CLI/API directly. |
+| `cli` | The agent invokes the tool's command-line interface directly. |
+| `mcp` | The agent connects to the tool via an MCP server. |
+| `api` | The agent calls the tool's API directly. |
+
+**Default path (no `--advanced`):** every non-local tool is set to `skill` (or, on a
+re-entered field, whatever method was already chosen) without prompting. nia prints where
+to change it later:
+
+```text
+✓ Selected: github_issues
+
+ℹ Access method: skill (change it in toolchain.toml, or rerun with --advanced)
+```
+
+**`--advanced` path:** nia prompts for the access method for every non-local tool that
+supports more than one method:
+
+```bash
+$ nia config init --interactive --advanced
+```
+```text
+✓ Selected: github_issues
+
+Access method for github_issues
+  How should the agent reach this tool?
+
+  1. skill - Recommended: agent uses a generated skill file (default)
+  2. cli - Agent shells out to the tool's CLI
+  3. mcp - Agent talks to an MCP server
+  4. api - Agent calls the tool's REST API directly
+
+Select (1-4) (default: 1): 
+✓ Selected: skill
+```
+
+Only methods supported by the selected tool are offered; tools with a single supported
+method (or `local` tools) never prompt, in either path. When `skill` is chosen for any
+tool, nia exports the corresponding skill file(s) to `.agents/skills/` as part of writing
+the configuration, and this is disclosed in the Phase 4 summary and "Created:" list.
+
+#### Repository/Instance Identifier (Interactive Mode)
+
+After selecting an access method for a non-local issue tracker, code platform, or ticket
+tracker, nia prompts for an optional **repository/instance identifier**:
+
+```text
+ℹ Repository/instance identifier for github_issues (optional)
+  e.g. owner/repo, e.g. octocat/hello-world
+  Detected from Git remote: octocat/hello-world
+Repository (press Enter to use auto-detected value, or type to override):
+```
+
+If nia can't detect a repository from the current directory's Git remote (`origin`,
+falling back to `upstream`), the prompt states that clearly instead of showing a
+detected value:
+
+```text
+ℹ Repository/instance identifier for github_issues (optional)
+  e.g. owner/repo, e.g. octocat/hello-world
+  No Git remote detected.
+Repository (press Enter to skip):
+```
+
+- Press **Enter** to skip — the tool falls back to auto-detecting the repository from
+  the Git remote at runtime, same as before this prompt existed (showing the detected
+  value up front is a display-only aid so you can confirm it looks right, or catch a
+  wrong remote such as a fork, before accepting it).
+- Type an identifier and it's validated the same way as `toolchain.toml`'s `repository`
+  field elsewhere (accepts a bare `owner/repo` slug like `octocat/hello-world`, or a
+  full Git URL such as `https://github.com/owner/repo.git` or `git@github.com:owner/repo.git`).
+  Invalid input is rejected with guidance and re-prompted (up to 3 attempts before
+  falling back to skipping).
+- When set, the value is written as `repository = "..."` in the corresponding
+  `toolchain.toml` section and shown in the Phase 2 and Phase 4 summaries.
+- Security scanners are excluded from this prompt since they're not typically scoped to
+  a single repository.
+- **Known limitation:** JIRA's host-only base URL example (e.g.
+  `https://yourcompany.atlassian.net`) has no path segment, so it doesn't pass the
+  reused Git URL validator. Either append a path segment (e.g. a project key) or press
+  Enter to skip and let JIRA fall back to auto-detection.
+
+#### Model Overrides (Interactive Mode)
+
+After selecting an agent and model profile (and only when the profile itself wasn't
+pre-specified via `--models`), nia offers to override the profile's default model and
+every operation-specific model it defines, one at a time:
+
+```text
+Optionally override the default models chosen for this profile.
+Press Enter to keep a default, or type a model name to override it.
+ℹ Default model [gpt-5.4]:
+ℹ issue.plan [gpt-5.4]:
+```
+
+- Press **Enter** at any prompt to keep the profile's default for that entry.
+- Type a model name to override it. If the model isn't recognized for the selected
+  agent, nia shows a warning and asks whether to use it anyway.
+- The fully resolved set of models (defaults plus any overrides) replaces the profile's
+  built-in values in the generated `agents.toml`.
+
+**Pre-specified Flags:**
+
+You can pre-populate selections using flags (skips those prompts):
+
+```bash
+nia config init --interactive --issues github_issues --code github --agent github_copilot
+```
 
 **Best for:**
-- Single-project and monorepo setup
-- When you want to verify AI suggestions before committing
-- Projects whose structure and configuration the agent can inspect
-- First-time nia users
+- Complete nia environment setup in one session
+- First-time nia users who want guided configuration
+- Projects that need both project metadata and toolchain setup
+- When you want to review AI suggestions before committing
 
 **Protection:**
 - Prompts when config already exists (Option C)
 - Offers to edit existing config or cancel
 - Validates all inputs before writing configuration
+- When `toolchain.toml` or `agents.toml` already exists, prompts separately for each
+  ("Replace it with your new selections? [y/N]") before regenerating it; declining
+  preserves the existing file untouched and skips the corresponding prompts entirely
 
 #### Editing Existing Configuration
 
@@ -419,10 +678,16 @@ description
 
 #### Comparison: When to Use Each Mode
 
-| Mode | Command | Use Case | Accuracy | Setup Time |
-|------|---------|----------|----------|------------|
-| Interactive | `--interactive` | Single repo, AI assistance with validation | 95%+ | 1-2 min |
-| Manual | (default) | Full control, non-standard projects | 100% | 2-5 min |
+| Mode | Command | Use Case | Configuration Created | Setup Time |
+|------|---------|----------|----------------------|------------|
+| Interactive | `--interactive` | Complete guided setup with AI assistance | project.toml + toolchain.toml + agents.toml | 2-4 min |
+| Manual | (default) | Full control, non-standard projects | project.toml only | 2-5 min |
+
+**Note:** To configure only toolchain or agent without interactive mode, use:
+```bash
+nia config init --issues github_issues --code github        # Toolchain only
+nia config init --agent github_copilot --models stable      # Agent only
+```
 
 #### Troubleshooting Interactive Mode
 
