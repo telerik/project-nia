@@ -387,6 +387,36 @@ nia backlog ask "How much technical debt is in the backlog?"
 
 ---
 
+#### `nia backlog plan`
+
+**Description**: Transform `.nia/work/backlog/roadmap.md` into a structured plan file (`plan.json` by default). Deterministic — parses the roadmap directly and does not invoke a coding agent.
+
+**Required Context**: Existing `roadmap.md` (or `--input` pointing to one)
+
+**Available Modifiers**: `--input`, `--output`, `--format`, `--force`, `--validate`, `--no-validate`, `--dispatch-format`, `--summary`, `--graph`, `--quiet`
+
+**Usage Examples**:
+```bash
+# Generate a plan from the roadmap
+nia backlog plan
+
+# Generate the flat format nia dispatch consumes
+nia backlog plan --dispatch-format
+
+# Validate or summarize an existing plan
+nia backlog plan --validate
+nia backlog plan --summary --graph
+```
+
+**Common Use Cases**:
+- Producing a dispatch-ready work queue from a roadmap
+- Validating a previously generated plan file
+- Inspecting plan structure and dependencies
+
+**Related Commands**: `backlog create`, `backlog rank`
+
+---
+
 ### Code Operations
 
 Commands for code generation, review, and maintenance.

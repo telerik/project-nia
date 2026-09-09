@@ -18,7 +18,7 @@ Backlog planning connects individual work items to broader product decisions. It
 - Re-rank work items and record the reasons for their order.
 - Ask a focused question about roadmap priorities or strategic decisions.
 
-Use `create` when you need a new strategic backlog and roadmap. Use `review` for a health check, `rank` when priorities need adjustment, and `ask` when you need an answer grounded in the current roadmap.
+Use `create` when you need a new strategic backlog and roadmap. Use `review` for a health check, `rank` when priorities need adjustment, `ask` when you need an answer grounded in the current roadmap, and `plan` when you need to convert the roadmap into a structured plan file that other tooling (such as `nia dispatch`) can consume.
 
 ## Prerequisites
 
@@ -105,6 +105,39 @@ The workflow writes `answer.md` to `.nia/work/backlog/`. You can also provide a 
 
 The `ask` operation supports `--role` and `--custom-agent`. It does not support `--edit` in the command configuration.
 
+### Generate a structured plan
+
+Use `plan` to transform `.nia/work/backlog/roadmap.md` into a structured plan file. Unlike the other backlog operations, `plan` is deterministic: it parses the roadmap directly and never invokes a coding agent, so it does not accept `--role`, `--custom-agent`, or `--edit`.
+
+```bash
+nia backlog plan
+```
+
+By default this reads `.nia/work/backlog/roadmap.md` and writes `.nia/work/backlog/plan.json`. Both paths can be overridden:
+
+```bash
+nia backlog plan --input .nia/work/backlog/roadmap.md --output .nia/work/backlog/plan.json --format json
+```
+
+`--format` accepts `json` or `toml`. `plan` refuses to overwrite an existing output file unless `--force` is given:
+
+```bash
+nia backlog plan --force
+```
+
+Other modifiers:
+
+- `--dispatch-format` writes the flat `{schema_version, generated_at, items[]}` shape consumed by `nia dispatch`, instead of the default epic-grouped shape.
+- `--no-validate` skips the post-generation validation pass (not recommended).
+- `--validate` checks an existing plan file (`--output`, or `.nia/work/backlog/plan.json` by default) without regenerating it. It accepts both the epic-grouped and `--dispatch-format` shapes.
+- `--summary` prints a summary of an existing plan file instead of generating one; combine it with `--graph` to also print an ASCII dependency graph.
+- `--quiet` suppresses progress output.
+
+```bash
+nia backlog plan --validate
+nia backlog plan --summary --graph
+```
+
 ## Configuration
 
 Backlog operations use the following default role and task prompts:
@@ -115,10 +148,11 @@ Backlog operations use the following default role and task prompts:
 | `review` | `product_manager` | `backlog_review` | `review.md` |
 | `rank` | `product_manager` | `backlog_rank` | `ranked_backlog.md` |
 | `ask` | `product_manager` | `backlog_ask` | `answer.md` |
+| `plan` | none (deterministic) | none (deterministic) | `plan.json` |
 
-You can override the default role with `--role` or select a configured custom agent with `--custom-agent`. These options are mutually exclusive. The selected agent and project configuration determine how NIA accesses the issue tracker.
+You can override the default role with `--role` or select a configured custom agent with `--custom-agent`. These options are mutually exclusive. The selected agent and project configuration determine how NIA accesses the issue tracker. `plan` does not use a role, agent, or prompt, since it runs entirely locally.
 
-The `create`, `review`, and `rank` operations support `--edit`. Use the modifier value to describe the refinement you need. The `ask` operation has no edit modifier.
+The `create`, `review`, and `rank` operations support `--edit`. Use the modifier value to describe the refinement you need. The `ask` and `plan` operations have no edit modifier.
 
 ## Workflow Examples
 
@@ -162,6 +196,7 @@ Backlog workflows write Markdown files to the fixed `.nia/work/backlog/` directo
 - `review` produces `review.md`.
 - `rank` produces `ranked_backlog.md`.
 - `ask` produces `answer.md`.
+- `plan` produces `plan.json` (or a `.toml` file with `--format toml`), read directly from `roadmap.md` with no agent involved.
 
 The workflows may use the configured issue tracker when their local context is unavailable, but the source prompts do not define a specific tracker product or guarantee a particular set of issue fields. The generated documents reflect the data and access available to the selected agent.
 
@@ -195,6 +230,10 @@ Repeat the operation with a specific `--edit` instruction that names the section
 ```bash
 nia backlog rank --edit "Move security work ahead of feature work and explain the ranking"
 ```
+
+### A plan cannot be generated or validated
+
+Check whether `.nia/work/backlog/roadmap.md` exists and matches the expected heading structure (`## Epic: ...` with `### #N: Title` work items). Parser warnings are printed during generation and explain which headings could not be matched. If `--output` already exists, rerun with `--force` to overwrite it.
 
 ## Related Topics
 
