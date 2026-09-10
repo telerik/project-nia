@@ -61,7 +61,7 @@ Publish the local `issue.md` description to the configured issue tracker. This o
 nia issue publish
 ```
 
-The local file must be at `.nia/work/job_<issue_id>/issue/issue.md`. If the file does not exist, the publish operation aborts and reports that it cannot find the draft.
+The local file is expected at `.nia/work/job_<issue_id>/issue/issue.md`. If it does not exist, the publish operation falls back to retrieving the issue from the issue tracker and proceeds from that instead of aborting.
 
 The draft is transferred to the issue tracker by file reference, so the published
 description is a byte-for-byte copy of the local file and any markup is preserved
@@ -207,7 +207,7 @@ Then verify it with `nia config show-context`.
 
 ### Missing local draft
 
-`nia issue publish` requires `.nia/work/job_<issue_id>/issue/issue.md`. Run `nia issue draft` first, or place the draft at that path before publishing.
+`nia issue publish` expects `.nia/work/job_<issue_id>/issue/issue.md`. When it is missing, the operation retrieves the issue from the issue tracker instead of aborting. Run `nia issue draft` first if you want to publish local edits rather than the tracker's current description.
 
 ### Missing input for another operation
 

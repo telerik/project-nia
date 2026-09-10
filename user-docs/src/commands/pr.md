@@ -72,13 +72,13 @@ Publish the local pull request description to the configured code management sys
 nia pr publish
 ```
 
-Before publishing, `NIA` requires this file:
+Before publishing, `NIA` looks for this file:
 
 ```text
 .nia/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
 ```
 
-If the file is missing, the operation aborts and reports that it cannot find the draft. Publish updates only the pull request description and preserves its other metadata, such as state, labels, and reviewers. The operation does not create a local output file and has no operation-specific modifier.
+If the file is missing, the operation falls back to generating the PR description from the branch diff and the issue instead of aborting. Publish updates only the pull request description and preserves its other metadata, such as state, labels, and reviewers. The operation does not create a local output file and has no operation-specific modifier.
 
 The draft is transferred to the code management system by file reference (for the GitHub
 CLI, `gh pr edit <pr_id> --body-file <path>`), so the published description is a
@@ -198,7 +198,7 @@ The built-in task used for each operation is `pr_draft`, `pr_publish`, `pr_revie
 
 ### Missing Pull Request Draft
 
-If `nia pr publish` cannot find `pull_request.md`, run `nia pr draft` first or place the intended description at:
+If `nia pr publish` cannot find `pull_request.md`, it generates the PR description from the branch diff and the issue instead of aborting. Run `nia pr draft` first, or place the intended description at the path below, if you want to publish a specific description rather than the auto-generated one:
 
 ```text
 .nia/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md

@@ -64,7 +64,7 @@ NIA executes Code Operations as configured workflows:
 5. Run the selected coding agent with the issue-linked plan and project context.
 6. Validate and display the expected outputs, reports, or execution results.
 
-A full plan contains `README.md`, `research.md`, `tasks.md`, and one or more phase files. A lite plan contains `README.md`, `tasks.md`, and `phase_1.md`. For operations that consume plans, NIA detects the lite shape and does not require `research.md` for the lite plan.
+A full plan contains `README.md`, `research.md`, `tasks.md`, and one or more phase files. A lite plan contains `README.md`, `tasks.md`, and `phase_1.md`. For operations that consume plans, NIA detects the lite shape and does not require `research.md` for the lite plan. If no plan exists at all under `.nia/work/job_<issue_id>/code/`, every Code Operation falls back to deriving the requirements directly from the issue (retrieving it from the configured issue tracker if `issue/issue.md` is not present locally) and proceeds without a plan; the output states that the run was performed without one.
 
 The operation determines whether the agent changes source files or produces an analysis report. Reports and plan-related artifacts stay under `.nia/work/job_<issue_id>/code/`; implementation, refactoring, and documentation changes are applied to the project files selected by the agent.
 
@@ -80,7 +80,7 @@ nia code create --fix "Fix the auth bug"   # Fix with inline instructions
 
 The standard operation consumes the implementation plan. The `--fix` modifier selects the fix prompt and accepts fix instructions from the `fix` input. Use it when the implementation needs a targeted correction or when the workflow provides fix instructions.
 
-The create prompt requires the plan context and writes task progress to `tasks.md`; the agent can also modify the implementation and add the outputs required by the prompt. The workflow validates the plan before execution, so missing required files stop the operation before code generation.
+The create prompt requires the plan context and writes task progress to `tasks.md`; the agent can also modify the implementation and add the outputs required by the prompt. If a plan exists, the workflow validates it before execution and missing required plan files stop the operation before code generation; if no plan exists at all, the agent falls back to deriving the requirements from the issue directly (see [How Code Operations Work](#how-code-operations-work)).
 
 ## Review Code
 
@@ -313,7 +313,7 @@ Check `.nia/work/job_<issue_id>/code/` and confirm that the plan matches one of 
 - Full plan: `README.md`, `research.md`, `tasks.md`, and phase files.
 - Lite plan: `README.md`, `tasks.md`, and exactly `phase_1.md`.
 
-Run the Issue Planning workflow again if the required files are missing.
+An incomplete plan (some but not all of the files above) still stops the operation. Run the Issue Planning workflow again to complete it, or remove the partial plan directory entirely so the operation falls back to deriving the requirements directly from the issue.
 
 ### Auto-fix cannot start
 

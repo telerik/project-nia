@@ -88,10 +88,10 @@ This provides focused output with custom refinements.
 
 ## Downstream Commands
 
-`nia pr merge` automatically detects when upstream commands used lite mode:
+`nia pr merge` requires `pr_review.md`; the other 4 review files (`status_check_fixes.md`, `code_quality_improvements.md`, `minor_merge_conflicts.md`, `high_risk_merge_conflicts.md`) are each individually optional. Any subset of them can be missing — not only the all-or-nothing lite/standard shape — and the operation proceeds from `pr_review.md` alone for whichever ones are absent:
 
-- If `nia pr review --lite` was used, only `pr_review.md` is required
-- Standard mode requires all 5 review files
+- If `nia pr review --lite` was used, only `pr_review.md` exists and the operation proceeds from it alone.
+- Standard mode normally produces all 5 files, but a partial set (e.g. only `status_check_fixes.md` missing) is also accepted.
 
 ## Token Usage
 
@@ -122,4 +122,4 @@ A: Yes. Each command execution is independent. Run `nia pr review` after `nia pr
 
 **Q: How does lite detection work for pr merge?**
 
-A: The system checks the presence of review files. If only `pr_review.md` exists (without `status_check_fixes.md`, etc.), lite mode is detected automatically.
+A: `pr_review.md` is always required. Each of the other 4 review files declares its own fallback, so `pr merge` proceeds from whichever files are actually present — including the fully lite shape (only `pr_review.md`), the full standard shape (all 5 files), or any partial mix in between.
