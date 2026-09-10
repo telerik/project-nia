@@ -18,43 +18,40 @@ Command hooks are ideal for:
 
 ## Configuration
 
-Command hooks are defined in `.nia/config/commands.toml` under the `workflows.targets.operations` section:
+Command hooks are defined in `.nia/config/commands.toml` under the `commands.operations.hooks` section:
 
 ```toml
-[[workflows]]
-name = "nia"
+[[commands]]
+target = "ask"
 
-[[workflows.targets]]
+[[commands.operations]]
 name = "default"
-
-[[workflows.targets.operations]]
-name = "ask"
 description = "Ask with pre-flight validation"
 
 # Pre-execution hooks (run before the command)
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "workspace-clean"
 type = "command_success"
 command = "git diff --quiet"
-on_failure = "warn"
+on_false = "skip"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "backup-context"
 type = "shell"
 command = "cp -r .context .context.bak"
 
 # Post-execution hooks (run after successful command execution)
-[[workflows.targets.operations.post]]
+[[commands.operations.hooks.post]]
 kind = "step"
 id = "cleanup-backup"
 type = "shell"
 command = "rm -rf .context.bak"
 
-[workflows.targets.operations.prompts]
-role = "assistant"
-task = "answer_question"
+[commands.operations.prompts]
+role = "software_engineer"
+task = "ask"
 ```
 
 ## Hook Types
@@ -65,7 +62,7 @@ Steps perform actions that may modify the environment. They execute in sequence 
 
 **Built-in Steps** (cross-platform, safe):
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "create-output-dir"
 type = "builtin"
@@ -85,7 +82,7 @@ Available built-in actions:
 
 **Shell Steps** (platform-specific):
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "install-deps"
 type = "shell"
@@ -110,7 +107,7 @@ command_windows = "choco install jq"
 
 ### Checks
 
-Checks validate conditions without modifying state. If a check fails, the workflow can either stop or continue based on `on_failure` setting.
+Checks validate conditions without modifying state. If a check fails, the workflow can either stop or continue based on the `on_false` setting.
 
 Available check types:
 
@@ -124,13 +121,14 @@ Available check types:
 | `env_exists` | Environment variable is set | `env_name` |
 | `env_equals` | Environment variable equals value | `env_name`, `env_value` |
 | `command_exists` | Command in PATH | `path` (command name) |
+| `command_success` | Command exits with status 0 | `command` |
 
 **Check Behavior**:
 - `on_false = "fail"` (default): Stop with error if check fails
 - `on_false = "skip"`: Skip remaining pre-items, proceed to command
 
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "api-key-exists"
 type = "env_exists"
@@ -155,7 +153,7 @@ Command hooks execute in a specific sequence to ensure proper setup and cleanup:
 Environment modifications in pre-hooks persist through command execution:
 
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "set-api-key"
 type = "builtin"
@@ -172,21 +170,21 @@ env_value = "secret-value"
 Steps can depend on other steps or require checks to pass:
 
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "has-tool"
 type = "command_exists"
-command = "jq"
+path = "jq"
 on_false = "skip"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "setup-a"
 type = "builtin"
 action = "make_directory"
 path = "temp"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "setup-b"
 type = "shell"
@@ -200,7 +198,7 @@ requires_check = "has-tool"  # Only run if has-tool passed
 Multiple dependencies and failure-based conditions:
 
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "fallback-config"
 type = "builtin"
@@ -220,29 +218,32 @@ The `failed()` syntax allows conditional execution based on failures, enabling f
 Ensure required tools and files exist before running:
 
 ```toml
-[[workflows.targets.operations]]
-name = "issue draft"
+[[commands]]
+target = "issue"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations]]
+name = "draft"
+
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "git-installed"
 type = "command_exists"
-command = "git"
+path = "git"
 on_false = "fail"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "in-git-repo"
 type = "command_success"
 command = "git rev-parse --git-dir"
 on_false = "fail"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "has-templates"
 type = "directory_exists"
 path = "templates"
-on_false = "warn"
+on_false = "skip"
 ```
 
 ### Example 2: CI/CD Mode
@@ -250,10 +251,13 @@ on_false = "warn"
 Different behavior in CI vs local development:
 
 ```toml
-[[workflows.targets.operations]]
-name = "ask"
+[[commands]]
+target = "ask"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations]]
+name = "default"
+
+[[commands.operations.hooks.pre]]
 kind = "check"
 id = "ci-mode"
 type = "env_equals"
@@ -261,14 +265,14 @@ env_name = "CI"
 env_value = "true"
 on_false = "skip"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "ci-setup"
 type = "shell"
 command = "npm ci"  # Clean install in CI
 requires_check = "ci-mode"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "local-setup"
 type = "shell"
@@ -281,25 +285,28 @@ depends_on = "failed(ci-mode)"
 Verify command outputs after execution:
 
 ```toml
-[[workflows.targets.operations]]
-name = "issue draft"
+[[commands]]
+target = "issue"
 
-[[workflows.targets.operations.post]]
+[[commands.operations]]
+name = "draft"
+
+[[commands.operations.hooks.post]]
 kind = "check"
 id = "draft-created"
 type = "file_exists"
 path = "issue/draft.md"
 on_false = "fail"
 
-[[workflows.targets.operations.post]]
+[[commands.operations.hooks.post]]
 kind = "check"
 id = "draft-has-title"
 type = "file_contains"
 path = "issue/draft.md"
 content = "# "
-on_false = "warn"
+on_false = "skip"
 
-[[workflows.targets.operations.post]]
+[[commands.operations.hooks.post]]
 kind = "step"
 id = "notify-success"
 type = "shell"
@@ -311,10 +318,13 @@ command = "echo 'Issue draft created successfully' | notify"
 Handle differences across operating systems:
 
 ```toml
-[[workflows.targets.operations]]
-name = "code create"
+[[commands]]
+target = "code"
 
-[[workflows.targets.operations.pre]]
+[[commands.operations]]
+name = "create"
+
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "install-build-tools"
 type = "shell"
@@ -328,7 +338,7 @@ command_windows = "choco install visualstudio2022-workload-vctools"
 Both steps and checks support timeout and retry configuration for reliability:
 
 ```toml
-[[workflows.targets.operations.pre]]
+[[commands.operations.hooks.pre]]
 kind = "step"
 id = "download-deps"
 type = "shell"
@@ -402,6 +412,23 @@ Each log entry includes:
 8. **Handle failures gracefully** - Use `on_false = "skip"` for optional checks
 9. **Minimize post-hooks** - They run after success, so command already did the work
 10. **Log liberally** - Use `echo` in shell steps to provide visibility
+
+## Deprecated `pre` / `post` Syntax and Precedence
+
+Earlier versions used `[[commands.operations.pre]]` and
+`[[commands.operations.post]]`. These are deprecated but still supported.
+
+When you extend a built-in operation, hook items are merged as follows:
+
+- Built-in items always run first, followed by your items, in definition order.
+- Your `hooks.pre` items are merged into the built-in operation's `hooks.pre` — they
+  are never discarded (fixed in issue #1272).
+- If you specify **both** `hooks.pre` and the deprecated `pre` for the same operation,
+  `hooks.pre` takes precedence and the deprecated items are not executed. A warning is
+  logged so the behaviour is visible. The same rule applies independently to
+  `hooks.post` and the deprecated `post`.
+
+Prefer `hooks.pre` / `hooks.post` for all new configuration.
 
 ## See Also
 
