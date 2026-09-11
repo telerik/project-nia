@@ -163,7 +163,7 @@ Commands run via `nia workflow run <workflow-name>` in **each repository**:
 
 ```bash
 # 1. Set context (issue ID)
-nia context set-issue 374
+nia config set-issue 374
 
 # 2. Draft issue once at application level
 cd /path/to/app-parent
@@ -266,15 +266,15 @@ nia app pr merge --start-from pr_merge
 
 Context is shared across all repositories:
 
-- **Issue ID**: Set once with `nia context set-issue <number>`
-- **Ticket ID**: Set once with `nia context set-ticket <id>`
+- **Issue ID**: Set once with `nia config set-issue <number>`
+- **Ticket ID**: Set once with `nia config set-ticket <id>`
 - **PR ID**: Generated per-repository, stored in each repo's `.nia/context.toml`
 
 Example:
 ```bash
 # Set issue context at app level
 cd /path/to/app-parent
-nia context set-issue 374
+nia config set-issue 374
 
 # All child repositories inherit issue_id=374
 # Each repository will have its own pr_id after PR creation
