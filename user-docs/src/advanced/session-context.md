@@ -30,17 +30,16 @@ When you run `nia config clear-context` your session state will also be cleared 
 
 ### Viewing Current Session State
 
-Sessions are stored in `context.toml` keyed by agent and command. Commands belonging to the same shared session group are assigned the same session ID, so resuming any of them reuses the existing context.
+Sessions are stored in the job-scoped `.nia/work/job_<id>/sessions.toml` file, keyed by agent
+and command. Commands belonging to the same shared session group are assigned the same
+session ID, so resuming any of them reuses the existing context.
 
 ```toml
-# .nia/context.toml - Session Storage Example
-issue_id = "542"
-service = "api-gateway"
-
-[agent_sessions.copilot]
+# .nia/work/job_542/sessions.toml - Session Storage Example
+[copilot]
 issue-draft = { session_id = "unknown", session_name = "issue-542" }
 
-[agent_sessions.opencode]
+[opencode]
 code-create = { session_id = "opencode-session-abc123", session_name = "unknown" }
 ```
 
@@ -129,23 +128,24 @@ This optimization:
 
 ## Session Storage
 
-Nia persists session information in `.nia/context.toml` to track which commands have been executed and their associated session IDs. This enables automatic session reuse across commands.
+Nia persists session information in the job-scoped `.nia/work/job_<id>/sessions.toml` file to
+track which commands have been executed and their associated session IDs. This enables
+automatic session reuse across commands. Storage is scoped to the job directory (rather than
+the top-level `.nia/context.toml`) so history survives across separate `nia` invocations
+without being erased by context migration.
 
-### Context File Structure
+### Sessions File Structure
 
-The `[agent_sessions]` section stores session tracking per agent (Copilot, OpenCode, etc):
+Each agent (Copilot, OpenCode, etc.) has its own top-level table storing session tracking:
 
 ```toml
-# .nia/context.toml - Session Storage Example
-issue_id = "542"
-service = "api-gateway"
-
-[agent_sessions.copilot]
+# .nia/work/job_542/sessions.toml - Session Storage Example
+[copilot]
 issue-draft = { session_id = "unknown", session_name = "issue-542" }
 issue-ask = { session_id = "unknown", session_name = "issue-542" }
 code-create = { session_id = "unknown", session_name = "code-542" }
 
-[agent_sessions.opencode]
+[opencode]
 code-create = { session_id = "opencode-session-abc123", session_name = "unknown" }
 code-test = { session_id = "550e8400-e29b-41d4-a716-446655440000", session_name = "code-test-542" }
 ```
@@ -172,19 +172,19 @@ nia code create
 nia code test --agent opencode
 ```
 
-The `context.toml` will contain:
+The job-scoped `sessions.toml` will contain:
 
 ```toml
-[agent_sessions.copilot]
+[copilot]
 code-create = { session_id = "unknown", session_name = "code-542" }
 
-[agent_sessions.opencode]
+[opencode]
 code-test = { session_id = "opencode-session-xyz", session_name = "unknown" }
 ```
 
 ### Key Naming Conventions
 
-The `context.toml` file uses two distinct key formats:
+The `sessions.toml` file uses two distinct key formats:
 
 | Key Type | Format | Example | Purpose |
 |----------|--------|---------|---------|
@@ -200,10 +200,10 @@ The `context.toml` file uses two distinct key formats:
 - `issue-draft` → `nia issue draft` command
 - `code-create-fix` → `nia code create --fix` command
 
-Both key types may appear in the same `context.toml` file:
+Both key types may appear in the same agent's table:
 
 ```toml
-[agent_sessions.copilot]
+[copilot]
 # Session group key (snake_case)
 code = { session_id = "uuid", session_name = "code-563" }
 
