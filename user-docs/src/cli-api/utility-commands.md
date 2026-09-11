@@ -307,12 +307,12 @@ Select package manager: cargo
 The interactive mode provides a guided setup experience that configures your complete nia environment in four phases:
 
 **Phase Flow:**
-1. **Project Configuration** (AI-assisted) - Repository metadata
-2. **Toolchain Configuration** (Selection-based) - Development tools
-3. **Agent Configuration** (Selection-based) - AI coding agent setup
+1. **Agent Configuration** (Selection-based) - AI coding agent and model profile
+2. **Project Configuration** (AI-assisted) - Repository metadata, analyzed with the agent chosen in phase 1
+3. **Toolchain Configuration** (Selection-based) - Development tools
 4. **Summary & Confirmation** - Review and write all configuration files
 
-By default, Phase 2 skips the per-tool access-method choice and uses `skill` for every
+By default, Phase 3 skips the per-tool access-method choice and uses `skill` for every
 selected tool. Add `--advanced` to be prompted for each tool's access method (`skill`,
 `cli`, `mcp`, `api`) instead — see [Access Methods](#access-methods-interactive-mode).
 
@@ -320,7 +320,33 @@ selected tool. Add `--advanced` to be prompted for each tool's access method (`s
 $ nia config init --interactive
 
 ════════════════════════════════════════════════════════
-Phase 1: Project Configuration
+Phase 1: Agent Configuration
+Configure your AI coding agent
+════════════════════════════════════════════════════════
+
+Agent
+  Select the AI coding agent you want to use
+
+  1. claude_code - Claude Code CLI (uses Claude models)
+  2. github_copilot - GitHub Copilot CLI (uses GitHub and BYOK models)
+  3. opencode - OpenCode CLI (uses BYOK models)
+
+Select (1-3): 2
+✓ Selected: github_copilot
+
+Model Profile
+  Choose quality vs. cost trade-off
+
+  1. lite - Minimize costs with fast/cheap models
+  2. balanced - Good performance at reasonable cost
+  3. stable - Predictable behaviour with previous-generation models (default)
+  4. heavy - Maximum quality for critical operations
+
+Select (1-4) (default: 3):
+✓ Selected: stable
+
+════════════════════════════════════════════════════════
+Phase 2: Project Configuration
 AI-assisted project metadata setup
 ════════════════════════════════════════════════════════
 
@@ -351,7 +377,7 @@ Accept? [Press Enter] or enter custom value:
 ✓ Accepted: cargo
 
 ════════════════════════════════════════════════════════
-Phase 2: Toolchain Configuration
+Phase 3: Toolchain Configuration
 Configure your development tools
 ════════════════════════════════════════════════════════
 
@@ -409,37 +435,15 @@ Select (1-4): 4
 ✓ Skipped
 
 ════════════════════════════════════════════════════════
-Phase 3: Agent Configuration
-Configure your AI coding agent
-════════════════════════════════════════════════════════
-
-Agent
-  Select the AI coding agent you want to use
-
-  1. claude_code - Claude Code CLI (uses Claude models)
-  2. github_copilot - GitHub Copilot CLI (uses GitHub and BYOK models)
-  3. opencode - OpenCode CLI (uses BYOK models)
-
-Select (1-3): 2
-✓ Selected: github_copilot
-
-Model Profile
-  Choose quality vs. cost trade-off
-
-  1. lite - Minimize costs with fast/cheap models
-  2. balanced - Good performance at reasonable cost
-  3. stable - Predictable behaviour with previous-generation models (default)
-  4. heavy - Maximum quality for critical operations
-
-Select (1-4) (default: 3):
-✓ Selected: stable
-
-════════════════════════════════════════════════════════
 Phase 4: Summary
 Review your configuration
 ════════════════════════════════════════════════════════
 
 Configuration Summary:
+
+[Agent Configuration]
+  agent: github_copilot
+  model_profile: stable
 
 [Project Configuration]
   name: my-project
@@ -452,10 +456,6 @@ Configuration Summary:
 [Toolchain Configuration]
   issue_tracker: github_issues (via skill)
   code_platform: github (via skill)
-
-[Agent Configuration]
-  agent: github_copilot
-  model_profile: stable
 
 Files to be created or replaced:
   ✓ .nia/config/project.toml
@@ -472,13 +472,22 @@ Configuration complete! Run 'nia config validate' to verify.
 
 **Phase Details:**
 
-**Phase 1: Project Configuration** (AI-assisted)
+**Phase 1: Agent Configuration** (Selection-based)
+- Agent: Choose your AI coding agent (Claude Code, GitHub Copilot, OpenCode)
+- Model profile: Select quality tier (lite, balanced, stable, heavy)
+- Defaults to "stable" profile if not specified
+- The agent selected here is used for the phase 2 repository analysis; choosing
+  "skip" means the analysis is not run and metadata is entered manually
+
+**Phase 2: Project Configuration** (AI-assisted)
 - Analyzes repository structure and manifests
 - Suggests project metadata based on code analysis
 - Supports monorepo detection and configuration
 - Each field can be accepted, modified, or overridden
+- Uses the agent selected in phase 1; if that agent is unavailable you can
+  retry, enter the metadata manually, or quit
 
-**Phase 2: Toolchain Configuration** (Selection-based)
+**Phase 3: Toolchain Configuration** (Selection-based)
 - Issue tracker: Choose from GitHub Issues, Jira, Azure DevOps, Shortcut, or local
 - Code platform: Select GitHub, GitHub Enterprise, Bitbucket, Azure DevOps, or local
 - Ticket tracker: Optional customer support system
@@ -487,11 +496,6 @@ Configuration complete! Run 'nia config validate' to verify.
 - Access method: Each non-local tool selected defaults to `skill` without prompting;
   run with `--advanced` to be prompted per tool instead
   (see [Access Methods](#access-methods-interactive-mode) below)
-
-**Phase 3: Agent Configuration** (Selection-based)
-- Agent: Choose your AI coding agent (Claude Code, GitHub Copilot, OpenCode)
-- Model profile: Select quality tier (lite, balanced, stable, heavy)
-- Defaults to "stable" profile if not specified
 
 **Phase 4: Summary & Confirmation**
 - Review all selections before writing files
@@ -505,7 +509,7 @@ Configuration complete! Run 'nia config validate' to verify.
 
 #### Access Methods (Interactive Mode)
 
-Choosing between `skill`, `cli`, `mcp`, and `api` is an expert decision, so whether Phase 2
+Choosing between `skill`, `cli`, `mcp`, and `api` is an expert decision, so whether Phase 3
 prompts for it depends on `--advanced`:
 
 | Method | Description |
@@ -584,7 +588,7 @@ Repository (press Enter to skip):
   Invalid input is rejected with guidance and re-prompted (up to 3 attempts before
   falling back to skipping).
 - When set, the value is written as `repository = "..."` in the corresponding
-  `toolchain.toml` section and shown in the Phase 2 and Phase 4 summaries.
+  `toolchain.toml` section and shown in the Phase 3 and Phase 4 summaries.
 - Security scanners are excluded from this prompt since they're not typically scoped to
   a single repository.
 - **Known limitation:** JIRA's host-only base URL example (e.g.
