@@ -1558,6 +1558,50 @@ Did you mean: 'issue-to-pr'?
 
 ---
 
+#### `nia workflow disable`
+
+**Description**: Disable a workflow (built-in or user-defined) so `nia workflow run` refuses to execute it, without deleting its definition file.
+
+**Usage Example**:
+```bash
+nia workflow disable issue-to-pr
+```
+
+**Key Features**:
+
+- ✅ **Persisted per project** — state is written to `.nia/config/workflows.toml` (project-local, not global)
+- ✅ **Non-destructive** — the workflow definition file is untouched; `validate` and `graph` keep working
+- ✅ **Visible in `list`** — disabled workflows still appear in `nia workflow list`, marked as disabled
+- ✅ **Excluded from `--auto`** — disabled workflows are never selected as `nia workflow run --auto` candidates
+- ✅ **Idempotent** — disabling an already-disabled workflow succeeds without error
+
+`.nia/config/workflows.toml` format:
+```toml
+disabled = ["issue-to-pr", "my-custom-flow"]
+```
+
+**Related Commands**: `workflow enable`, `workflow list`, `workflow run`
+
+---
+
+#### `nia workflow enable`
+
+**Description**: Re-enable a previously disabled workflow.
+
+**Usage Example**:
+```bash
+nia workflow enable issue-to-pr
+```
+
+**Key Features**:
+
+- ✅ **Idempotent** — enabling an already-enabled workflow succeeds without error
+- ✅ **Validates the name** — errors with "Unknown workflow" for a name that isn't a known built-in, user-defined, or alias workflow
+
+**Related Commands**: `workflow disable`, `workflow list`, `workflow run`
+
+---
+
 ## Global Workflow Flags
 
 The following flags are available on all workflow commands (`issue`, `code`, `pr`, `docs`, `backlog`, `ticket`) but NOT on utility commands (`config`, `guide`, `shell`, `status`, `workflow`).
