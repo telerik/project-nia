@@ -264,6 +264,25 @@ enabled = true
 
 Individual source toggles have no effect when `enabled = false`. Leave this section out unless your project uses externally managed configuration sources.
 
+### Routing Configuration
+
+The optional `[routing]` section controls the workflow routing classifier used by
+`nia workflow run --auto`:
+
+```toml
+[routing]
+enabled = true
+model = "claude-haiku-4.5"
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|--------------|
+| `enabled` | Boolean | `true` | Set to `false` to disable the classifier for this project; `--auto` then fails with a clear error instead of calling an agent. |
+| `model` | String | `"claude-haiku-4.5"` | Model passed to the configured default agent for the one-shot classification call. |
+
+The classifier always uses the project's configured default coding agent (the
+same one every other agent step uses), never a hardcoded agent.
+
 ## Verify Project Setup
 
 Run these checks after completing the setup:

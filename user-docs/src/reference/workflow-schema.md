@@ -201,8 +201,25 @@ description = "Optional description"
 | `escape_conditions` | Array | No | Conditions to exit loops |
 | `retry` | Object | No | Retry configuration |
 | `max_visits` | Number | No | Override loop detection threshold for this state |
+| `is_exit_point` | Boolean | No | Marks this state as a certified `nia workflow run --ends-at` target (default: false) |
 
 > **Note**: States must specify one of: `operation`, `operations`, `command`, or `approval`. The `operation`/`operations` fields represent the new operation model, while `command`/`pre_steps`/`post_steps` are legacy patterns maintained for backward compatibility.
+
+> **`is_exit_point` and `--ends-at`**: `nia workflow run <name> --ends-at <state>` stops the
+> workflow right before entering `<state>`, without executing it (`stopped_early` is reported
+> even when `<state>` is itself a terminal state). This only works for states explicitly marked
+> `is_exit_point = true` — the flag is an author certification that stopping there leaves the
+> workflow in a safe, resumable place, not just any state that happens to exist. Passing a state
+> that exists but isn't certified is rejected at parse time with an error listing the valid
+> `--ends-at` targets for that workflow.
+>
+> ```toml
+> [[workflow.states]]
+> name = "create_pr"
+> is_exit_point = true  # valid --ends-at target
+> operation = { id = "open-pr", type = "agent", prompt = "..." }
+> on_success = "completed"
+> ```
 
 ---
 
@@ -346,9 +363,33 @@ operation = { id = "mode-check", type = "env_equals", env_name = "MODE", env_val
 | `file_contains` | File contains string | `path`, `content` |
 | `file_matches` | File matches regex pattern | `path`, `pattern` |
 | `command_exists` | Command is available in `PATH` | `command` |
-| `command_success` | Shell command exits with 0 | `command` |
+| `command_success` | Shell command exits with 0 | `command` or `auto_detect` |
 | `tasks_complete` | All tasks in tasks.md are complete | `path` (optional) |
 | `counter_matches` | Loop counter matches expression | `counter_name`, `counter_expression` |
+
+##### `command_success` with `auto_detect`
+
+Instead of a literal `command`, a `command_success` check can set `auto_detect` to
+`"build"` or `"test"` to run the project's own build/test command:
+
+```toml
+operation = { id = "project-builds", type = "command_success", auto_detect = "build", on_false = "fail" }
+```
+
+The command is read from `.nia/config/project.toml`'s `[project]` table
+(`build_command` / `test_command`) — it is **not** derived by scanning the
+filesystem for build-system markers (no `Cargo.toml`/`package.json` detection).
+If `project.toml` is absent or the field isn't set, the check is **skipped**,
+not failed, so it's safe to leave in workflows shared across projects that
+don't record a build/test command. A check may set exactly one of `command` or
+`auto_detect`, and `auto_detect` is only valid on `command_success` checks.
+
+```toml
+# .nia/config/project.toml
+[project]
+build_command = "cargo build --all-targets"
+test_command = "cargo test"
+```
 
 **Check Behaviors**:
 

@@ -1344,6 +1344,12 @@ nia workflow run issue-to-pr --list-states
 # Start from a specific step
 nia workflow run issue-to-pr --start-from create_code
 
+# Stop right before a certified exit-point state
+nia workflow run issue-to-pr --ends-at create_code
+
+# Classify the current issue and pick a workflow automatically
+nia workflow run --auto
+
 # Validate without executing
 nia workflow run issue-to-pr --dry-run
 ```
@@ -1356,6 +1362,15 @@ nia workflow run issue-to-pr --dry-run
   - Output shows initial state with `*` marker
 
 - `--start-from <state>` - Resume execution from a specific state
+- `--ends-at <state>` - Stop execution right before entering the named state, without running it.
+  The state must be marked `is_exit_point = true` in the workflow definition (an author-certified
+  safe stopping point); reaching it is reported as a successful, `stopped_early` run. Use
+  `--list-states` to see which states qualify.
+- `--auto` - Classify the current issue context (`nia config --issue <ID>`) with the routing
+  classifier and run whichever workflow it selects, instead of a caller-supplied workflow name.
+  Mutually exclusive with a positional workflow name. Requires interactive confirmation unless
+  `--bypass-approvals` is also given. Requires `[routing].enabled = true` in `project.toml` (the
+  default).
 - `--bypass-approvals` - Skip approval gates during execution
 - `--dry-run` - Validate workflow without executing
 
