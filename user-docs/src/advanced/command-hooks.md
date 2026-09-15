@@ -211,6 +211,105 @@ depends_on = ["create-dir", "failed(load-user-config)"]
 
 The `failed()` syntax allows conditional execution based on failures, enabling fallback logic.
 
+## Parallel Step Groups
+
+A parallel group is an explicit, opt-in `kind = "parallel"` item that wraps a
+list of nested steps and runs them concurrently. The group behaves as a
+**single item** for ordering and dependency purposes: everything declared
+before it completes first, and nothing declared after it starts until every
+nested step has finished.
+
+### Syntax
+
+```toml
+[[commands]]
+target = "research"
+
+[[commands.operations]]
+name = "gather"
+
+[[commands.operations.hooks.pre]]
+kind = "parallel"
+id = "researchers"
+description = "Fan out independent research roles"
+
+  [[commands.operations.hooks.pre.steps]]
+  id = "researcher-market"
+  type = "agent"
+  prompt = "Research the market landscape"
+
+  [[commands.operations.hooks.pre.steps]]
+  id = "researcher-tech"
+  type = "agent"
+  prompt = "Research the technical landscape"
+
+[[commands.operations.hooks.pre]]
+kind = "step"
+id = "synthesize"
+type = "agent"
+depends_on = "researchers"
+prompt = "Synthesize the research findings"
+```
+
+### Rules
+
+| Rule | Behaviour |
+|---|---|
+| Maximum concurrency | 10 nested steps at a time; extra steps queue and start as capacity frees |
+| Nested `depends_on` / `requires_check` | Rejected at load time — declare dependencies on the group instead |
+| Nested `set_env` | Rejected at load time — nested steps have isolated contexts, so the change would be discarded |
+| Nested `share_session_with` | Rejected at load time — each nested agent step gets its own session |
+| Two nested steps writing the same file path | Rejected at load time |
+| Nested parallel groups | Not supported |
+| Failure | Every nested step still runs to completion; the group then reports failure and the workflow halts, exactly as a single failed step would |
+| Ordering of results | Always declaration order, never completion order |
+
+A nested step can still set `allow_failure = true` to exclude its own
+failure from the group's aggregate outcome, while its failure is still
+recorded in telemetry:
+
+```toml
+  [[commands.operations.hooks.pre.steps]]
+  id = "researcher-optional-source"
+  type = "agent"
+  prompt = "Research an optional, best-effort data source"
+  allow_failure = true
+```
+
+### Concurrency is never inferred
+
+A flat item list — one without a `kind = "parallel"` wrapper — always runs
+strictly sequentially, exactly as before this feature existed. Removing the
+`kind = "parallel"` wrapper from a group (and un-nesting its `steps`) restores
+fully sequential behavior with no other changes required.
+
+### Author responsibility
+
+Load-time validation only catches the declarative failure modes listed
+above. The side effects of `shell` and `agent` nested steps — for example,
+two agent steps editing the same source file, or a shell step reading a
+temp file another nested step is still writing — cannot be validated
+statically. Authors are responsible for ensuring nested steps in the same
+group are truly independent of one another.
+
+### Provider limits
+
+Because nested `agent` steps each get their own session, running 10 nested
+agent steps concurrently issues 10 concurrent requests to the configured
+coding agent. Be mindful of provider-side rate limits when sizing a
+parallel group of agent steps.
+
+### Resuming an interrupted parallel group
+
+A parallel group is atomic from the workflow state machine's perspective: it
+produces a single aggregate result. If a workflow run is cancelled or killed
+while a group is in flight, resuming re-runs the **entire** group, including
+nested steps that had already completed. Design nested steps to be
+idempotent so a re-run is safe.
+
+See [`configs/examples/workflow-steps-parallel.toml`](https://github.com/Progress-Copilot/nia/blob/main/configs/examples/workflow-steps-parallel.toml)
+for a complete, runnable example.
+
 ## Examples
 
 ### Example 1: Environment Validation
