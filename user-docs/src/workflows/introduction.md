@@ -230,6 +230,70 @@ message = "Ready to deploy to production. Approve?"
 required_code = "DEPLOY-PROD"  # Optional confirmation code
 ```
 
+#### Responding to an approval gate
+
+When a workflow reaches an approval gate it pauses until a human approves or rejects it.
+
+**In the same terminal (interactive runs).** If `nia workflow run` is attached to an interactive
+terminal, the gate details — including the required code — are printed directly, followed by a
+prompt:
+
+```text
+⏸ Approval Required
+────────────────────────────────────────
+Workflow ID: 1226
+Gate: deploy_approval
+Current State: await_deploy
+
+Message: Ready to deploy to production. Approve?
+
+Required Code: DEPLOY-PROD
+
+Approve or reject below, or from another terminal run:
+  nia workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
+  nia workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason <your-reason>
+
+Approve this gate? [a]pprove / [r]eject / [w]ait for another session >
+```
+
+Enter `a` or `r`, then the required code, then your email address. Press Enter at the email
+prompt to accept the `user_email` value from `.nia/context.toml`. Choosing `w` hides the prompt
+and waits for someone else to resolve the gate.
+
+**From another terminal or another machine.** The existing commands are unchanged and can be
+used at any time, including while the inline prompt is displayed — whichever path completes
+first resolves the gate:
+
+```bash
+nia workflow status
+nia workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
+nia workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason "needs rework"
+```
+
+**Non-interactive runs.** When stdin or stdout is not a terminal, in CI, or with
+`--quiet`/silent output, no prompt is shown and the workflow waits for an out-of-band
+approval exactly as before. Set `NIA_DISABLE_INLINE_APPROVAL=1` to force this behaviour on an
+interactive terminal.
+
+Both paths enforce identical validation (case-sensitive code match, email format) and produce
+identical audit records.
+
+##### Terminal input while a gate is open
+
+While an inline approval prompt is displayed, the workflow owns the terminal's standard input, so
+it can read your `a`/`r`/`w` choice, the code, and the email address without any of those
+keystrokes leaking to another process.
+
+- If the gate is instead resolved from another terminal (out-of-band `approve`/`reject`) while the
+  inline prompt is still on screen, press Enter once in the first terminal to hand it back to the
+  workflow — you'll see a message asking for exactly that.
+- A workflow step that needs interactive input (for example, a shell step reading from stdin)
+  should not be scheduled immediately after an approval gate. If it is, and an operator is still
+  mid-keystroke at the gate when that step starts, the step receives empty input for that one
+  window rather than risk stealing bytes from the approval prompt. Setting
+  `NIA_DISABLE_INLINE_APPROVAL=1` avoids the scenario entirely by never arming an inline prompt in
+  the first place.
+
 ## Quick Example
 
 Here's a minimal workflow that drafts an issue:

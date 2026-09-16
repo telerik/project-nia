@@ -1374,6 +1374,11 @@ nia workflow run issue-to-pr --dry-run
 - `--bypass-approvals` - Skip approval gates during execution
 - `--dry-run` - Validate workflow without executing
 
+> **Inline approvals:** when `nia workflow run` is attached to an interactive terminal, approval
+> gates can be approved or rejected directly in that terminal. Set
+> `NIA_DISABLE_INLINE_APPROVAL=1` to suppress the inline prompt and use only
+> `nia workflow approve` / `nia workflow reject` from another session.
+
 **Common Use Cases**:
 - Executing multi-step automated workflows
 - Running pre-defined process flows
