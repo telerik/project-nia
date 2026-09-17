@@ -224,7 +224,8 @@ Transaction events capture workflow execution metadata:
 | `custom_agent` | keyword | Custom agent name (e.g., `python-expert`). Value is `"none"` when not configured |
 | `agent` | keyword | AI agent platform (e.g., `copilot`, `opencode`) |
 | `token_usage.input_tokens` | long | AI input tokens consumed |
-| `token_usage.cached_tokens` | long | AI cached tokens (not billed) |
+| `token_usage.cached_tokens` | long | AI cached tokens (cache reads, not billed) |
+| `token_usage.cache_write_tokens` | long | AI cache write tokens (cache creation, priced separately; omitted when not reported) |
 | `token_usage.output_tokens` | long | AI output tokens consumed |
 | `workflow_type` | keyword | Workflow source: `builtin` or `custom` |
 | `role_prompt_type` | keyword | Role prompt source: `builtin` or `custom` |
