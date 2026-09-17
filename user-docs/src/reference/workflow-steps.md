@@ -243,6 +243,26 @@ type = "agent"
 prompt = "Analyze the provided context and summarize key requirements."
 ```
 
+The prompt may reference `{{issue_id}}`, `{{pr_id}}`, and `{{ticket_id}}` —
+these are substituted with the resolved workflow context before the prompt is
+sent to the agent. A placeholder with no value in context (e.g. `{{pr_id}}`
+with no PR set) is left unsubstituted:
+
+```toml
+[[workflows.operations.pre]]
+kind = "step"
+id = "summarize-issue"
+type = "agent"
+prompt = "Summarize issue {{issue_id}} for the team."
+context = ["issue"]
+```
+
+`context` additionally injects a separate `<issue_context>`/`<pr_context>`/
+`<ticket_context>` XML block before the prompt (see [Workflow Schema
+Reference](workflow-schema.md) for the full field list). Every agent step
+writes a trace file to `<job_dir>/traces/` with the prompt and the agent's
+output, the same as command-based states.
+
 ## Check Types
 
 Checks probe environment state without modifying it.

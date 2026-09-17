@@ -318,7 +318,33 @@ operation = { id = "send-initial", type = "agent", prompt = "Send the initial re
 **Agent Context Values**:
 
 `context` accepts only these values: `issue`, `code`, `pr`, `security`, `ticket`.
-An unrecognized value makes the operation fail workflow validation.
+An unrecognized value makes the operation fail workflow validation. Each
+recognized value (other than `code`/`security`, which are reserved for future
+tooltip injection) appends an XML block like `<issue_context><issue_id>...`
+after the prompt's project config, separate from the prompt text itself.
+
+**Agent Prompt Placeholders**:
+
+The `prompt` text itself may reference `{{issue_id}}`, `{{pr_id}}`, and
+`{{ticket_id}}` directly — these are substituted with the resolved workflow
+context values before the prompt is sent to the agent:
+
+```toml
+operation = { id = "notify", type = "agent", prompt = "Post a status update on issue {{issue_id}}." }
+```
+
+If a value isn't available in the current context (e.g. `{{pr_id}}` when no
+PR is set), the placeholder is left as-is rather than silently removed. Only
+these three IDs are supported — project metadata and toolchain placeholders
+(e.g. `{{issue_tracker_name}}`, available to command-based prompts) are not.
+
+**Agent Step Traces**:
+
+Every agent step writes a trace file to `<job_dir>/traces/` (named
+`{timestamp}_{step_id}.trace.md`), containing the prompt sent to the agent and
+its stdout/stderr/exit code — the same convention used by command-based
+states, so `nia --tail`/`--continue` and `nia diagnose` work for agent steps
+too.
 
 **Built-in Actions**:
 - `make_directory`: Create directory (`path` field required)
