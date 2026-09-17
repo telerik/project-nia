@@ -366,6 +366,34 @@ Configure in `application.toml`:
 max_workers = 5  # Run in up to 5 repositories concurrently
 ```
 
+`--max-workers` controls how many repositories run **concurrently**; it no longer affects how quickly
+completion is detected once a workflow finishes (see below).
+
+## Monitoring and Completion Detection
+
+While a workflow executes in each child repository, the parent `nia app` process polls each child's
+`.nia/work/job_<issue-id>/logs/transaction.jsonl` every 3 seconds. This transaction log is the **single
+source of truth** — it is exactly what `nia workflow status` reads inside the child repository, so the
+parent's view and the child's own view agree whenever the parent reaches a terminal state within its
+detection bound. If the parent instead reports `Unknown` (see below), no terminal transition was found
+in that bound; `nia workflow status` run inside the child repository remains the authoritative live
+view of what the workflow is actually doing.
+
+**Detection bound**: once a child's terminal state is durably written to its transaction log, the parent
+reflects that state within:
+- **~4 seconds** in the normal case (one poll interval plus a 1-second terminal check), or
+- **~19 seconds worst case**, if the child's own process has already exited before the parent's next poll
+  (a bounded reconciliation window of 5 additional polls).
+
+The parent never waits indefinitely. Every repository ends the run in exactly one of four states:
+
+| State | Meaning |
+|---|---|
+| `Done` | The workflow completed successfully. |
+| `Failed` | The workflow ended with an error. |
+| `Needs Approval` | The workflow reached an approval gate. The parent cannot approve on the child's behalf — run `nia workflow approve` inside that child repository, then re-run the `nia app` command. |
+| `Unknown` | No terminal transition was found in the child's transaction log within the detection bound. Run `nia workflow status` inside the named child repository to inspect its own view directly. |
+
 ## Troubleshooting
 
 ### Q: My PR was created twice when I ran `nia app pr draft` then `nia app pr publish`
