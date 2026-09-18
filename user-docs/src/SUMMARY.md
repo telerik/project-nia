@@ -18,6 +18,7 @@
   - [Project Configuration](./configuration/project.md)
   - [Context Sources](./configuration/context.md)
   - [Commit Behavior](./configuration/commit-behavior.md)
+  - [Branch Behavior](./configuration/branch-behavior.md)
   - [Toolchain Configuration](./configuration/toolchain.md)
   - [Hierarchical Loading](./configuration/hierarchical.md)
   - [Agent Skills](./configuration/skills.md)

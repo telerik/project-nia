@@ -168,6 +168,78 @@ behavior = "enabled"  # Basic commit instructions
 
 ---
 
+## Branch Configuration (project.toml)
+
+Controls whether and how nia creates/checks out a dedicated git branch before working on a task.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `behavior` | string | No | Branch creation mode: "auto" (default) or "off" |
+| `base` | string | No | Ref to fork newly created branches from. Unset = fork from whatever is currently checked out |
+| `naming` | string | No | Naming template. Default: `"nia/issue-{issue}-{slug}"`. Tokens: `{target}`, `{action}`, `{slug}`, `{issue}`, `{date}` |
+| `checkout` | boolean | No | Whether to check out the branch after creating it (default: `true`) |
+| `on_dirty` | string | No | What to do when the working tree is dirty: "carry" (default), "stash", or "error" |
+| `on_collision` | string | No | What to do when the resolved branch name already exists: "checkout" (default), "suffix", or "error" |
+
+**Example:**
+```toml
+[branch]
+behavior = "auto"       # "auto" branches whenever commit instructions would be enabled; "off" never branches
+naming = "nia/issue-{issue}-{slug}"
+checkout = true
+on_dirty = "carry"       # "carry" | "stash" | "error"
+on_collision = "checkout" # "checkout" | "suffix" | "error"
+# base = "develop"       # omit to fork from whatever is checked out
+```
+
+**Behavior Options:**
+- `"auto"` (default): Create a branch exactly when the resolved commit instructions for that target/operation would be enabled (reuses the `[commit]` trigger table). The `pr` target never auto-branches, since PR operations act on an already-checked-out branch.
+- `"off"`: Never create or check out branches automatically, regardless of commit state.
+
+**Related Documentation:** [Branch Configuration Guide](../configuration/branch-behavior.md)
+
+---
+
+## Agent Branch Settings (agents.toml)
+
+Control branch-creation behavior per target or operation in agent configuration, mirroring Agent Commit Settings.
+
+### Target-Level Settings
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `branch` | string | No | "on" or "off" to enable/disable branch creation for all operations in this target |
+
+**Example:**
+```toml
+[agent.github_copilot.targets]
+code = { model = "gpt-4", branch = "on" }
+issue = { branch = "off" }
+```
+
+### Operation-Level Settings
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `branch` | string | No | "on" or "off" to enable/disable branch creation for this specific operation |
+
+**Example:**
+```toml
+[agent.github_copilot.operations]
+"code.review" = { branch = "on" }
+"code.create" = { model = "gpt-4", branch = "off" }
+```
+
+**Precedence (highest to lowest):**
+1. `project.toml [branch].behavior = "off"` (global override)
+2. Operation-specific `branch` setting
+3. Target-specific `branch` setting
+4. Built-in default (reuses the resolved `[commit]` trigger; the `pr` target is always excluded)
+
+**Related Documentation:** [Branch Configuration Guide](../configuration/branch-behavior.md)
+
+---
+
 ## Agent Commit Settings (agents.toml)
 
 Control commit behavior per target or operation in agent configuration.

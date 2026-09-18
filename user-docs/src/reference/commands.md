@@ -996,6 +996,32 @@ nia pr review
 
 ---
 
+#### `nia config set-base-branch`
+
+**Description**: Set the project-level base branch/ref that newly created branches are forked from.
+
+**Usage Example**:
+```bash
+# Fork new branches from 'develop' instead of the repo's checked-out branch
+nia config set-base-branch develop
+```
+
+**Common Use Cases**:
+- Teams whose default working branch is not the branch the agent happens to have checked out
+- Standardizing which ref feature branches fork from across the team
+
+**Prerequisites**:
+- Run inside a nia project (`.nia/config/project.toml` must already exist; run `nia config init` first)
+
+**Notes**:
+- This is a project-level, team-shared setting written to `.nia/config/project.toml`'s `[branch]` table — not a per-job or per-user override. Commit the resulting change to share it with your team.
+
+**Related Commands**: `config validate`
+
+**Related Documentation**: [Branch Behavior Configuration](../configuration/branch-behavior.md)
+
+---
+
 #### `nia config show-context`
 
 **Description**: Display current workflow context (issue ID, PR ID, service).
