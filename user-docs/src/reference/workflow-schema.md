@@ -543,22 +543,23 @@ on_failure = "create_code"          # Regular operation
 
 #### Command Operations
 
-Execute a Nia CLI command within the workflow:
+Execute a Nia CLI command within the workflow. A command operation is identified solely by the
+presence of the `target` field — there is no `type` field on command operations, and adding one
+causes a parse error:
 
 ```toml
-operation = { type = "command", target = "issue", operation = "draft", modifiers = ["lite"] }
+operation = { target = "issue", operation = "draft", modifiers = ["lite"] }
 ```
 
 With arguments:
 ```toml
-operation = { type = "command", target = "code", operation = "review", args = { model = "gpt-4" } }
+operation = { target = "code", operation = "review", args = { model = "gpt-4" } }
 ```
 
 **Command Fields**:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | String | Yes | Always "command" |
 | `target` | String | Yes | Command target (e.g., "issue", "code", "pr") |
 | `operation` | String | Yes | Command operation (e.g., "draft", "review") |
 | `modifiers` | Array | No | List of modifiers to apply |
