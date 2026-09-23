@@ -200,6 +200,7 @@ Before using application commands:
 3. **Discover repositories**:
    ```bash
    nia app discover
+   nia app status                # Show where each repository's output landed
    ```
 
 ### Execution Modes
@@ -448,6 +449,21 @@ Executing workflow 'issue-to-plan' in 3 repositories
 - `[⏳]` - In progress
 - `[⏸]` - Awaiting approval
 
+**In-progress state detail:** While a repository is `In Progress`, the live
+table appends the child workflow's current internal state in parentheses,
+e.g. `In Progress (review_requested)`, sourced from the same polled status
+the parent already tracks. The suffix only appears once a state has been
+polled and disappears once the row reaches a terminal state (`Done`,
+`Failed`, etc.); the post-run summary shows the identical, sanitized state
+name using a `[state]` bracket instead.
+
+**Activity indicator:** Below the table, a pulsing activity line reports
+elapsed runtime with minute-and-second precision (e.g. `elapsed: 3m 12s`,
+`elapsed: 1h 1m 1s`), rolling over into hours and days for long-running
+workflows, so a healthy long-running command stays visibly distinguishable
+from a hung one. This line only appears on interactive terminals; quiet mode
+and non-TTY output are unaffected.
+
 ### Best Practices
 
 1. **Use direct execution for analysis**: Issue drafting, code review work best with full application context
@@ -466,6 +482,7 @@ Executing workflow 'issue-to-plan' in 3 repositories
 **Solutions:**
 ```bash
 nia app discover                 # Discover repositories
+nia app status                   # Show where each repository's output landed
 nia config show --sources        # Verify discovery results
 ```
 

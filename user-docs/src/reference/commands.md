@@ -1404,6 +1404,17 @@ nia workflow run issue-to-pr --dry-run
 > gates can be approved or rejected directly in that terminal. Set
 > `NIA_DISABLE_INLINE_APPROVAL=1` to suppress the inline prompt and use only
 > `nia workflow approve` / `nia workflow reject` from another session.
+>
+> **Approvals console:** when `nia app` runs in an interactive terminal, repositories blocked at
+> an approval gate show their approval code in the status table and can be approved or rejected
+> from the same terminal. Type `h` for the command list; `a 2` approves repository 2, `a all`
+> batch-approves everything currently pending (one email, one confirmation), and `r 1,3 <reason>`
+> batch-rejects with a shared reason. Each repository is still resolved independently through the
+> same validation and audit path as `nia workflow approve` / `nia workflow reject`, which remain
+> available from another terminal at any time. Set `NIA_DISABLE_INLINE_APPROVAL=1` (or run with
+> `--quiet`, piped output, or in CI) to disable the console and use the out-of-band commands only.
+> See [Resolving approval gates](../advanced/multi-repository.md#resolving-approval-gates) for
+> full details.
 
 **Common Use Cases**:
 - Executing multi-step automated workflows

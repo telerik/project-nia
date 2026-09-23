@@ -391,8 +391,89 @@ The parent never waits indefinitely. Every repository ends the run in exactly on
 |---|---|
 | `Done` | The workflow completed successfully. |
 | `Failed` | The workflow ended with an error. |
-| `Needs Approval` | The workflow reached an approval gate. The parent cannot approve on the child's behalf — run `nia workflow approve` inside that child repository, then re-run the `nia app` command. |
+| `Needs Approval` | The workflow reached an approval gate. When `nia app` is attached to an interactive terminal, it can be approved or rejected from the parent's own approvals console (see [Resolving approval gates](#resolving-approval-gates) below); otherwise, run `nia workflow approve` inside that child repository, then re-run the `nia app` command. |
 | `Unknown` | No terminal transition was found in the child's transaction log within the detection bound. Run `nia workflow status` inside the named child repository to inspect its own view directly. |
+
+## Finding Command Output
+
+| Execution mode | Where artifacts are written |
+|---|---|
+| Direct | Parent application directory: `.nia/work/job_<id>/` |
+| Workflow | Each child repository: `.nia/work/job_<id>/` inside that repository |
+
+After every `nia app` run, the parent job directory also contains:
+
+- `app_index.toml` — machine-readable artifact pointers
+- `app_index.md` — human-readable summary with repository outcomes and paths
+
+Example repository table:
+
+```text
+| Repository | Outcome | Job directory | Artifacts | Logs |
+| api-service | Done | `../api-service/.nia/work/job_1225` | 4 | `../api-service/.nia/work/job_1225/logs/system.log` |
+```
+
+> **Read-only:** The index contains paths only. Artifacts are owned by the repository that produced them — run `nia issue plan --edit` (and every other edit command) from inside that repository. Editing anything in the parent folder has no effect on the workflow.
+
+Use `nia app status` to re-render artifact locations later:
+
+```bash
+nia app status
+nia app status --job 1225
+nia app status --paths
+```
+
+`nia app status` also works for job directories created before the index existed; when no recorded
+index is present it falls back to scanning the repositories listed in `application.toml`.
+
+To investigate a failed child repository, open the `system.log` and `transaction.jsonl` paths shown
+in the index, or run `nia workflow status` inside that repository.
+
+Known limitation: two simultaneous `nia app` runs for the same issue overwrite each other's index
+(last writer wins). Each index records `run_id` and `generated_at`, so the winning run is still
+identifiable.
+
+## Resolving approval gates
+
+Each repository's approval gate is independent: its own code, message and `timeout_seconds`. When
+`nia app` runs in an interactive terminal, a repository blocked at a gate shows its code inline in
+the status table (`⏸ Needs Approval (code ABCD1234)`), and the parent process arms a small
+line-oriented console the moment at least one repository is pending — no second terminal required.
+
+| Command | Effect |
+|---|---|
+| `l` | List pending repositories with codes and waiting time |
+| `d <sel>` | Show the gate message and code for the selection |
+| `a <sel>` | Approve the selection |
+| `r <sel> [reason]` | Reject the selection with an optional shared reason |
+| `w` | Close the console; keep polling (out-of-band only) |
+| `h` | Help |
+
+`<sel>` accepts: omitted (only when exactly one repository is pending), a single index (`2`), a
+list (`1,3`), a range (`2-4`), a repository name, or `all`.
+
+Selecting more than one repository previews the batch and asks for `y`/`N` confirmation before
+anything is submitted. A batch collects **one** approval code (for single-target actions) or skips
+straight to email (batches use each repository's own discovered code) and **one** email address for
+the whole selection, then reports the outcome per repository — `approved`, `rejected`,
+`skipped (already resolved)`, `skipped (not pending)` or `failed` — so a partial failure in one
+repository is never hidden by another repository's success.
+
+Every resolution, whether typed into this console or run out-of-band, goes through the same
+`nia workflow approve` / `nia workflow reject` validation and audit trail, so the two paths can be
+mixed freely: if another session (or a second terminal) resolves a gate first, the console reports
+it as resolved elsewhere on its next poll and simply continues.
+
+Per-gate `timeout_seconds` keeps running while the console is open; a repository that times out
+leaves `Needs Approval` on its own, exactly as it would with no console attached.
+
+The console never arms — and behaves exactly as before this feature — when `nia app` is not
+attached to an interactive terminal (piped output, `--quiet`, CI, or
+`NIA_DISABLE_INLINE_APPROVAL=1`). In those cases, resolve gates with `nia workflow approve` /
+`nia workflow reject` from inside the child repository as usual.
+
+See `tests/manual_app_inline_approval.md` in the repository for manual test procedures covering
+concurrent gates, batches, out-of-band races, and interrupt/timeout behavior.
 
 ## Troubleshooting
 
