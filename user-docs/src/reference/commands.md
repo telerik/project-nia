@@ -50,7 +50,7 @@ The following flags have short versions for convenient command-line usage:
 | Long Flag | Short | Available In | Description |
 |-----------|-------|--------------|-------------|
 | `--agent` | `-a` | All workflow operations | Select AI coding agent |
-| `--role` | `-r` | All workflow operations | Override AI role |
+| `--role` | `-r` | All workflow operations | Override AI role (use `none` to disable role prompting) |
 | `--context-file` | `-c` | All workflow operations | Add file context (repeatable) |
 | `--context-dir` | — | All workflow operations | Add directory context (repeatable) |
 | `--model` | `-m` | All workflow operations | Override AI model |
@@ -1773,6 +1773,19 @@ nia issue draft --role product_manager --agent copilot
 # Technical writer for documentation-heavy work
 nia docs create --role technical_writer
 ```
+
+#### Disabling the role prompt
+
+```bash
+nia issue draft --role none
+```
+
+`none` is a reserved value that omits the role (persona) prompt entirely, reducing
+input and cached token cost. It is accepted case-insensitively (`--role NONE`).
+All other unrecognised values are still rejected with an `Invalid role` error.
+
+To disable roles persistently, see
+[Command customization → Disabling role prompting](../advanced/command-customization.md#disabling-role-prompting).
 
 #### Default Role Assignments
 

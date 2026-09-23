@@ -46,11 +46,79 @@ role = "senior_reviewer"
 task = "thorough_code_review"
 ```
 
+**Example: Disable role prompting for one operation**
+
+```toml
+[[prompt_overrides]]
+target = "issue"
+operation = "draft"
+role = "none"          # Reserved value - no role prompt is composed
+```
+
+`none` is a reserved value, not a prompt file name. nia never looks for
+`none.role.xml` / `none.role.md`; the role section is omitted from the composed
+prompt entirely, including its separator, which reduces input and cached token cost.
+
 **Requirements:**
 - `target` must be a built-in target (issue, code, pr, etc.)
 - `operation` must exist under that target
 - At least one of `role` or `task` must be specified
 - Referenced prompts must exist in `.nia/prompts/` or be built-in
+- `role` may be a custom role prompt name or the reserved value `"none"` to disable role prompting
+
+## Disabling role prompting
+
+Role prompts give the AI a persona. Disabling them reduces input and cached token
+cost and can be preferable with newer models where role framing adds little value.
+
+There are three ways to disable role prompting:
+
+| Mechanism | Scope | Example |
+|-----------|-------|---------|
+| `--role none` | One invocation | `nia issue draft --role none` |
+| `role = "none"` in `[[prompt_overrides]]` | One target/operation | see above |
+| `roles = "disabled"` in `commands.toml` | Every operation | see below |
+
+```toml
+# .nia/config/commands.toml
+roles = "disabled"
+```
+
+### Precedence
+
+Highest to lowest:
+
+1. The `--role <name>` command-line flag (`--role none` disables).
+2. A per-operation role from `[[prompt_overrides]]`, `[[custom_commands]]` or `[[commands]]`.
+3. The global `roles = "disabled"` setting.
+4. The built-in role for the operation.
+
+An explicit per-operation role therefore **overrides** a global `roles = "disabled"`:
+
+```toml
+roles = "disabled"          # no role prompt anywhere ...
+
+[[prompt_overrides]]
+target = "code"
+operation = "review"
+role = "security_analyst"   # ... except for `nia code review`
+```
+
+### Notes and limits
+
+- `none` is the only reserved value. `off`, `disable` and `nil` remain invalid role
+  names and are rejected with the usual `Invalid role` error, so a typo can never
+  silently disable role prompting.
+- `--role` and `--custom-agent` remain mutually exclusive. `--role none` is not a
+  way around that rule. Custom agents already skip the role prompt, so combining a
+  custom agent with a disabled role produces exactly the same prompt.
+- `nia workflow run` does not accept `--role` at all, but configuration-level
+  settings (`roles = "disabled"` and `role = "none"`) do apply to it.
+- Resumed (delta) sessions already omit the role prompt; disabling roles changes
+  nothing for them.
+- The global setting is read from `commands.toml` at the system, user and
+  repository levels using the normal configuration hierarchy. There is no
+  per-service (monorepo) role switch.
 
 ### Option 2: Define Custom Commands
 

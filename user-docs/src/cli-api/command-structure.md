@@ -298,6 +298,7 @@ nia app code review --fix        # Include fix suggestions
 nia app issue draft --model claude-opus-4.8
 nia app issue draft --agent custom-agent
 nia app issue draft --role security_expert
+nia app issue draft --role none   # skip the persona prompt for this run
 nia app issue draft --context-file ./extra-context.txt
 nia app issue draft --clear      # Clear job directory first
 nia app issue draft --quiet      # Suppress output
@@ -334,7 +335,7 @@ nia app issue plan --max-workers 5            # Parallel execution limit
 - `--max-workers N`: Limit parallel repository execution (default: 3)
 
 **Rejected flags** (with helpful error messages):
-- `--model`, `--agent`, `--role`: Model/agent selection is defined in workflow configuration
+- `--model`, `--agent`, `--role`: Model/agent selection is defined in workflow configuration. Role prompting can still be disabled for workflow runs via `roles = "disabled"` or `role = "none"` in `commands.toml`.
 - `--context-file`: Context is propagated via `.nia/context.toml`, not flags
 - `--edit`, `--fix`: Workflow run non-interactively across multiple repositories
 - `--clear`: Workflow context is managed per child repository
