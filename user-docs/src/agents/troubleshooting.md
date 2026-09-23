@@ -242,6 +242,44 @@ The status check should report the agent as authenticated.
 
 NIA does not store external agent credentials in `.nia/config/agents.toml`. Do not place secrets in configuration files or trace files.
 
+### Status Reports Not Authenticated After You Set a Model
+
+#### Symptoms
+
+`nia status` reports the agent as not authenticated, but the agent CLI works
+normally when you run it yourself.
+
+#### Possible Causes
+
+`nia status` sends its authentication check using the agent-level `model` you set
+in `.nia/config/agents.toml`. If your agent CLI does not recognise that model
+name, the CLI returns an error that NIA cannot distinguish from a sign-in
+failure.
+
+#### Resolution
+
+1. Run `nia config validate`. NIA reports a warning when a configured model name
+   is not in its known list for that agent.
+2. Confirm the model name against your agent CLI's own model list.
+3. Correct the `model` value in `.nia/config/agents.toml`, or remove it so the
+   check sends no model name and the agent CLI uses its own default.
+
+> **Claude Code users:** prefer correcting `model` to a current, valid value
+> over removing it. Older Claude Code CLI versions fall back to an internally
+> retired model ID when no `--model` flag is sent, which fails authentication
+> for an unrelated reason (a 404 on the retired model, not a sign-in problem).
+> If you remove `model` and authentication still fails, upgrade the Claude
+> Code CLI to a version that no longer references retired model IDs.
+
+#### Verification
+
+```bash
+nia status --verbose
+```
+
+Set `NIA_LOG=debug` to see which model NIA used for the check, or that no model
+name was sent because none is configured.
+
 ### Authentication Details Are Unclear
 
 #### Symptoms

@@ -295,3 +295,31 @@ Apply these practices when managing model configuration:
 - [Toolchain Configuration](./toolchain-config.md) explains the tools and platforms available to agents.
 - [Workflow Commands](../cli-api/workflow-commands.md) describes workflow targets and operations.
 - [GitHub Copilot CLI Documentation](https://github.com/github/gh-copilot) provides external agent documentation.
+
+## Model Used for Health Checks
+
+`nia status`, `nia config validate`, and the `learn` readiness check confirm that
+your coding agent is authenticated by sending it a very short prompt. There is no
+free way to ask an agent CLI whether it is signed in, so this check consumes a
+small number of tokens each time you run one of those commands.
+
+To keep that cost predictable, NIA sends the check with the model **you already
+configured for that agent**, instead of letting the agent CLI pick one
+automatically:
+
+- If you set an agent-level `model` in `.nia/config/agents.toml`, NIA uses exactly
+  that model for the check. `nia config init` writes this value for you, so it is
+  normally already set.
+- If no agent-level `model` is set, NIA sends no model name at all and the agent
+  CLI applies its own default.
+
+NIA has no separate "health check model" and no built-in model name of its own. It
+will never send a model you did not configure. That keeps the check honest — it
+verifies the model your real runs use — and means you control the cost by choosing
+a cheaper agent-level `model` if you want to.
+
+Target-level and operation-level model settings do not apply to the health check.
+The check is not a workflow operation, so only the agent-level `model` is used.
+
+Normal workflow commands are unaffected: they do not run this check and continue
+to use the full model resolution order described above.
