@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<releases xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" workspace="">
+  <release name="Forge Trial" development-stage="Stable" download-option-id="a841cd28e0b7f111a9b0d59e312d293f" download-strategy-id="" version="" release-type="Primary" status="Draft" release-flow="None" version-title="" build-date="" actual-date="">
+    <releasenotes id="" />
+    <eula id="" />
+    <template>
+      <file path="install.ps1" tags="FileType=[Trial Files],cat_productinstallation" file-release-flow="Direct" />
+      <file path="install.sh" tags="FileType=[Trial Files],cat_productinstallation" file-release-flow="Direct" />
+    </template>
+  </release>
+</releases>

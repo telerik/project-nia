@@ -1,0 +1,165 @@
+name: Upload to Telerik Download System
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_on_live:
+        description: "Upload on LIVE"
+        type: boolean
+        default: false
+        required: false
+      upload_on_uat:
+        description: "Upload on UAT"
+        type: boolean
+        default: true
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+  packages: read
+
+env:
+  RELEASE_REPOSITORY: "telerik/project-nia"
+  RELEASE_TYPE: "Primary"
+  ENVIRONMENT_LIVE: "LIVE"
+  ENVIRONMENT_UAT: "UAT"
+  UPLOAD_TEMPLATE_LIVE: "ForgeTrial_LIVE.xml"
+  UPLOAD_TEMPLATE_UAT: "ForgeTrial_UAT.xml"
+  UPLOAD_ON_LIVE: ${{ inputs.upload_on_live }}
+  UPLOAD_ON_UAT: ${{ inputs.upload_on_uat }}
+
+jobs:
+  upload:
+    name: Upload installers
+    runs-on: [self-hosted, TelerikUpload]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: telerik/actions/checkout@master
+        with:
+          repository: ${{ github.repository }}
+          path: ${{ github.workspace }}\project-nia
+
+      - name: Import secrets
+        id: import-secrets
+        uses: LanceMcCarthy/akeyless-action@dc80a71bf8a10a38b2d3ee3cf389d51a2d7e15e0
+        with:
+          access-id: ${{ secrets.GH_AKEYLESS_ACCESS_ID }}
+          static-secrets: |
+            {
+              "/WebComponents/prod/tokens/GH_TOKEN": "GH_TOKEN",
+              "/VSX/upload-tool/UAT/PrivateKey_UAT": "PrivateKey_UAT",
+              "/VSX/upload-tool/LIVE/PrivateKey_LIVE": "PrivateKey_LIVE"
+            }
+          export-secrets-to-environment: false
+          export-secrets-to-outputs: true
+
+      - name: Checkout upload tooling
+        uses: telerik/actions/checkout@master
+        with:
+          repository: telerik/vsx-build-tasks
+          path: ${{ github.workspace }}\vsx-build-tasks
+          ref: main
+          token: ${{ steps.import-secrets.outputs.GH_TOKEN }}
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download installers from latest release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ steps.import-secrets.outputs.GH_TOKEN }}
+        run: |
+          $headers = @{
+            Authorization = "Bearer $env:GITHUB_TOKEN"
+            Accept = "application/vnd.github+json"
+            "X-GitHub-Api-Version" = "2022-11-28"
+            "User-Agent" = "nia-download-system-upload"
+          }
+          $releases = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/$env:RELEASE_REPOSITORY/releases?per_page=100" `
+            -Headers $headers
+          $release = $releases | Where-Object { -not $_.draft } | Select-Object -First 1
+
+          if (-not $release) {
+            throw "No published GitHub release was found"
+          }
+          if ($release.tag_name -notmatch '^v(.+)$') {
+            throw "Release tag '$($release.tag_name)' does not start with 'v'"
+          }
+
+          $version = $Matches[1]
+          $uploadFolder = "${{ github.workspace }}\project-nia\upload"
+          New-Item -ItemType Directory -Force -Path $uploadFolder | Out-Null
+          $assetHeaders = $headers.Clone()
+          $assetHeaders["Accept"] = "application/octet-stream"
+
+          foreach ($assetName in @("install.ps1", "install.sh")) {
+            $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+            if (-not $asset) {
+              throw "Release '$($release.tag_name)' does not contain '$assetName'"
+            }
+
+            Invoke-WebRequest `
+              -Uri $asset.url `
+              -Headers $assetHeaders `
+              -OutFile (Join-Path $uploadFolder $assetName)
+          }
+
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VERSION_WITH_UNDERSCORE=$($version.Replace('.', '_'))" | `
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Downloaded installers from release $($release.tag_name)"
+
+      - name: List files for upload
+        shell: pwsh
+        run: Get-ChildItem -Path "${{ github.workspace }}\project-nia\upload" -Recurse
+
+      - name: Upload on LIVE
+        if: ${{ env.UPLOAD_ON_LIVE == 'true' }}
+        shell: pwsh
+        run: |
+          msbuild ${{ github.workspace }}\vsx-build-tasks\AutomaticUpload\AutomaticUpload.proj `
+          -p:TemplateXmlFile=${{ github.workspace }}\project-nia\build\uploadtemplates\${{ env.UPLOAD_TEMPLATE_LIVE }} `
+          -p:Environment=${{ env.ENVIRONMENT_LIVE }} `
+          -p:UploadSourceFolder=${{ github.workspace }}\project-nia\upload `
+          -p:VersionString=${{ env.VERSION }} `
+          -p:VersionTitleString=${{ env.VERSION }} `
+          -p:VersionStringWithUnderscore=${{ env.VERSION_WITH_UNDERSCORE }} `
+          -p:ReleaseType=${{ env.RELEASE_TYPE }} `
+          -p:DropLocation=${{ github.workspace }}\project-nia\upload\Logs `
+          -p:PrivateKey_LIVE=${{ steps.import-secrets.outputs.PrivateKey_LIVE }} `
+          /fl `
+          /v:detailed
+
+      - name: Upload on UAT
+        if: ${{ env.UPLOAD_ON_UAT == 'true' }}
+        shell: pwsh
+        run: |
+          msbuild ${{ github.workspace }}\vsx-build-tasks\AutomaticUpload\AutomaticUpload.proj `
+          -p:TemplateXmlFile=${{ github.workspace }}\project-nia\build\uploadtemplates\${{ env.UPLOAD_TEMPLATE_UAT }} `
+          -p:Environment=${{ env.ENVIRONMENT_UAT }} `
+          -p:UploadSourceFolder=${{ github.workspace }}\project-nia\upload `
+          -p:VersionString=${{ env.VERSION }} `
+          -p:VersionTitleString=${{ env.VERSION }} `
+          -p:VersionStringWithUnderscore=${{ env.VERSION_WITH_UNDERSCORE }} `
+          -p:ReleaseType=${{ env.RELEASE_TYPE }} `
+          -p:DropLocation=${{ github.workspace }}\project-nia\upload\Logs `
+          -p:PrivateKey_UAT=${{ steps.import-secrets.outputs.PrivateKey_UAT }} `
+          /fl `
+          /v:detailed
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7
+        with:
+          name: telerik-upload-logs
+          path: ${{ github.workspace }}\project-nia\upload\Logs
+          if-no-files-found: ignore
+
+      - name: Clean up
+        if: always()
+        shell: pwsh
+        run: Remove-Item -Path "${{ github.workspace }}\project-nia\upload" -Recurse -Force -ErrorAction SilentlyContinue
