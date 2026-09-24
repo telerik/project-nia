@@ -1,6 +1,6 @@
 # Configuration Fields Reference
 
-Quick reference for all configuration fields in Nia CLI.
+Quick reference for all configuration fields in Progress Forge CLI.
 
 > **Schema Version:** This reference documents schema v2.1.0 (current).
 
@@ -155,13 +155,13 @@ Controls how commit instructions are included in AI agent prompts.
 ```toml
 [commit]
 behavior = "enabled"  # Basic commit instructions
-# behavior = "tagged"    # Include nia co-author attribution
+# behavior = "tagged"    # Include frg co-author attribution
 # behavior = "disabled"  # No commit instructions
 ```
 
 **Behavior Options:**
 - `"enabled"`: Include basic commit instructions (default)
-- `"tagged"`: Include commit instructions with `Co-authored-by: nia <nia@Progress.com>`
+- `"tagged"`: Include commit instructions with `Co-authored-by: frg <forge@Progress.com>`
 - `"disabled"`: Include explicit no-commit instructions (AI should not commit)
 
 **Related Documentation:** [Commit Configuration Guide](../configuration/commit-behavior.md)
@@ -170,13 +170,13 @@ behavior = "enabled"  # Basic commit instructions
 
 ## Branch Configuration (project.toml)
 
-Controls whether and how nia creates/checks out a dedicated git branch before working on a task.
+Controls whether and how frg creates/checks out a dedicated git branch before working on a task.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `behavior` | string | No | Branch creation mode: "auto" (default) or "off" |
 | `base` | string | No | Ref to fork newly created branches from. Unset = fork from whatever is currently checked out |
-| `naming` | string | No | Naming template. Default: `"nia/issue-{issue}-{slug}"`. Tokens: `{target}`, `{action}`, `{slug}`, `{issue}`, `{date}` |
+| `naming` | string | No | Naming template. Default: `"forge/issue-{issue}-{slug}"`. Tokens: `{target}`, `{action}`, `{slug}`, `{issue}`, `{date}` |
 | `checkout` | boolean | No | Whether to check out the branch after creating it (default: `true`) |
 | `on_dirty` | string | No | What to do when the working tree is dirty: "carry" (default), "stash", or "error" |
 | `on_collision` | string | No | What to do when the resolved branch name already exists: "checkout" (default), "suffix", or "error" |
@@ -185,7 +185,7 @@ Controls whether and how nia creates/checks out a dedicated git branch before wo
 ```toml
 [branch]
 behavior = "auto"       # "auto" branches whenever commit instructions would be enabled; "off" never branches
-naming = "nia/issue-{issue}-{slug}"
+naming = "forge/issue-{issue}-{slug}"
 checkout = true
 on_dirty = "carry"       # "carry" | "stash" | "error"
 on_collision = "checkout" # "checkout" | "suffix" | "error"
@@ -281,7 +281,7 @@ issue = { commits = "off" }
 
 ---
 
-## Context Configuration (.nia/context.toml)
+## Context Configuration (.forge/context.toml)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -298,14 +298,14 @@ service_name = "api"
 
 **Setting via commands:**
 ```bash
-nia config set-issue 123
-nia config set-pr 456
+frg config set-issue 123
+frg config set-pr 456
 ```
 
 **Setting via environment:**
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
 ```
 
 **Precedence:** Environment variables > context.toml > None

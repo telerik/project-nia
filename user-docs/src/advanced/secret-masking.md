@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nia automatically masks secrets and sensitive information in agent output before writing to trace files or displaying via `nia --tail`. This security feature prevents credentials, API keys, tokens, and other secrets from being persisted to disk or exposed in terminal output.
+Progress Forge automatically masks secrets and sensitive information in agent output before writing to trace files or displaying via `frg --tail`. This security feature prevents credentials, API keys, tokens, and other secrets from being persisted to disk or exposed in terminal output.
 
 > **🔒 Security by Default**
 >
@@ -10,17 +10,17 @@ Nia automatically masks secrets and sensitive information in agent output before
 
 ## How It Works
 
-When an agent executes commands or displays output, nia applies pattern-based detection to identify secrets before they reach:
+When an agent executes commands or displays output, frg applies pattern-based detection to identify secrets before they reach:
 
-1. **Trace files** (`.nia/work/job_*/traces/*.md`)
-2. **Live streaming** via `nia --tail`
+1. **Trace files** (`.forge/work/job_*/traces/*.md`)
+2. **Live streaming** via `frg --tail`
 3. **Terminal output** during agent execution
 
 Detected secrets are replaced with `***REDACTED***` placeholders, preserving readability while protecting sensitive data.
 
 ### Pattern Detection
 
-Nia uses **gitleaks** as the pattern source of truth. The `.gitleaks.toml` configuration file defines what patterns are considered secrets.
+Progress Forge uses **gitleaks** as the pattern source of truth. The `.gitleaks.toml` configuration file defines what patterns are considered secrets.
 
 **Default patterns include:**
 - AWS access keys and secret keys
@@ -41,10 +41,10 @@ Nia uses **gitleaks** as the pattern source of truth. The `.gitleaks.toml` confi
 
 | Priority | Location | Use Case |
 |----------|----------|----------|
-| 1 (Highest) | `.nia/config/.gitleaks.toml` | Repository-specific patterns |
-| 2 | `<app_root>/.nia/config/.gitleaks.toml` | Application-level patterns (monorepos) |
-| 3 | `~/.nia/.gitleaks.toml` | User-specific patterns |
-| 4 | `~/.config/nia/.gitleaks.toml` | System-wide patterns |
+| 1 (Highest) | `.forge/config/.gitleaks.toml` | Repository-specific patterns |
+| 2 | `<app_root>/.forge/config/.gitleaks.toml` | Application-level patterns (monorepos) |
+| 3 | `~/.forge/.gitleaks.toml` | User-specific patterns |
+| 4 | `~/.config/forge/.gitleaks.toml` | System-wide patterns |
 | 5 (Lowest) | Built-in defaults | Fallback patterns |
 
 This hierarchy allows you to:
@@ -54,10 +54,10 @@ This hierarchy allows you to:
 
 ### Basic Configuration Structure
 
-Create or edit `.nia/config/.gitleaks.toml` in your repository:
+Create or edit `.forge/config/.gitleaks.toml` in your repository:
 
 ```toml
-# .nia/config/.gitleaks.toml
+# .forge/config/.gitleaks.toml
 title = "My Project Secret Detection"
 
 [extend]
@@ -99,7 +99,7 @@ You can extend the default patterns to detect secrets specific to your organizat
 If your company uses internal API tokens with format `COMPANY_xxxxx`:
 
 ```toml
-# .nia/config/.gitleaks.toml
+# .forge/config/.gitleaks.toml
 title = "Acme Corp Secret Detection"
 
 [extend]
@@ -122,7 +122,7 @@ regexes = [
 Detect your organization's specific database URL format:
 
 ```toml
-# .nia/config/.gitleaks.toml
+# .forge/config/.gitleaks.toml
 title = "Database Connection Security"
 
 [extend]
@@ -146,7 +146,7 @@ keywords = ["redis://"]
 For SaaS platforms or internal tools with unique token formats:
 
 ```toml
-# .nia/config/.gitleaks.toml
+# .forge/config/.gitleaks.toml
 title = "SaaS Platform Tokens"
 
 [extend]
@@ -177,7 +177,7 @@ keywords = ["jenkins", "api-token"]
 For teams with multiple environments and tools:
 
 ```toml
-# .nia/config/.gitleaks.toml
+# .forge/config/.gitleaks.toml
 title = "Engineering Team Secret Detection"
 
 [extend]
@@ -251,7 +251,7 @@ stopwords = [
 ### Example: Monorepo with Multiple Services
 
 ```toml
-# <monorepo_root>/.nia/config/.gitleaks.toml
+# <monorepo_root>/.forge/config/.gitleaks.toml
 # Application-level config shared across all services
 title = "Monorepo Security Patterns"
 
@@ -264,13 +264,13 @@ id = "company-internal-token"
 description = "Company internal service tokens"
 regex = '''COMPANY_SVC_[A-Z0-9]{32}'''
 
-# Each service repository can override with its own .nia/config/.gitleaks.toml
+# Each service repository can override with its own .forge/config/.gitleaks.toml
 ```
 
 ### Example: User-Level Customization
 
 ```toml
-# ~/.nia/.gitleaks.toml
+# ~/.forge/.gitleaks.toml
 # Personal preferences for all your projects
 title = "Personal Development Patterns"
 
@@ -302,16 +302,16 @@ After adding custom patterns, verify they work:
 2. **Check if masking works:**
    ```bash
    # Run an agent that displays the test file
-   nia ask "show me the contents of test_secret.txt"
+   frg ask "show me the contents of test_secret.txt"
 
    # Check the trace file
-   grep "***REDACTED***" .nia/work/job_*/traces/*.md
+   grep "***REDACTED***" .forge/work/job_*/traces/*.md
    ```
 
 3. **Verify pattern count:**
    The masking module logs pattern statistics at startup:
    ```
-   [nia:security] Loaded 23 secret patterns from .gitleaks.toml
+   [forge:security] Loaded 23 secret patterns from .gitleaks.toml
    ```
 
 ### Testing Allowlist Patterns
@@ -326,7 +326,7 @@ echo "test_api_key_12345" > test_allowlist.txt
 echo "ACME_1234567890abcdef1234567890abcdef12345678" > test_real.txt
 
 # Run agent and check
-nia ask "show contents of both files"
+frg ask "show contents of both files"
 ```
 
 ## Troubleshooting
@@ -340,7 +340,7 @@ nia ask "show contents of both files"
 1. **Check if pattern exists:**
    ```bash
    # View your gitleaks config
-   cat .nia/config/.gitleaks.toml
+   cat .forge/config/.gitleaks.toml
    ```
 
 2. **Add a custom rule:**
@@ -383,16 +383,16 @@ nia ask "show contents of both files"
 **Solutions:**
 
 1. **Check file location:**
-   Ensure `.gitleaks.toml` is in `.nia/config/` directory (not project root)
+   Ensure `.gitleaks.toml` is in `.forge/config/` directory (not project root)
 
 2. **Verify TOML syntax:**
    ```bash
    # Test with toml parser
-   python3 -c "import toml; toml.load('.nia/config/.gitleaks.toml')"
+   python3 -c "import toml; toml.load('.forge/config/.gitleaks.toml')"
    ```
 
 3. **Check for parse errors:**
-   Look for warnings in nia output:
+   Look for warnings in frg output:
    ```
    WARN Failed to load .gitleaks.toml, using default configuration
    ```
@@ -440,9 +440,9 @@ regex = '''SVC_(prod|staging|dev)_[A-Za-z0-9+/]{43}='''
 
 ### 5. Version Control Configuration
 
-Commit `.nia/config/.gitleaks.toml` to version control so the entire team benefits:
+Commit `.forge/config/.gitleaks.toml` to version control so the entire team benefits:
 ```bash
-git add .nia/config/.gitleaks.toml
+git add .forge/config/.gitleaks.toml
 git commit -m "feat: add custom secret masking patterns"
 ```
 
@@ -463,13 +463,13 @@ Audit your patterns when:
 ### What Gets Masked
 
 ✅ **Protected:**
-- Trace files (`.nia/work/job_*/traces/*.md`)
+- Trace files (`.forge/work/job_*/traces/*.md`)
 - Live `--tail` output
 - Terminal output during agent execution
 
 ❌ **Not Protected:**
 - Files already committed to git
-- Manual `cat` or `echo` commands outside nia
+- Manual `cat` or `echo` commands outside forge
 - Network traffic to external services
 - Clipboard contents
 
@@ -494,11 +494,11 @@ If you have `.gitleaks.toml` in your project root:
 
 ```bash
 # Move to hierarchical location
-mkdir -p .nia/config
-mv .gitleaks.toml .nia/config/.gitleaks.toml
+mkdir -p .forge/config
+mv .gitleaks.toml .forge/config/.gitleaks.toml
 
 # Verify it's loaded
-nia ask "test" 2>&1 | grep "Loaded.*patterns"
+frg ask "test" 2>&1 | grep "Loaded.*patterns"
 ```
 
 ## See Also

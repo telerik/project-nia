@@ -2,19 +2,19 @@
 
 ## Overview
 
-The `nia app` command enables coordination of development workflows across multiple repositories that make up a single application. Instead of manually running commands in each repository, `nia app` orchestrates operations at the application level.
+The `frg app` command enables coordination of development workflows across multiple repositories that make up a single application. Instead of manually running commands in each repository, `frg app` orchestrates operations at the application level.
 
 ## Automated Repository Setup
 
-Before running multi-repository commands, child repositories need `project.toml` configuration with the correct `allow_app` UUID. nia provides automated setup via AI analysis.
+Before running multi-repository commands, child repositories need `project.toml` configuration with the correct `allow_app` UUID. frg provides automated setup via AI analysis.
 
-### Automatic Configuration (`nia app discover --auto`)
+### Automatic Configuration (`frg app discover --auto`)
 
 Automatically generate `project.toml` for all discovered child repositories:
 
 ```bash
 cd /path/to/app-parent
-nia app discover --auto
+frg app discover --auto
 ```
 
 **What it does:**
@@ -45,7 +45,7 @@ Do you want to proceed? [y/N]:
 
 **Example Output:**
 ```
-Warning bypassed via NIA_ACCEPT_AUTO_RISK environment variable.
+Warning bypassed via FORGE_ACCEPT_AUTO_RISK environment variable.
 
 Analyzing service-rust...
   ✓ Created project.toml
@@ -61,12 +61,12 @@ Analyzing service-node...
 └─────────────────────────────────────────────────────────────────┘
 
 ⚠️  Review generated configurations before using.
-   Run `nia config init --interactive` in specific repos to fix issues.
+   Run `frg config init --interactive` in specific repos to fix issues.
 ```
 
 **CI/CD Usage**: Bypass the interactive prompt in automated environments:
 ```bash
-NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
+FORGE_ACCEPT_AUTO_RISK=true frg app discover --auto
 ```
 
 **Important Notes:**
@@ -81,20 +81,20 @@ NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
 - Regenerating configurations after cleanup
 
 **When not to use:**
-- For single-repository setup (use `nia config init --interactive` instead)
+- For single-repository setup (use `frg config init --interactive` instead)
 - When repositories already have `project.toml` (skipped automatically)
 - For fine-grained control over each field (use interactive mode)
 
 **Related Commands:**
-- `nia config init --interactive` - Interactive initialization for single repos with per-field approval
-- `nia app discover` - Discover and save repositories without initialization
-- `nia app discover --force` - Re-discover and overwrite repository list in application.toml
+- `frg config init --interactive` - Interactive initialization for single repos with per-field approval
+- `frg app discover` - Discover and save repositories without initialization
+- `frg app discover --force` - Re-discover and overwrite repository list in application.toml
 
 ---
 
 ## Prerequisites
 
-1. **Application Configuration**: Create `.nia/config/application.toml` in a parent directory:
+1. **Application Configuration**: Create `.forge/config/application.toml` in a parent directory:
 
 ```toml
 [[application.repositories]]
@@ -113,7 +113,7 @@ name = "my-app-database"
 allow_app = "550e8400-e29b-41d4-a716-446655440000"
 ```
 
-2. **Repository Configuration**: Each repository must have matching `allow_app` UUID in `.nia/config/project.toml`:
+2. **Repository Configuration**: Each repository must have matching `allow_app` UUID in `.forge/config/project.toml`:
 
 ```toml
 [project]
@@ -123,79 +123,79 @@ allow_app = "550e8400-e29b-41d4-a716-446655440000"
 ## Command Syntax
 
 ```bash
-nia app <target> <operation> [flags]
+frg app <target> <operation> [flags]
 ```
 
 Examples:
 ```bash
-nia app issue draft
-nia app issue plan
-nia app code create
-nia app code review
-nia app pr draft
-nia app pr publish
-nia app pr review
-nia app pr merge
+frg app issue draft
+frg app issue plan
+frg app code create
+frg app code review
+frg app pr draft
+frg app pr publish
+frg app pr review
+frg app pr merge
 ```
 
 ## Execution Modes
 
-The `nia app` command uses two distinct execution modes:
+The `frg app` command uses two distinct execution modes:
 
 ### Direct Execution (Default)
 
 Commands run **once** at the application level with aggregated repository context:
-- `nia app issue draft` - Creates a single issue document for the entire feature
-- `nia app issue split` - Splits the issue into repository-specific sections
-- `nia app code review` - Reviews the entire feature across all repositories holistically
+- `frg app issue draft` - Creates a single issue document for the entire feature
+- `frg app issue split` - Splits the issue into repository-specific sections
+- `frg app code review` - Reviews the entire feature across all repositories holistically
 
 ### Workflow Execution
 
-Commands run via `nia workflow run <workflow-name>` in **each repository**:
-- `nia app issue plan` - Runs `issue-to-plan` workflow per-repository
-- `nia app code create` - Runs `code-to-review` workflow per-repository
-- `nia app pr draft` - Runs `pr-create-publish` workflow per-repository
-- `nia app pr publish` - Runs `pr-create-publish` workflow per-repository
-- `nia app pr review` - Runs `pr-review-merge` workflow per-repository
-- `nia app pr merge` - Runs `pr-review-merge` workflow per-repository
+Commands run via `frg workflow run <workflow-name>` in **each repository**:
+- `frg app issue plan` - Runs `issue-to-plan` workflow per-repository
+- `frg app code create` - Runs `code-to-review` workflow per-repository
+- `frg app pr draft` - Runs `pr-create-publish` workflow per-repository
+- `frg app pr publish` - Runs `pr-create-publish` workflow per-repository
+- `frg app pr review` - Runs `pr-review-merge` workflow per-repository
+- `frg app pr merge` - Runs `pr-review-merge` workflow per-repository
 
 ## Typical Multi-Repository Workflow
 
 ```bash
 # 1. Set context (issue ID)
-nia config set-issue 374
+frg config set-issue 374
 
 # 2. Draft issue once at application level
 cd /path/to/app-parent
-nia app issue draft
+frg app issue draft
 
 # 3. Plan implementation in each repository
 #    (includes local issue re-drafting with codebase context)
-nia app issue plan
+frg app issue plan
 
 # 4. Generate code in each repository
 #    (includes local code review before global review)
-nia app code create
+frg app code create
 
 # 5. Review entire feature across all repositories
-nia app code review
+frg app code review
 
 # 6. Create PRs and publish descriptions in each repository
-nia app pr draft        # Or: nia app pr publish
+frg app pr draft        # Or: frg app pr publish
 
 # 7. Review and merge PRs in each repository
-nia app pr review       # Or: nia app pr merge
+frg app pr review       # Or: frg app pr merge
 ```
 
-## Special Behavior: `nia app pr` Commands
+## Special Behavior: `frg app pr` Commands
 
 The PR command group has **unified workflow behavior** to prevent duplicate PRs and enable safe re-execution:
 
-### `nia app pr draft` and `nia app pr publish`
+### `frg app pr draft` and `frg app pr publish`
 
 Both commands run the **same workflow** (`pr-create-publish`):
 
-1. **Check if PR exists** - Looks for `pr_id` in `.nia/context.toml`
+1. **Check if PR exists** - Looks for `pr_id` in `.forge/context.toml`
 2. **Create PR if needed** - Skipped if PR already exists
 3. **Draft PR description** - Generates PR description
 4. **Publish to GitHub** - Updates PR with description
@@ -205,16 +205,16 @@ Both commands run the **same workflow** (`pr-create-publish`):
 **Example usage:**
 ```bash
 # First run: Creates PR + drafts + publishes
-nia app pr draft
+frg app pr draft
 
 # Later: Skips creation, only updates description
-nia app pr publish
+frg app pr publish
 
 # Skip to publish step if PR exists and draft is ready
-nia app pr publish --start-from pr_publish
+frg app pr publish --start-from pr_publish
 ```
 
-### `nia app pr review` and `nia app pr merge`
+### `frg app pr review` and `frg app pr merge`
 
 Both commands run the **same workflow** (`pr-review-merge`):
 
@@ -228,16 +228,16 @@ Both commands run the **same workflow** (`pr-review-merge`):
 **Example usage:**
 ```bash
 # First run: Review + wait for approval + merge
-nia app pr review
+frg app pr review
 
 # Re-run to check status or merge
-nia app pr merge
+frg app pr merge
 
 # Skip directly to merge if review is done
-nia app pr merge --start-from pr_merge
+frg app pr merge --start-from pr_merge
 
 # Skip directly to approval gate if review is complete
-nia app pr merge --start-from await_pr_approval
+frg app pr merge --start-from await_pr_approval
 ```
 
 ## Advanced: Using `--start-from`
@@ -247,34 +247,34 @@ The `--start-from` flag lets you jump to specific workflow states:
 ### For `pr-create-publish` workflow:
 ```bash
 # Skip PR creation if PR already exists
-nia app pr draft --start-from pr_draft
+frg app pr draft --start-from pr_draft
 
 # Skip directly to publish step
-nia app pr publish --start-from pr_publish
+frg app pr publish --start-from pr_publish
 ```
 
 ### For `pr-review-merge` workflow:
 ```bash
 # Skip directly to approval gate
-nia app pr merge --start-from await_pr_approval
+frg app pr merge --start-from await_pr_approval
 
 # Skip directly to merge
-nia app pr merge --start-from pr_merge
+frg app pr merge --start-from pr_merge
 ```
 
 ## Context Propagation
 
 Context is shared across all repositories:
 
-- **Issue ID**: Set once with `nia config set-issue <number>`
-- **Ticket ID**: Set once with `nia config set-ticket <id>`
-- **PR ID**: Generated per-repository, stored in each repo's `.nia/context.toml`
+- **Issue ID**: Set once with `frg config set-issue <number>`
+- **Ticket ID**: Set once with `frg config set-ticket <id>`
+- **PR ID**: Generated per-repository, stored in each repo's `.forge/context.toml`
 
 Example:
 ```bash
 # Set issue context at app level
 cd /path/to/app-parent
-nia config set-issue 374
+frg config set-issue 374
 
 # All child repositories inherit issue_id=374
 # Each repository will have its own pr_id after PR creation
@@ -284,7 +284,7 @@ nia config set-issue 374
 
 All repositories must:
 1. Exist at the specified path
-2. Have matching `allow_app` UUID in `.nia/config/project.toml`
+2. Have matching `allow_app` UUID in `.forge/config/project.toml`
 
 If validation fails:
 ```
@@ -296,7 +296,7 @@ Found:    123e4567-e89b-12d3-a456-426614174000
 
 ## Missing Repositories
 
-If a repository path doesn't exist, `nia` warns but continues with available repositories:
+If a repository path doesn't exist, `frg` warns but continues with available repositories:
 
 ```
 ⚠️  Warning: Repository path not found: frontend
@@ -318,7 +318,7 @@ All standard flags are passed through to the underlying command:
 
 Example:
 ```bash
-nia app code review --model claude-opus-5 --quiet
+frg app code review --model claude-opus-5 --quiet
 ```
 
 ### Workflow Execution Mode
@@ -337,12 +337,12 @@ Only workflow-compatible flags are supported:
 Example:
 ```bash
 # ✅ Supported
-nia app issue plan --quiet --bypass-approvals
+frg app issue plan --quiet --bypass-approvals
 
 # ❌ Not supported (will show helpful error)
-nia app issue plan --model claude-opus-5
+frg app issue plan --model claude-opus-5
 # Error: --model flag is not supported for workflow execution commands.
-# Workflow agent models are configured in .nia/config/agents.toml
+# Workflow agent models are configured in .forge/config/agents.toml
 ```
 
 ## Model Configuration for App Commands
@@ -350,7 +350,7 @@ nia app issue plan --model claude-opus-5
 App commands use the standard `agents.toml` configuration with the format `"app.target.operation"`:
 
 ```toml
-# .nia/config/agents.toml
+# .forge/config/agents.toml
 [agents]
 "app.issue.draft" = "claude-opus-5"
 "app.code.review" = "claude-sonnet-5"
@@ -371,12 +371,12 @@ completion is detected once a workflow finishes (see below).
 
 ## Monitoring and Completion Detection
 
-While a workflow executes in each child repository, the parent `nia app` process polls each child's
-`.nia/work/job_<issue-id>/logs/transaction.jsonl` every 3 seconds. This transaction log is the **single
-source of truth** — it is exactly what `nia workflow status` reads inside the child repository, so the
+While a workflow executes in each child repository, the parent `frg app` process polls each child's
+`.forge/work/job_<issue-id>/logs/transaction.jsonl` every 3 seconds. This transaction log is the **single
+source of truth** — it is exactly what `frg workflow status` reads inside the child repository, so the
 parent's view and the child's own view agree whenever the parent reaches a terminal state within its
 detection bound. If the parent instead reports `Unknown` (see below), no terminal transition was found
-in that bound; `nia workflow status` run inside the child repository remains the authoritative live
+in that bound; `frg workflow status` run inside the child repository remains the authoritative live
 view of what the workflow is actually doing.
 
 **Detection bound**: once a child's terminal state is durably written to its transaction log, the parent
@@ -391,17 +391,17 @@ The parent never waits indefinitely. Every repository ends the run in exactly on
 |---|---|
 | `Done` | The workflow completed successfully. |
 | `Failed` | The workflow ended with an error. |
-| `Needs Approval` | The workflow reached an approval gate. When `nia app` is attached to an interactive terminal, it can be approved or rejected from the parent's own approvals console (see [Resolving approval gates](#resolving-approval-gates) below); otherwise, run `nia workflow approve` inside that child repository, then re-run the `nia app` command. |
-| `Unknown` | No terminal transition was found in the child's transaction log within the detection bound. Run `nia workflow status` inside the named child repository to inspect its own view directly. |
+| `Needs Approval` | The workflow reached an approval gate. When `frg app` is attached to an interactive terminal, it can be approved or rejected from the parent's own approvals console (see [Resolving approval gates](#resolving-approval-gates) below); otherwise, run `frg workflow approve` inside that child repository, then re-run the `frg app` command. |
+| `Unknown` | No terminal transition was found in the child's transaction log within the detection bound. Run `frg workflow status` inside the named child repository to inspect its own view directly. |
 
 ## Finding Command Output
 
 | Execution mode | Where artifacts are written |
 |---|---|
-| Direct | Parent application directory: `.nia/work/job_<id>/` |
-| Workflow | Each child repository: `.nia/work/job_<id>/` inside that repository |
+| Direct | Parent application directory: `.forge/work/job_<id>/` |
+| Workflow | Each child repository: `.forge/work/job_<id>/` inside that repository |
 
-After every `nia app` run, the parent job directory also contains:
+After every `frg app` run, the parent job directory also contains:
 
 - `app_index.toml` — machine-readable artifact pointers
 - `app_index.md` — human-readable summary with repository outcomes and paths
@@ -410,33 +410,33 @@ Example repository table:
 
 ```text
 | Repository | Outcome | Job directory | Artifacts | Logs |
-| api-service | Done | `../api-service/.nia/work/job_1225` | 4 | `../api-service/.nia/work/job_1225/logs/system.log` |
+| api-service | Done | `../api-service/.forge/work/job_1225` | 4 | `../api-service/.forge/work/job_1225/logs/system.log` |
 ```
 
-> **Read-only:** The index contains paths only. Artifacts are owned by the repository that produced them — run `nia issue plan --edit` (and every other edit command) from inside that repository. Editing anything in the parent folder has no effect on the workflow.
+> **Read-only:** The index contains paths only. Artifacts are owned by the repository that produced them — run `frg issue plan --edit` (and every other edit command) from inside that repository. Editing anything in the parent folder has no effect on the workflow.
 
-Use `nia app status` to re-render artifact locations later:
+Use `frg app status` to re-render artifact locations later:
 
 ```bash
-nia app status
-nia app status --job 1225
-nia app status --paths
+frg app status
+frg app status --job 1225
+frg app status --paths
 ```
 
-`nia app status` also works for job directories created before the index existed; when no recorded
+`frg app status` also works for job directories created before the index existed; when no recorded
 index is present it falls back to scanning the repositories listed in `application.toml`.
 
 To investigate a failed child repository, open the `system.log` and `transaction.jsonl` paths shown
-in the index, or run `nia workflow status` inside that repository.
+in the index, or run `frg workflow status` inside that repository.
 
-Known limitation: two simultaneous `nia app` runs for the same issue overwrite each other's index
+Known limitation: two simultaneous `frg app` runs for the same issue overwrite each other's index
 (last writer wins). Each index records `run_id` and `generated_at`, so the winning run is still
 identifiable.
 
 ## Resolving approval gates
 
 Each repository's approval gate is independent: its own code, message and `timeout_seconds`. When
-`nia app` runs in an interactive terminal, a repository blocked at a gate shows its code inline in
+`frg app` runs in an interactive terminal, a repository blocked at a gate shows its code inline in
 the status table (`⏸ Needs Approval (code ABCD1234)`), and the parent process arms a small
 line-oriented console the moment at least one repository is pending — no second terminal required.
 
@@ -460,39 +460,39 @@ the whole selection, then reports the outcome per repository — `approved`, `re
 repository is never hidden by another repository's success.
 
 Every resolution, whether typed into this console or run out-of-band, goes through the same
-`nia workflow approve` / `nia workflow reject` validation and audit trail, so the two paths can be
+`frg workflow approve` / `frg workflow reject` validation and audit trail, so the two paths can be
 mixed freely: if another session (or a second terminal) resolves a gate first, the console reports
 it as resolved elsewhere on its next poll and simply continues.
 
 Per-gate `timeout_seconds` keeps running while the console is open; a repository that times out
 leaves `Needs Approval` on its own, exactly as it would with no console attached.
 
-The console never arms — and behaves exactly as before this feature — when `nia app` is not
+The console never arms — and behaves exactly as before this feature — when `frg app` is not
 attached to an interactive terminal (piped output, `--quiet`, CI, or
-`NIA_DISABLE_INLINE_APPROVAL=1`). In those cases, resolve gates with `nia workflow approve` /
-`nia workflow reject` from inside the child repository as usual.
+`FORGE_DISABLE_INLINE_APPROVAL=1`). In those cases, resolve gates with `frg workflow approve` /
+`frg workflow reject` from inside the child repository as usual.
 
 See `tests/manual_app_inline_approval.md` in the repository for manual test procedures covering
 concurrent gates, batches, out-of-band races, and interrupt/timeout behavior.
 
 ## Troubleshooting
 
-### Q: My PR was created twice when I ran `nia app pr draft` then `nia app pr publish`
+### Q: My PR was created twice when I ran `frg app pr draft` then `frg app pr publish`
 
 A: This should not happen with Phase 10 workflows. The `pr-create-publish` workflow checks for existing PRs. If you're seeing duplicates, ensure:
-1. You're running nia version with Phase 10 updates
+1. You're running frg version with Phase 10 updates
 2. The PR creation step completed successfully and saved `pr_id` to `context.toml`
 
 ### Q: I want to skip PR review and go straight to merge
 
 A: Use the `--start-from` flag:
 ```bash
-nia app pr merge --start-from pr_merge
+frg app pr merge --start-from pr_merge
 ```
 
-### Q: Can I use `--lite` flag with `nia app` commands?
+### Q: Can I use `--lite` flag with `frg app` commands?
 
-A: The `--lite` flag is **never supported** with `nia app` commands. App-level operations require comprehensive analysis across multiple repositories.
+A: The `--lite` flag is **never supported** with `frg app` commands. App-level operations require comprehensive analysis across multiple repositories.
 
 ### Q: How do I know which workflow a command uses?
 
@@ -508,7 +508,7 @@ Multi-repository commands use **context-adaptive prompts** that automatically ad
 
 ### Architecture Detection
 
-When you run `nia app` commands, the AI agent receives an `<application>` XML block describing your repository structure. The agent detects your architecture based on context signals:
+When you run `frg app` commands, the AI agent receives an `<application>` XML block describing your repository structure. The agent detects your architecture based on context signals:
 
 | Context Signal | Architecture Type | Agent Behavior |
 |----------------|-------------------|----------------|
@@ -533,11 +533,11 @@ For multi-repository and monorepo scenarios, repositories/services are identifie
 
 ### File Naming Conventions
 
-When commands like `nia app issue split` create multiple output files, they use slug-based naming:
+When commands like `frg app issue split` create multiple output files, they use slug-based naming:
 
 **Multi-Repository:**
 ```
-.nia/work/job_123/issue/
+.forge/work/job_123/issue/
 ├── issue_api-service.md
 ├── issue_web-ui.md
 └── issue_database.md
@@ -545,7 +545,7 @@ When commands like `nia app issue split` create multiple output files, they use 
 
 **Monolith (traditional):**
 ```
-.nia/work/job_123/issue/
+.forge/work/job_123/issue/
 ├── issue_a.md
 ├── issue_b.md
 └── issue_c.md

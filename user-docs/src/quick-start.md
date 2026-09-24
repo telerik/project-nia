@@ -1,40 +1,40 @@
 # Quick Start
 
-NIA is a command-line agent harness for software development life cycle (SDLC) workflows. It connects your project context and development tools to an AI coding agent so you can draft issues, create plans, review code, and run other configured workflows.
+Progress Forge is a command-line agent harness for software development life cycle (SDLC) workflows. It connects your project context and development tools to an AI coding agent so you can draft issues, create plans, review code, and run other configured workflows.
 
-This guide takes you from installing NIA to configuring a supported AI coding agent, initializing NIA in a project, and running an Issue-to-PR workflow that begins by setting an issue context and generating a plan with `nia issue plan`. The examples cover GitHub Copilot CLI, Claude Code, and OpenCode — use the tabs to pick your agent. GitHub Copilot CLI is the shortest path in this tutorial. The [AI coding agent setup guide](./agents/setup.md) contains the agent-specific requirements and authentication commands.
+This guide takes you from installing Forge to configuring a supported AI coding agent, initializing Forge in a project, and running an Issue-to-PR workflow that begins by setting an issue context and generating a plan with `frg issue plan`. The examples cover GitHub Copilot CLI, Claude Code, and OpenCode — use the tabs to pick your agent. GitHub Copilot CLI is the shortest path in this tutorial. The [AI coding agent setup guide](./agents/setup.md) contains the agent-specific requirements and authentication commands.
 
-> **Want a guided, hands-on tour first?** The [Quick Start with the Sample App](./quick-start-sample-app.md) runs NIA's built-in `nia learn` tutorials against a ready-made codebase — no configuration required. Come back here when you are ready to adopt NIA in your own project.
+> **Want a guided, hands-on tour first?** The [Quick Start with the Sample App](./quick-start-sample-app.md) runs Forge's built-in `frg learn` tutorials against a ready-made codebase — no configuration required. Come back here when you are ready to adopt Forge in your own project.
 
 ## Prerequisites
 
 Before you begin, ensure that you have:
 
 * **Node.js 18+** (`node --version`) — the coding agents install via npm. Get it from [nodejs.org](https://nodejs.org).
-* **GitHub CLI** (`gh --version` & `gh auth status`) — installs and authenticates NIA. Install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh` and then authenticate.
-* NIA runs inside a project, so you need a local Git repository to work in. This guide uses your own project. If you would rather practice on a ready-made codebase with guided tutorials, follow the [Quick Start with the Sample App](./quick-start-sample-app.md) instead.
+* **GitHub CLI** (`gh --version` & `gh auth status`) — installs and authenticates Forge. Install with `brew install gh`, `winget install --id GitHub.cli`, or `sudo apt install gh` and then authenticate.
+* Forge runs inside a project, so you need a local Git repository to work in. This guide uses your own project. If you would rather practice on a ready-made codebase with guided tutorials, follow the [Quick Start with the Sample App](./quick-start-sample-app.md) instead.
 
 ## Installation & Verification
 
-Make the `nia` command available in a new terminal.
+Make the `frg` command available in a new terminal.
 
 1. Download and run the installer:
 
-<div class="nia-tabs" data-group="os">
-<div class="nia-tab" data-title="Windows (PowerShell)">
+<div class="forge-tabs" data-group="os">
+<div class="forge-tab" data-title="Windows (PowerShell)">
 
 Requires **PowerShell 6+** (PowerShell 7 recommended). `$PSVersionTable.PSVersion.Major` must be 6 or higher; install PowerShell with `winget install Microsoft.PowerShell` and open a new `pwsh` terminal. If you have the GitHub CLI, run:
 
 ```powershell
 gh release download --repo telerik/project-nia --pattern 'install.ps1'
 # Install to a user-writable location so no administrator rights are needed:
-.\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\Nia"
+.\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\Forge"
 ```
 
 > **No GitHub CLI, or the installer is blocked?** See [Install on Windows 11 Client](./getting-started/installation.md#install-on-windows-11-client) for manual binary download and PATH setup steps.
 
 </div>
-<div class="nia-tab" data-title="Linux / macOS">
+<div class="forge-tab" data-title="Linux / macOS">
 
 ```bash
 gh release download --repo telerik/project-nia --pattern 'install.sh'
@@ -49,17 +49,17 @@ sh install.sh
 3. Verify the installation.
 
 	```bash
-	nia --version
+	frg --version
 	```
 
-The terminal prints a NIA version number, for example `nia 4.2.1`. If the command is not found, open a new terminal and confirm that the directory containing the NIA executable is on your `PATH`.
+The terminal prints a Forge version number, for example `frg 4.2.1`. If the command is not found, open a new terminal and confirm that the directory containing the `frg` executable is on your `PATH`.
 
 4. Install and authenticate an AI coding agent.
 
-Give NIA an authenticated coding agent that can execute a workflow. You can change agents later by re-running `config init`.
+Give Forge an authenticated coding agent that can execute a workflow. You can change agents later by re-running `config init`.
 
-<div class="nia-tabs" data-group="agent">
-<div class="nia-tab" data-title="GitHub Copilot CLI">
+<div class="forge-tabs" data-group="agent">
+<div class="forge-tab" data-title="GitHub Copilot CLI">
 
 1. Install the CLI. Node.js and npm must be available:
 
@@ -76,7 +76,7 @@ Give NIA an authenticated coding agent that can execute a workflow. You can chan
 	```
 
 </div>
-<div class="nia-tab" data-title="Claude Code">
+<div class="forge-tab" data-title="Claude Code">
 
 1. Install the CLI. Node.js and npm must be available:
 
@@ -88,7 +88,7 @@ Give NIA an authenticated coding agent that can execute a workflow. You can chan
 2. Authenticate by running `claude` once. It opens your browser to sign in and stores the token locally. If the browser cannot open — common over SSH or WSL — the CLI prints a URL and a code to paste back into the terminal.
 
 </div>
-<div class="nia-tab" data-title="OpenCode">
+<div class="forge-tab" data-title="OpenCode">
 
 1. Install the CLI. Node.js and npm must be available:
 
@@ -106,9 +106,9 @@ Give NIA an authenticated coding agent that can execute a workflow. You can chan
 </div>
 </div>
 
-5. Initialize NIA Configuration.
+5. Initialize Forge Configuration.
 
-Run `nia config init` from the root of your project, such as a locally cloned Git repository (for example, https://github.com/telerik/healthcare-app-angular). The command creates the NIA configuration files that store your AI agent, project metadata, and optional toolchain connections.
+Run `frg config init` from the root of your project, such as a locally cloned Git repository (for example, https://github.com/telerik/healthcare-app-angular). The command creates the Forge configuration files that store your AI agent, project metadata, and optional toolchain connections.
 
 Choose the initialization command that matches your setup:
 
@@ -116,25 +116,25 @@ Choose the initialization command that matches your setup:
 
 Use this command when your workflows will read issues from GitHub or work with a GitHub repository. Pick the tab for the agent you set up in the previous step:
 
-<div class="nia-tabs" data-group="agent">
-<div class="nia-tab" data-title="GitHub Copilot CLI">
+<div class="forge-tabs" data-group="agent">
+<div class="forge-tab" data-title="GitHub Copilot CLI">
 
 ```bash
-nia config init --issues github_issues --code github --agent github_copilot --models stable
+frg config init --issues github_issues --code github --agent github_copilot --models stable
 ```
 
 </div>
-<div class="nia-tab" data-title="Claude Code">
+<div class="forge-tab" data-title="Claude Code">
 
 ```bash
-nia config init --issues github_issues --code github --agent claude_code --models stable
+frg config init --issues github_issues --code github --agent claude_code --models stable
 ```
 
 </div>
-<div class="nia-tab" data-title="OpenCode">
+<div class="forge-tab" data-title="OpenCode">
 
 ```bash
-nia config init --issues github_issues --code github --agent opencode --models stable
+frg config init --issues github_issues --code github --agent opencode --models stable
 ```
 
 </div>
@@ -144,27 +144,27 @@ This command creates configuration for the selected AI coding agent, GitHub Issu
 
 * Use a Local-Only Setup
 
-Use this command when you do not want to connect NIA to an external issue tracker or code platform. Pick the tab for the agent you set up in the previous step:
+Use this command when you do not want to connect Forge to an external issue tracker or code platform. Pick the tab for the agent you set up in the previous step:
 
-<div class="nia-tabs" data-group="agent">
-<div class="nia-tab" data-title="GitHub Copilot CLI">
+<div class="forge-tabs" data-group="agent">
+<div class="forge-tab" data-title="GitHub Copilot CLI">
 
 ```bash
-nia config init --issues local --code local --agent github_copilot --models stable
+frg config init --issues local --code local --agent github_copilot --models stable
 ```
 
 </div>
-<div class="nia-tab" data-title="Claude Code">
+<div class="forge-tab" data-title="Claude Code">
 
 ```bash
-nia config init --issues local --code local --agent claude_code --models stable
+frg config init --issues local --code local --agent claude_code --models stable
 ```
 
 </div>
-<div class="nia-tab" data-title="OpenCode">
+<div class="forge-tab" data-title="OpenCode">
 
 ```bash
-nia config init --issues local --code local --agent opencode --models stable
+frg config init --issues local --code local --agent opencode --models stable
 ```
 
 </div>
@@ -174,29 +174,29 @@ You can customize model selection with the `--models` flag:
 
 ```bash
 # Use balanced profile (recommended for most users)
-nia config init --agent github_copilot --models balanced
+frg config init --agent github_copilot --models balanced
 
 # Use the lite profile for lower-cost experimentation
-nia config init --agent opencode --models lite
+frg config init --agent opencode --models lite
 ```
 
-> **Note**: When you omit `--models`, NIA uses the `stable` profile by default.
+> **Note**: When you omit `--models`, Forge uses the `stable` profile by default.
 
 After initialization, confirm that these files exist:
 
-- `.nia/config/agents.toml`, which selects the AI coding agent.
-- `.nia/config/project.toml`, which contains project metadata that you must complete.
-- `.nia/config/toolchain.toml` when you selected an issue tracker or code platform.
+- `.forge/config/agents.toml`, which selects the AI coding agent.
+- `.forge/config/project.toml`, which contains project metadata that you must complete.
+- `.forge/config/toolchain.toml` when you selected an issue tracker or code platform.
 
 6. Set Your User Identity.
 
 ```bash
-nia config user --email "john@company.com"
+frg config user --email "john@company.com"
 ```
 
 7. Configure Project Metadata.
 
-Open `.nia/config/project.toml` and replace the sample values with details about your project. NIA uses this metadata to give the agent reliable information about your language, framework, tests, and package manager.
+Open `.forge/config/project.toml` and replace the sample values with details about your project. Forge uses this metadata to give the agent reliable information about your language, framework, tests, and package manager.
 
 Use this template as a starting point:
 
@@ -226,10 +226,10 @@ For detailed configuration options including custom fields and monorepo setup, s
 After you complete the project metadata, validate the configuration:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
-If validation succeeds, NIA reports:
+If validation succeeds, Forge reports:
 
 ```text
 Configuration is valid
@@ -237,12 +237,12 @@ Configuration is valid
 
 8. View Available Commands.
 
-Nia includes a command-line interface (CLI) that provides access to its available features and operations. You can use the built-in help system to discover available commands, view command descriptions, and learn how to use specific functionality.
+Forge includes a command-line interface (CLI) that provides access to its available features and operations. You can use the built-in help system to discover available commands, view command descriptions, and learn how to use specific functionality.
 
 To display a list of all available commands, run:
 
 ```bash
-nia --help
+frg --help
 ```
 The help output includes:
 
@@ -256,14 +256,14 @@ Use this command whenever you want to discover available capabilities or verify 
 Most commands provide their own detailed help. To view the available options, arguments, and examples for a specific command, append the --help option to the command name:
 
 ```bash
-nia issue --help
-nia config --help
+frg issue --help
+frg config --help
 ```
 
-Nia includes comprehensive documentation that you can access offline:
+Forge includes comprehensive documentation that you can access offline:
 
 ```bash
-nia guide
+frg guide
 ```
 
 This will open the full user guide in your default web browser.
@@ -277,42 +277,42 @@ Use the issue, code, and pull request workflows to address an existing issue fro
 Replace `14` with the identifier of the existing issue or work item:
 
 ```bash
-nia config set-issue 14
-nia config show-context
+frg config set-issue 14
+frg config show-context
 ```
 
-The issue workflow requires an Issue ID. You can set the same context with the `NIA_ISSUE_ID` environment variable instead:
+The issue workflow requires an Issue ID. You can set the same context with the `FORGE_ISSUE_ID` environment variable instead:
 
 ```bash
-export NIA_ISSUE_ID=14
+export FORGE_ISSUE_ID=14
 ```
 
-The context command reports the current Issue ID. If NIA reports that an Issue ID is required, set it with one of these methods before continuing.
+The context command reports the current Issue ID. If Forge reports that an Issue ID is required, set it with one of these methods before continuing.
 
 2. Generate and review the implementation plan.
 
 Create the implementation plan for the selected issue:
 
 ```bash
-nia issue plan
+frg issue plan
 ```
 
-The standard plan uses the `software_architect` role and writes its output under `.nia/work/job_14/code/`. A full plan can include `README.md`, `research.md`, `tasks.md`, and one or more phase files. For a simple change, you can request the lightweight plan format instead:
+The standard plan uses the `software_architect` role and writes its output under `.forge/work/job_14/code/`. A full plan can include `README.md`, `research.md`, `tasks.md`, and one or more phase files. For a simple change, you can request the lightweight plan format instead:
 
 ```bash
-nia issue plan --lite
+frg issue plan --lite
 ```
 
 Review the generated plan files, especially the implementation approach in `README.md`, the decisions and alternatives in `research.md` when present, the checklist in `tasks.md`, and the phase files. Refine the plan when requirements, risks, dependencies, or verification steps are missing:
 
 ```bash
-nia issue plan --edit
+frg issue plan --edit
 ```
 
 Use focused instructions with the edit operation when needed:
 
 ```bash
-nia issue plan --edit "Include the required test and validation steps"
+frg issue plan --edit "Include the required test and validation steps"
 ```
 
 Do not start implementation until the plan reflects the approved approach. The code workflow validates the required plan files before it invokes the coding agent.
@@ -322,13 +322,13 @@ Do not start implementation until the plan reflects the approved approach. The c
 Use the plan to create the implementation and tests:
 
 ```bash
-nia code create
+frg code create
 ```
 
 The `create` operation uses the issue-linked plan, applies changes to the project files, and writes task progress to `tasks.md`. If the implementation needs a targeted correction, provide fix instructions with the documented fix modifier:
 
 ```bash
-nia code create --fix "Address the failing validation identified during implementation"
+frg code create --fix "Address the failing validation identified during implementation"
 ```
 
 4. Build, test, and review the implementation.
@@ -336,60 +336,60 @@ nia code create --fix "Address the failing validation identified during implemen
 Run the build and test workflows after implementation:
 
 ```bash
-nia code build
-nia code test
+frg code build
+frg code test
 ```
 
-The build workflow writes diagnostic results to `.nia/work/job_14/code/build_report.md`. The test workflow writes its test-results analysis to the Code job directory. Review the terminal results and generated reports, and fix any failures before continuing.
+The build workflow writes diagnostic results to `.forge/work/job_14/code/build_report.md`. The test workflow writes its test-results analysis to the Code job directory. Review the terminal results and generated reports, and fix any failures before continuing.
 
 Review the implementation against the issue plan:
 
 ```bash
-nia code review
+frg code review
 ```
 
-The standard review writes `review.md` to `.nia/work/job_14/code/`. If the review identifies issues, run the review auto-fix workflow with the required severity scope:
+The standard review writes `review.md` to `.forge/work/job_14/code/`. If the review identifies issues, run the review auto-fix workflow with the required severity scope:
 
 ```bash
-nia code review --auto-fix issues
+frg code review --auto-fix issues
 ```
 
-Run `nia code review` before `--auto-fix` so that the current `review.md` exists. You can use `critical`, `major`, `minor`, `suggestions`, or `all` when a narrower or broader scope is appropriate. After applying fixes, run `nia code build`, `nia code test`, and `nia code review` again and resolve remaining failures or findings. Use specific `--edit` or `--fix` instructions when a workflow needs clarification.
+Run `frg code review` before `--auto-fix` so that the current `review.md` exists. You can use `critical`, `major`, `minor`, `suggestions`, or `all` when a narrower or broader scope is appropriate. After applying fixes, run `frg code build`, `frg code test`, and `frg code review` again and resolve remaining failures or findings. Use specific `--edit` or `--fix` instructions when a workflow needs clarification.
 
 5. Create and publish the pull request.
 
-NIA does not provide a standalone built-in operation for creating a pull request. Use your configured code management system to create the pull request for the implementation changes, then note its identifier. The pull request must be associated with the issue.
+Forge does not provide a standalone built-in operation for creating a pull request. Use your configured code management system to create the pull request for the implementation changes, then note its identifier. The pull request must be associated with the issue.
 
 Set the pull request context after the pull request exists. Replace `456` with its identifier:
 
 ```bash
-nia config set-pr 456
-nia config show-context
+frg config set-pr 456
+frg config show-context
 ```
 
 For a PR-specific workflow, both the Issue ID and PR ID are required. You can set them with environment variables instead:
 
 ```bash
-export NIA_ISSUE_ID=14
-export NIA_PR_ID=456
+export FORGE_ISSUE_ID=14
+export FORGE_PR_ID=456
 ```
 
 Draft the pull request description from the changes and associated issue:
 
 ```bash
-nia pr draft
+frg pr draft
 ```
 
-The standard operation writes `pull_request.md` under `.nia/work/job_14/pr/pr_456/`. Review and refine the local description as needed:
+The standard operation writes `pull_request.md` under `.forge/work/job_14/pr/pr_456/`. Review and refine the local description as needed:
 
 ```bash
-nia pr draft --edit
+frg pr draft --edit
 ```
 
 Publish the reviewed description to the existing pull request:
 
 ```bash
-nia pr publish
+frg pr publish
 ```
 
 This updates only the pull request description and preserves metadata such as its state, labels, and reviewers. It does not create the pull request.
@@ -399,75 +399,75 @@ This updates only the pull request description and preserves metadata such as it
 Run the pull request review with both the issue and pull request contexts set:
 
 ```bash
-nia pr review
+frg pr review
 ```
 
-The standard review analyzes status checks, code quality, reviewer comments, and merge conflicts. It writes reports such as `pr_review.md`, `status_check_fixes.md`, `code_quality_improvements.md`, and conflict reports under `.nia/work/job_14/pr/pr_456/`. Use the lightweight review when you need only blocking issues, failing checks, and merge conflicts:
+The standard review analyzes status checks, code quality, reviewer comments, and merge conflicts. It writes reports such as `pr_review.md`, `status_check_fixes.md`, `code_quality_improvements.md`, and conflict reports under `.forge/work/job_14/pr/pr_456/`. Use the lightweight review when you need only blocking issues, failing checks, and merge conflicts:
 
 ```bash
-nia pr review --lite
+frg pr review --lite
 ```
 
-Review the findings and address the requested changes in the project. Validate all resulting changes locally with `nia code build`, `nia code test`, and the relevant code review workflow, then update the pull request through your configured code management system. Rerun `nia pr review` until the actionable issues and reviewer feedback are resolved. Treat high-risk merge conflicts as escalation items; NIA does not resolve them automatically.
+Review the findings and address the requested changes in the project. Validate all resulting changes locally with `frg code build`, `frg code test`, and the relevant code review workflow, then update the pull request through your configured code management system. Rerun `frg pr review` until the actionable issues and reviewer feedback are resolved. Treat high-risk merge conflicts as escalation items; Forge does not resolve them automatically.
 
-Stop here. Do not run a merge operation: merging the pull request is not part of this workflow. The documented `nia pr merge` operation prepares a pull request for merging but does not perform the final merge; complete any eventual merge separately through the configured code management system after the required approvals and checks.
+Stop here. Do not run a merge operation: merging the pull request is not part of this workflow. The documented `frg pr merge` operation prepares a pull request for merging but does not perform the final merge; complete any eventual merge separately through the configured code management system after the required approvals and checks.
 
 7. Expected result.
 
-The selected issue has a reviewed implementation plan, the planned changes and tests are applied, the build and test workflows report their results, and code review findings are resolved. A pull request exists in the configured code management system with a reviewed description, and `nia pr review` reports the remaining status checks, code-quality findings, reviewer feedback, and merge conflicts. The pull request remains unmerged.
+The selected issue has a reviewed implementation plan, the planned changes and tests are applied, the build and test workflows report their results, and code review findings are resolved. A pull request exists in the configured code management system with a reviewed description, and `frg pr review` reports the remaining status checks, code-quality findings, reviewer feedback, and merge conflicts. The pull request remains unmerged.
 
-> **Tip:** To see the generated prompt and complete agent response when troubleshooting, inspect the workflow trace under `.nia/work/` or run `nia trace list`.
+> **Tip:** To see the generated prompt and complete agent response when troubleshooting, inspect the workflow trace under `.forge/work/` or run `frg trace list`.
 
 8. Verify your success.
 
 You have completed the quick start when all of the following are true:
 
-- `nia --version` prints a version number.
+- `frg --version` prints a version number.
 - The selected AI coding agent's version and authentication checks succeed.
-- `.nia/config/project.toml` exists and describes your project.
-- `nia config validate` completes successfully.
-- `nia status` does not report a blocking installation or authentication problem.
-- `nia config set-issue 14` sets the issue context without an error.
-- `nia issue plan` creates an implementation plan for the selected issue.
-- `nia issue draft` creates a local issue draft that you can open and review.
+- `.forge/config/project.toml` exists and describes your project.
+- `frg config validate` completes successfully.
+- `frg status` does not report a blocking installation or authentication problem.
+- `frg config set-issue 14` sets the issue context without an error.
+- `frg issue plan` creates an implementation plan for the selected issue.
+- `frg issue draft` creates a local issue draft that you can open and review.
 
-If a check fails, fix that check before continuing. Common causes include an old PowerShell version on Windows, an agent executable missing from `PATH`, incomplete agent authentication, or sample values left in `.nia/config/project.toml`.
+If a check fails, fix that check before continuing. Common causes include an old PowerShell version on Windows, an agent executable missing from `PATH`, incomplete agent authentication, or sample values left in `.forge/config/project.toml`.
 
 ## Automate the Whole Journey with One Command
 
-You just ran the Issue-to-PR lifecycle step by step — planning, implementation, build, test, review, and pull request. NIA can orchestrate that entire sequence for you as a single, stateful workflow.
+You just ran the Issue-to-PR lifecycle step by step — planning, implementation, build, test, review, and pull request. Forge can orchestrate that entire sequence for you as a single, stateful workflow.
 
-> **This is the payoff: `nia workflow run issue-to-pr`.** With the issue context set, this one command chains every step you performed by hand — `nia issue plan`, `nia code create`, `nia code build`, `nia code test`, `nia code review`, and the pull request operations — into a resumable state machine with approval gates, automatic retries, and a full audit trail. It is the recommended way to run the workflow once you are comfortable with the individual steps.
+> **This is the payoff: `frg workflow run issue-to-pr`.** With the issue context set, this one command chains every step you performed by hand — `frg issue plan`, `frg code create`, `frg code build`, `frg code test`, `frg code review`, and the pull request operations — into a resumable state machine with approval gates, automatic retries, and a full audit trail. It is the recommended way to run the workflow once you are comfortable with the individual steps.
 
 Set the issue context, then run the workflow:
 
 ```bash
-nia config set-issue 14
-nia workflow run issue-to-pr
+frg config set-issue 14
+frg workflow run issue-to-pr
 ```
 
 Useful options:
 
 ```bash
 # Skip approval gates for CI/automation
-nia workflow run issue-to-pr --bypass-approvals
+frg workflow run issue-to-pr --bypass-approvals
 
 # Validate the workflow without executing it
-nia workflow run issue-to-pr --dry-run
+frg workflow run issue-to-pr --dry-run
 
 # Resume an interrupted run from a specific step
-nia workflow run issue-to-pr --start-from create_code
+frg workflow run issue-to-pr --start-from create_code
 ```
 
 The workflow pauses at approval gates so you stay in control, and it resumes automatically if a run is interrupted. See [Introduction to Workflows](./workflows/introduction.md) for the built-in workflows, states, and transitions.
 
 ## Summary
 
-You installed NIA, connected an AI coding agent, initialized NIA in a project, completed the required project metadata, validated the configuration, and ran your first workflow.
+You installed Forge, connected an AI coding agent, initialized Forge in a project, completed the required project metadata, validated the configuration, and ran your first workflow.
 
 ## Next steps
 
-- [Automate the Issue-to-PR lifecycle](./workflows/introduction.md) with `nia workflow run issue-to-pr` instead of running each step by hand.
+- [Automate the Issue-to-PR lifecycle](./workflows/introduction.md) with `frg workflow run issue-to-pr` instead of running each step by hand.
 - [Configure an AI coding agent](./agents/setup.md) to change agents, commands, models, or prompt formats.
 - [Configure project metadata](./configuration/project.md) for monorepos, shared context, configuration locks, and custom fields.
 - [Explore issue workflows](./commands/issue.md) to review, plan, publish, or split issues.

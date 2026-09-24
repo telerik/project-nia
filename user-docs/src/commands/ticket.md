@@ -1,6 +1,6 @@
 # Ticket Workflows
 
-Use NIA ticket workflows to assess a support ticket, investigate its cause, prepare customer updates, answer follow-up questions, and compare related tickets. Each operation uses a ticket context and stores its output in a ticket-specific work directory.
+Use Progress Forge ticket workflows to assess a support ticket, investigate its cause, prepare customer updates, answer follow-up questions, and compare related tickets. Each operation uses a ticket context and stores its output in a ticket-specific work directory.
 
 ## Understand Ticket Workflows
 
@@ -24,25 +24,25 @@ The normal lifecycle moves from context setup to triage, investigation, and foll
 5. Run `correlate` when other tickets might share symptoms, timing, environment, or a root cause.
 6. Review every generated artifact before sharing it or using it to make a product or support decision.
 
-NIA resolves the ticket context, validates the configured ticket tracker, loads the prompt for the selected operation, and writes the operation output under `.nia/work/ticket_<ticket_id>/`. NIA sanitizes characters other than letters, numbers, hyphens, and underscores when it creates the directory name.
+Progress Forge resolves the ticket context, validates the configured ticket tracker, loads the prompt for the selected operation, and writes the operation output under `.forge/work/ticket_<ticket_id>/`. Progress Forge sanitizes characters other than letters, numbers, hyphens, and underscores when it creates the directory name.
 
 ## Prerequisites
 
 Ticket operations require the following configuration:
 
-- **Ticket ID:** Set a ticket ID with `nia config set-ticket <id>` or the `NIA_TICKET_ID` environment variable. A ticket operation does not use an issue ID as a substitute.
-- **Ticket tracker:** Add a `ticket_tracker` entry to `.nia/config/toolchain.toml`. The tracker name must resolve to a built-in tracker or a custom tool definition.
-- **Code platform:** Provide a code platform when initializing tracker configuration with `nia config init`.
-- **Tracker access:** Configure the access method and the credentials required by the selected tracker. NIA does not define one credential name or permission model for every tracker.
+- **Ticket ID:** Set a ticket ID with `frg config set-ticket <id>` or the `FORGE_TICKET_ID` environment variable. A ticket operation does not use an issue ID as a substitute.
+- **Ticket tracker:** Add a `ticket_tracker` entry to `.forge/config/toolchain.toml`. The tracker name must resolve to a built-in tracker or a custom tool definition.
+- **Code platform:** Provide a code platform when initializing tracker configuration with `frg config init`.
+- **Tracker access:** Configure the access method and the credentials required by the selected tracker. Progress Forge does not define one credential name or permission model for every tracker.
 
-NIA supports built-in ticket trackers for GitHub Issues, Jira, Azure DevOps, Shortcut, and local Markdown files. The available access methods depend on the tracker definition. Custom ticket tools can provide their own access instructions.
+Progress Forge supports built-in ticket trackers for GitHub Issues, Jira, Azure DevOps, Shortcut, and local Markdown files. The available access methods depend on the tracker definition. Custom ticket tools can provide their own access instructions.
 
 ## Configuration
 
-Initialize tracker configuration or edit `.nia/config/toolchain.toml` directly. The following example configures GitHub Issues as the ticket tracker and GitHub as the code platform:
+Initialize tracker configuration or edit `.forge/config/toolchain.toml` directly. The following example configures GitHub Issues as the ticket tracker and GitHub as the code platform:
 
 ```bash
-nia config init --tickets github_issues --code github
+frg config init --tickets github_issues --code github
 ```
 
 The resulting tracker definition uses these fields:
@@ -61,26 +61,26 @@ type = "built-in"
 method = "cli"
 ```
 
-Use a built-in tracker name from the NIA registry. Set `type = "custom"` for a custom tracker and provide the description required by the toolchain schema. Set `method` to the access method supported by the selected tracker.
+Use a built-in tracker name from the Progress Forge registry. Set `type = "custom"` for a custom tracker and provide the description required by the toolchain schema. Set `method` to the access method supported by the selected tracker.
 
 ### Set Ticket Context
 
-Set a ticket ID before running any `nia ticket` operation:
+Set a ticket ID before running any `frg ticket` operation:
 
 ```bash
-nia config set-ticket TICKET-12345
+frg config set-ticket TICKET-12345
 ```
 
-You can set the same value with the `NIA_TICKET_ID` environment variable:
+You can set the same value with the `FORGE_TICKET_ID` environment variable:
 
 ```bash
-export NIA_TICKET_ID=TICKET-12345
+export FORGE_TICKET_ID=TICKET-12345
 ```
 
 When both values exist, the environment variable takes precedence over the value in the context file. Confirm the active value with:
 
 ```bash
-nia config show-context
+frg config show-context
 ```
 
 ## Ticket Operations
@@ -92,10 +92,10 @@ The following examples show the commands for each operation and explain the file
 Run triage first when a ticket needs an initial assessment or an investigation plan:
 
 ```bash
-nia ticket triage
+frg ticket triage
 ```
 
-The operation retrieves the ticket from the configured tracker and writes these files to `.nia/work/ticket_<ticket_id>/triage/`:
+The operation retrieves the ticket from the configured tracker and writes these files to `.forge/work/ticket_<ticket_id>/triage/`:
 
 - `ticket.md`&mdash;A copy of the original ticket.
 - `ticket_summary.md`&mdash;An initial assessment, including a suggested severity and the information currently available.
@@ -107,7 +107,7 @@ Triage assesses the issue and prepares the investigation. It does not represent 
 Use the `--edit` option to refine the triage artifacts:
 
 ```bash
-nia ticket triage --edit
+frg ticket triage --edit
 ```
 
 ### Investigate and Respond
@@ -115,10 +115,10 @@ nia ticket triage --edit
 Run `respond` after triage when the team needs a detailed investigation:
 
 ```bash
-nia ticket respond
+frg ticket respond
 ```
 
-The operation uses the triage artifacts, examines relevant project material, and writes these files to `.nia/work/ticket_<ticket_id>/respond/`:
+The operation uses the triage artifacts, examines relevant project material, and writes these files to `.forge/work/ticket_<ticket_id>/respond/`:
 
 - `investigation_report.md`&mdash;Investigation evidence, root-cause analysis, and remediation recommendations.
 - `customer_update.md`&mdash;A customer-facing draft that explains the result and next steps without exposing sensitive internal product details or other confidential information.
@@ -128,7 +128,7 @@ The response is a draft investigation package. Review its evidence and recommend
 Use the `--edit` option to refine an existing response:
 
 ```bash
-nia ticket respond --edit
+frg ticket respond --edit
 ```
 
 ### Ask a Ticket Question
@@ -136,13 +136,13 @@ nia ticket respond --edit
 Use `ask` for a focused question about the ticket or its investigation:
 
 ```bash
-nia ticket ask "What evidence supports the current root-cause assessment?"
+frg ticket ask "What evidence supports the current root-cause assessment?"
 ```
 
-The operation reads available ticket, triage, and response artifacts. If the original triage copy does not exist, it can retrieve the ticket from the configured tracker. NIA writes the answer to:
+The operation reads available ticket, triage, and response artifacts. If the original triage copy does not exist, it can retrieve the ticket from the configured tracker. Progress Forge writes the answer to:
 
 ```text
-.nia/work/ticket_<ticket_id>/answer.md
+.forge/work/ticket_<ticket_id>/answer.md
 ```
 
 Use `ask` to clarify evidence or findings without requesting a new full response. The operation does not modify the investigation artifacts.
@@ -152,26 +152,26 @@ Use `ask` to clarify evidence or findings without requesting a new full response
 Use `correlate` when multiple tickets might describe the same problem:
 
 ```bash
-nia ticket correlate
+frg ticket correlate
 ```
 
 The operation reads the current ticket artifacts, searches the configured tracker for key terms, and compares information such as symptoms, error messages, timing, customer characteristics, versions, configurations, and environments. It writes the analysis to:
 
 ```text
-.nia/work/ticket_<ticket_id>/related_tickets_analysis.md
+.forge/work/ticket_<ticket_id>/related_tickets_analysis.md
 ```
 
 The analysis distinguishes correlation from causation. Treat shared patterns as evidence for further investigation, not as proof that tickets have the same root cause.
 
 ## Workflow Execution Details
 
-Each `nia ticket` command follows the same execution sequence:
+Each `frg ticket` command follows the same execution sequence:
 
 1. Resolve the ticket ID from the environment or context file.
 2. Require a ticket ID for the `ticket` target and validate the configured ticket tracker.
 3. Load the prompt for the selected operation.
 4. Read the operation’s available ticket and investigation artifacts.
-5. Write the operation output under `.nia/work/ticket_<ticket_id>/`.
+5. Write the operation output under `.forge/work/ticket_<ticket_id>/`.
 
 The operation controls which artifacts it reads and writes. `triage` establishes the initial investigation context. `respond` uses triage context for a deeper investigation. `ask` reads context to answer a question, while `correlate` reads context and searches the configured tracker for related tickets. These operations create investigation material; they do not change ticket state or deploy product changes.
 
@@ -180,7 +180,7 @@ The operation controls which artifacts it reads and writes. `triage` establishes
 Ticket operations create a directory structure like the following:
 
 ```text
-.nia/work/ticket_SUP-12345/
+.forge/work/ticket_SUP-12345/
 ├── triage/
 │   ├── ticket.md
 │   ├── ticket_summary.md
@@ -211,23 +211,23 @@ Choose the operation that matches the investigation stage:
 You can set both contexts at the same time:
 
 ```bash
-nia config set-issue 278
-nia config set-ticket SUP-12345
+frg config set-issue 278
+frg config set-ticket SUP-12345
 ```
 
 Ticket commands use `ticket_id`. Issue, code, documentation, and pull request commands use their own context requirements. For example:
 
 ```bash
-nia ticket triage
-nia ticket respond
-nia issue draft
-nia code create
+frg ticket triage
+frg ticket respond
+frg issue draft
+frg code create
 ```
 
 Clear the ticket context when the investigation ends:
 
 ```bash
-nia config clear-ticket
+frg config clear-ticket
 ```
 
 ## Best Practices
@@ -246,45 +246,45 @@ Use these practices to keep ticket investigations reliable and maintainable:
 
 ### Resolve a Missing Ticket ID Error
 
-If NIA reports `Ticket ID required for 'ticket' operations`, set the ticket context with either method:
+If Progress Forge reports `Ticket ID required for 'ticket' operations`, set the ticket context with either method:
 
 ```bash
-nia config set-ticket <ticket_id>
+frg config set-ticket <ticket_id>
 ```
 
 ```bash
-export NIA_TICKET_ID=<ticket_id>
+export FORGE_TICKET_ID=<ticket_id>
 ```
 
-Confirm the result with `nia config show-context`. If an issue ID is set but no ticket ID is set, add the ticket ID because the two contexts are separate.
+Confirm the result with `frg config show-context`. If an issue ID is set but no ticket ID is set, add the ticket ID because the two contexts are separate.
 
 ### Resolve a Missing Ticket Tracker Error
 
-If NIA reports that the ticket tracker is not configured, initialize or update the toolchain configuration:
+If Progress Forge reports that the ticket tracker is not configured, initialize or update the toolchain configuration:
 
 ```bash
-nia config init --tickets github_issues --code github
+frg config init --tickets github_issues --code github
 ```
 
 Confirm that `ticket_tracker.name` matches a built-in tracker or a configured custom tool and that its `method` is supported. The command requires a code platform when it creates tracker configuration.
 
 ### Resolve Missing Investigation Context
 
-If `respond`, `ask`, or `correlate` cannot find the expected context, confirm the active ticket ID and inspect `.nia/work/ticket_<ticket_id>/`. Run `triage` when the operation needs triage artifacts, then rerun the operation. Check that an earlier run did not use a different ticket ID.
+If `respond`, `ask`, or `correlate` cannot find the expected context, confirm the active ticket ID and inspect `.forge/work/ticket_<ticket_id>/`. Run `triage` when the operation needs triage artifacts, then rerun the operation. Check that an earlier run did not use a different ticket ID.
 
 ### Resolve Tracker Access Problems
 
-If NIA cannot retrieve a ticket or search for related tickets, verify the tracker name, access method, repository or service context, and credentials required by that tracker. Access requirements vary by tracker and method, so follow the access instructions in the configured tracker definition.
+If Progress Forge cannot retrieve a ticket or search for related tickets, verify the tracker name, access method, repository or service context, and credentials required by that tracker. Access requirements vary by tracker and method, so follow the access instructions in the configured tracker definition.
 
 ## Limitations
 
-Ticket workflows depend on the configured tracker, the ticket data available through that tracker, the active ticket context, and the artifacts in the ticket work directory. A local Markdown tracker reads ticket content from `.nia/work/ticket_<ticket_id>/ticket.md` and does not provide automatic synchronization, status tracking, labels, assignees, or other metadata.
+Ticket workflows depend on the configured tracker, the ticket data available through that tracker, the active ticket context, and the artifacts in the ticket work directory. A local Markdown tracker reads ticket content from `.forge/work/ticket_<ticket_id>/ticket.md` and does not provide automatic synchronization, status tracking, labels, assignees, or other metadata.
 
 The workflows do not define a universal severity policy, ticket-state integration, credential name, or proof of causation. They generate investigation material for review and do not replace the team’s support, security, privacy, or release processes.
 
 ## Related Topics
 
 - [Configure the toolchain](../agents/toolchain-config.md) explains built-in and custom tool definitions and access methods.
-- [Resolve project context](../project/context.md) explains how NIA resolves issue, ticket, pull request, and related context values.
+- [Resolve project context](../project/context.md) explains how Progress Forge resolves issue, ticket, pull request, and related context values.
 - [Investigate product issues](./issue.md) describes issue workflows for product problems identified during a ticket investigation.
 - [Prepare pull requests](./pr.md) describes pull request workflows after a product change has been implemented and reviewed.

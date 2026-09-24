@@ -11,13 +11,13 @@ Configuration management and validation.
 Validate workflow configuration files.
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 Validates:
-- `.nia/config/commands.toml` (if exists)
+- `.forge/config/commands.toml` (if exists)
 - Built-in workflows TOML
-- Project metadata in `nia-config.json`
+- Project metadata in `forge-config.json`
 - Schema version compatibility
 - Protected namespace conflicts
 
@@ -31,7 +31,7 @@ Validates:
 
 **Example:**
 ```bash
-$ nia config validate
+$ frg config validate
 ✓ Schema version: 2.0.0
 ✓ Metadata valid
 ✓ 5 workflows loaded
@@ -45,15 +45,15 @@ Configuration valid
 Validate a specific TOML file.
 
 ```bash
-nia config validate --file path/to/commands.toml
-nia config validate -f path/to/commands.toml   # Short form
+frg config validate --file path/to/commands.toml
+frg config validate -f path/to/commands.toml   # Short form
 ```
 
 Useful for testing custom workflows before deploying.
 
 **Example:**
 ```bash
-$ nia config validate --file examples/workflows/custom_commands.toml
+$ frg config validate --file examples/workflows/custom_commands.toml
 ✓ Schema version: 2.0.0
 ✓ Metadata valid
 ✓ 2 workflows loaded
@@ -67,47 +67,47 @@ Export built-in workflows, prompts, and skills for customization.
 **Note:** You must specify what to export using `--commands`, `--prompts`, `--workflows`, `--skills`, `--security`, or `--all`.
 
 ```bash
-nia config export --all          # Export commands, prompts, and workflows
-nia config export --commands     # Export only commands.toml
-nia config export --prompts      # Export only prompt files
-nia config export --workflows    # Export only workflow files
-nia config export --skills       # Export only skill files
-nia config export --security     # Export only security configs (e.g. prompt-safety)
+frg config export --all          # Export commands, prompts, and workflows
+frg config export --commands     # Export only commands.toml
+frg config export --prompts      # Export only prompt files
+frg config export --workflows    # Export only workflow files
+frg config export --skills       # Export only skill files
+frg config export --security     # Export only security configs (e.g. prompt-safety)
 ```
 
 Creates:
-- `.nia/config/commands.toml` - All built-in workflow definitions (with `--commands` or `--all`)
-- `.nia/prompts/{xml,markdown}/{target}/` - All built-in prompt files organized by format and target (with `--prompts` or `--all`)
-  - Note: `{xml,markdown}` and `{target}` are placeholders - actual paths will be like `.nia/prompts/xml/issue/` or `.nia/prompts/markdown/role/`
+- `.forge/config/commands.toml` - All built-in workflow definitions (with `--commands` or `--all`)
+- `.forge/prompts/{xml,markdown}/{target}/` - All built-in prompt files organized by format and target (with `--prompts` or `--all`)
+  - Note: `{xml,markdown}` and `{target}` are placeholders - actual paths will be like `.forge/prompts/xml/issue/` or `.forge/prompts/markdown/role/`
   - Init prompts (e.g., `issue_draft.task.xml`)
   - Delta prompts (e.g., `issue_draft_delta.task.xml`)
   - Role prompts (e.g., `product_manager.role.xml`)
-- `.nia/config/workflows/` - All built-in workflow files (with `--workflows` or `--all`)
+- `.forge/config/workflows/` - All built-in workflow files (with `--workflows` or `--all`)
   - `issue-to-plan.toml` - Issue planning workflow
   - `issue-to-pr.toml` - Full issue-to-PR workflow  
   - `code-to-review.toml` - Code creation and review workflow
   - `pr-to-merge.toml` - PR review and merge workflow
   - `ticket-to-response.toml` - Support ticket workflow
 - `.agents/skills/` - Built-in skill files (with `--skills` only)
-- `.nia/config/.prompt-safety.toml` - Built-in prompt-injection detection rules (with `--security` only)
+- `.forge/config/.prompt-safety.toml` - Built-in prompt-injection detection rules (with `--security` only)
 
 **Use Case:** Bootstrap your custom workflow configuration by exporting defaults.
 
 **Example:**
 ```bash
-$ nia config export --all
+$ frg config export --all
 Exporting workflow configuration...
 ✓ Exported all built-in workflows
-  Commands: ./.nia/config/commands.toml
-  Prompts:  264 files in .nia/prompts/{xml,markdown}/{target}/
-  Workflows: 5 files in .nia/config/workflows/
+  Commands: ./.forge/config/commands.toml
+  Prompts:  264 files in .forge/prompts/{xml,markdown}/{target}/
+  Workflows: 5 files in .forge/config/workflows/
 
 Next steps:
-  1. Edit prompts in .nia/prompts/ as needed
-  2. Edit workflow files in .nia/config/workflows/ as needed
-  3. Modify .nia/config/commands.toml to customize operations
-  4. Run: nia config validate
-  5. Run: nia config show
+  1. Edit prompts in .forge/prompts/ as needed
+  2. Edit workflow files in .forge/config/workflows/ as needed
+  3. Modify .forge/config/commands.toml to customize operations
+  4. Run: frg config validate
+  5. Run: frg config show
 ```
 
 ### export --target
@@ -115,16 +115,16 @@ Next steps:
 Export only a specific workflow target.
 
 ```bash
-nia config export --prompts --target <TARGET>   # Long form
-nia config export --prompts -t <TARGET>         # Short form (equivalent)
+frg config export --prompts --target <TARGET>   # Long form
+frg config export --prompts -t <TARGET>         # Short form (equivalent)
 ```
 
 **Example:**
 ```bash
-$ nia config export --prompts --target issue
+$ frg config export --prompts --target issue
 Exporting workflow configuration...
 ✓ Exported 60 prompt files
-  Location: .nia/prompts/{xml,markdown}/{target}/
+  Location: .forge/prompts/{xml,markdown}/{target}/
 
 Next steps:
   1. Edit prompt files as needed
@@ -133,22 +133,22 @@ Next steps:
 
 ### export --workflows
 
-Export only built-in workflow files to `.nia/config/workflows/`.
+Export only built-in workflow files to `.forge/config/workflows/`.
 
 ```bash
-nia config export --workflows
+frg config export --workflows
 ```
 
 **Example:**
 ```bash
-$ nia config export --workflows
+$ frg config export --workflows
 Exporting workflow configuration...
 ✓ Exported 5 workflow files
-  Location: .nia/config/workflows/
+  Location: .forge/config/workflows/
 
 Next steps:
   1. Edit workflow files as needed
-  2. Run: nia workflow run <workflow-name>
+  2. Run: frg workflow run <workflow-name>
 ```
 
 **Available Built-in Workflows:**
@@ -158,15 +158,15 @@ Next steps:
 - `pr-to-merge.toml` - PR review automation with merge checks
 - `ticket-to-response.toml` - Support ticket response workflow
 
-**Note:** User workflows in `.nia/config/workflows/` override built-in workflows of the same name. This allows you to customize specific workflows while keeping others at defaults.
+**Note:** User workflows in `.forge/config/workflows/` override built-in workflows of the same name. This allows you to customize specific workflows while keeping others at defaults.
 
 ### export --force
 
 Overwrite existing configuration and prompt files.
 
 ```bash
-nia config export --all --force       # Long form
-nia config export --prompts --force   # Export only prompts
+frg config export --all --force       # Long form
+frg config export --prompts --force   # Export only prompts
 ```
 
 **Note:** `--force` has no short flag because it's a destructive operation that should be typed explicitly.
@@ -175,7 +175,7 @@ nia config export --prompts --force   # Export only prompts
 
 **Example:**
 ```bash
-$ nia config export --all --force
+$ frg config export --all --force
 Exporting workflow configuration...
 ✓ Exported all built-in workflows
   (existing files overwritten)
@@ -184,8 +184,8 @@ Exporting workflow configuration...
 **Combined Flags:**
 ```bash
 # Export specific target and overwrite if exists
-nia config export --prompts --target code --force
-nia config export --prompts -t code --force   # Mixing short and long
+frg config export --prompts --target code --force
+frg config export --prompts -t code --force   # Mixing short and long
 ```
 
 ### export --skills
@@ -195,60 +195,60 @@ Export all embedded built-in skill files to `.agents/skills/`.
 Skills are packages of procedural knowledge that agents load on demand, following the [Agent Skills open standard](https://docs.github.com/copilot/using-github-copilot/agent-skills).
 
 ```bash
-nia config export --skills              # Auto-detect scope from config location
-nia config export --skills --force      # Overwrite existing skills
-nia config export --skills --scope=project   # Force project scope
-nia config export --skills --scope=user      # Force global user scope
+frg config export --skills              # Auto-detect scope from config location
+frg config export --skills --force      # Overwrite existing skills
+frg config export --skills --scope=project   # Force project scope
+frg config export --skills --scope=user      # Force global user scope
 ```
 
 **Scope Detection:**
 
-When you run `--skills` without `--scope`, nia auto-detects based on where your toolchain config is found:
+When you run `--skills` without `--scope`, frg auto-detects based on where your toolchain config is found:
 
 | Config Location | Export Location |
 |----------------|-----------------|
-| `.nia/config/toolchain.toml` (repository) | `.agents/skills/` (project) |
-| `~/.config/nia/toolchain.toml` (user) | `~/.agents/skills/` (global) |
+| `.forge/config/toolchain.toml` (repository) | `.agents/skills/` (project) |
+| `~/.config/forge/toolchain.toml` (user) | `~/.agents/skills/` (global) |
 
 **Explicit and Automatic Export:**
 
-`nia config export --skills` exports all embedded built-in skills, regardless of which
+`frg config export --skills` exports all embedded built-in skills, regardless of which
 tools are configured in `toolchain.toml`. This is useful for browsing or customizing the
 complete built-in skill library.
 
-Selective export happens automatically during `nia config init`. The initialization flow
+Selective export happens automatically during `frg config init`. The initialization flow
 installs only skills for selected tools that use `method = "skill"` and always uses project
 scope.
 
 Example:
 ```bash
-nia config init --issues github_issues --code github
+frg config init --issues github_issues --code github
 # Installs issue-read-github and pr-read-github
 
-nia config export --skills
+frg config export --skills
 # Exports all 18 embedded skills; existing files are skipped
 ```
 
 **Update Detection:**
 
-When an embedded skill already exists, nia compares the `version` strings in the two
-SKILL.md frontmatter blocks. Any difference is reported as an available update; Nia does
+When an embedded skill already exists, frg compares the `version` strings in the two
+SKILL.md frontmatter blocks. Any difference is reported as an available update; Progress Forge does
 not currently apply semantic-version ordering.
 
 ```bash
-$ nia config export --skills
+$ frg config export --skills
 ⚠ Skill updates available:
   - issue-read-github: v1.0.0 → v1.1.0
   - pr-read-github: v1.2.0 → v1.3.0
 
-Run 'nia config export --skills --force' to update
+Run 'frg config export --skills --force' to update
 Warning: This will overwrite existing files. Back up custom modifications first.
 ```
 
 **Example - Project Scope:**
 ```bash
 $ cd /path/to/repo
-$ nia config export --skills
+$ frg config export --skills
 Exporting skills for project scope...
 ✓ Exported 18 skills to .agents/skills/
 
@@ -258,7 +258,7 @@ Customize skill files to match your team's practices.
 
 **Example - User Scope:**
 ```bash
-$ nia config export --skills --scope=user
+$ frg config export --skills --scope=user
 Exporting skills for user scope...
 ✓ Exported 18 skills to ~/.agents/skills/
 
@@ -271,22 +271,22 @@ Skills are available globally across all your projects.
 
 ### init
 
-Initialize nia configuration for a repository.
+Initialize frg configuration for a repository.
 
 ```bash
-nia config init                    # Manual initialization (prompts for all values)
-nia config init --interactive      # AI-assisted with per-field approval
-nia config init -i                 # Short form of --interactive
+frg config init                    # Manual initialization (prompts for all values)
+frg config init --interactive      # AI-assisted with per-field approval
+frg config init -i                 # Short form of --interactive
 ```
 
-Creates `.nia/config/project.toml` with project metadata used by AI agents for context and decision-making.
+Creates `.forge/config/project.toml` with project metadata used by AI agents for context and decision-making.
 
 #### Manual Initialization (default)
 
 Prompts for each configuration value:
 
 ```bash
-$ nia config init
+$ frg config init
 Enter project name: my-service
 Enter description: User authentication microservice
 Select language: Rust
@@ -294,7 +294,7 @@ Select framework: axum
 Select testing framework: cargo test
 Select package manager: cargo
 
-✓ Configuration created at .nia/config/project.toml
+✓ Configuration created at .forge/config/project.toml
 ```
 
 **Best for:**
@@ -304,7 +304,7 @@ Select package manager: cargo
 
 #### Interactive Mode (`--interactive`)
 
-The interactive mode provides a guided setup experience that configures your complete nia environment in four phases:
+The interactive mode provides a guided setup experience that configures your complete frg environment in four phases:
 
 **Phase Flow:**
 1. **Agent Configuration** (Selection-based) - AI coding agent and model profile
@@ -317,7 +317,7 @@ selected tool. Add `--advanced` to be prompted for each tool's access method (`s
 `cli`, `mcp`, `api`) instead — see [Access Methods](#access-methods-interactive-mode).
 
 ```bash
-$ nia config init --interactive
+$ frg config init --interactive
 
 ════════════════════════════════════════════════════════
 Phase 1: Agent Configuration
@@ -458,16 +458,16 @@ Configuration Summary:
   code_platform: github (via skill)
 
 Files to be created or replaced:
-  ✓ .nia/config/project.toml
-  ✓ .nia/config/toolchain.toml
-  ✓ .nia/config/agents.toml
+  ✓ .forge/config/project.toml
+  ✓ .forge/config/toolchain.toml
+  ✓ .forge/config/agents.toml
   ✓ .agents/skills/ (skill files for tools using the "skill" access method)
 
 Create these configuration files? [Y/n]:
 ✓ Configuration files created successfully
 ✓ Generated configuration validated
 
-Configuration complete! Run 'nia config validate' to verify.
+Configuration complete! Run 'frg config validate' to verify.
 ```
 
 **Phase Details:**
@@ -504,7 +504,7 @@ Configuration complete! Run 'nia config validate' to verify.
 - Creates all files atomically (all or none)
 - No partial configuration on cancellation
 - Validates the generated `toolchain.toml`/`agents.toml` immediately after writing and
-  reports "Generated configuration validated" (or a hint to run `nia config validate`
+  reports "Generated configuration validated" (or a hint to run `frg config validate`
   if a problem is detected)
 
 #### Access Methods (Interactive Mode)
@@ -520,7 +520,7 @@ prompts for it depends on `--advanced`:
 | `api` | The agent calls the tool's API directly. |
 
 **Default path (no `--advanced`):** every non-local tool is set to `skill` (or, on a
-re-entered field, whatever method was already chosen) without prompting. nia prints where
+re-entered field, whatever method was already chosen) without prompting. frg prints where
 to change it later:
 
 ```text
@@ -529,11 +529,11 @@ to change it later:
 ℹ Access method: skill (change it in toolchain.toml, or rerun with --advanced)
 ```
 
-**`--advanced` path:** nia prompts for the access method for every non-local tool that
+**`--advanced` path:** frg prompts for the access method for every non-local tool that
 supports more than one method:
 
 ```bash
-$ nia config init --interactive --advanced
+$ frg config init --interactive --advanced
 ```
 ```text
 ✓ Selected: github_issues
@@ -552,13 +552,13 @@ Select (1-4) (default: 1):
 
 Only methods supported by the selected tool are offered; tools with a single supported
 method (or `local` tools) never prompt, in either path. When `skill` is chosen for any
-tool, nia exports the corresponding skill file(s) to `.agents/skills/` as part of writing
+tool, frg exports the corresponding skill file(s) to `.agents/skills/` as part of writing
 the configuration, and this is disclosed in the Phase 4 summary and "Created:" list.
 
 #### Repository/Instance Identifier (Interactive Mode)
 
 After selecting an access method for a non-local issue tracker, code platform, or ticket
-tracker, nia prompts for an optional **repository/instance identifier**:
+tracker, frg prompts for an optional **repository/instance identifier**:
 
 ```text
 ℹ Repository/instance identifier for github_issues (optional)
@@ -567,7 +567,7 @@ tracker, nia prompts for an optional **repository/instance identifier**:
 Repository (press Enter to use auto-detected value, or type to override):
 ```
 
-If nia can't detect a repository from the current directory's Git remote (`origin`,
+If frg can't detect a repository from the current directory's Git remote (`origin`,
 falling back to `upstream`), the prompt states that clearly instead of showing a
 detected value:
 
@@ -599,7 +599,7 @@ Repository (press Enter to skip):
 #### Model Overrides (Interactive Mode)
 
 After selecting an agent and model profile (and only when the profile itself wasn't
-pre-specified via `--models`), nia offers to override the profile's default model and
+pre-specified via `--models`), frg offers to override the profile's default model and
 every operation-specific model it defines, one at a time:
 
 ```text
@@ -611,7 +611,7 @@ Press Enter to keep a default, or type a model name to override it.
 
 - Press **Enter** at any prompt to keep the profile's default for that entry.
 - Type a model name to override it. If the model isn't recognized for the selected
-  agent, nia shows a warning and asks whether to use it anyway.
+  agent, frg shows a warning and asks whether to use it anyway.
 - The fully resolved set of models (defaults plus any overrides) replaces the profile's
   built-in values in the generated `agents.toml`.
 
@@ -620,12 +620,12 @@ Press Enter to keep a default, or type a model name to override it.
 You can pre-populate selections using flags (skips those prompts):
 
 ```bash
-nia config init --interactive --issues github_issues --code github --agent github_copilot
+frg config init --interactive --issues github_issues --code github --agent github_copilot
 ```
 
 **Best for:**
-- Complete nia environment setup in one session
-- First-time nia users who want guided configuration
+- Complete frg environment setup in one session
+- First-time frg users who want guided configuration
 - Projects that need both project metadata and toolchain setup
 - When you want to review AI suggestions before committing
 
@@ -642,7 +642,7 @@ nia config init --interactive --issues github_issues --code github --agent githu
 When you run `--interactive` on a repository that already has `project.toml`, you'll be prompted:
 
 ```
-⚠ Configuration already exists at .nia/config/project.toml
+⚠ Configuration already exists at .forge/config/project.toml
 
 Would you like to:
   [E] Edit existing configuration interactively
@@ -689,8 +689,8 @@ description
 
 **Note:** To configure only toolchain or agent without interactive mode, use:
 ```bash
-nia config init --issues github_issues --code github        # Toolchain only
-nia config init --agent github_copilot --models stable      # Agent only
+frg config init --issues github_issues --code github        # Toolchain only
+frg config init --agent github_copilot --models stable      # Agent only
 ```
 
 #### Troubleshooting Interactive Mode
@@ -699,16 +699,16 @@ Common issues and solutions:
 
 **AI analysis takes too long (>30 seconds)**
 
-1. Check agent connectivity: `nia status`
-2. Verify your AI agent is configured: `nia config show-context`
-3. Fall back to manual mode: `nia config init` (without `--interactive`)
+1. Check agent connectivity: `frg status`
+2. Verify your AI agent is configured: `frg config show-context`
+3. Fall back to manual mode: `frg config init` (without `--interactive`)
 
 ```bash
 # Check if agent is responding
-nia status
+frg status
 
 # If agent is slow, use manual mode instead
-nia config init
+frg config init
 ```
 
 **AI suggests incorrect framework/language**
@@ -729,13 +729,13 @@ Interactive mode reads field values from stdin and requires actual user input. A
 
 ```bash
 # These will fail (no user to provide input):
-echo "" | nia config init --interactive       # Error: EOF detected
-cat /dev/null | nia config init --interactive # Error: EOF detected
+echo "" | frg config init --interactive       # Error: EOF detected
+cat /dev/null | frg config init --interactive # Error: EOF detected
 
 # Solutions for non-interactive environments:
-nia config init                 # Manual mode - prompts for each field
-nia config init --app           # App mode - minimal prompts
-nia config init --name "myapp"  # Explicit values via flags
+frg config init                 # Manual mode - prompts for each field
+frg config init --app           # App mode - minimal prompts
+frg config init --name "myapp"  # Explicit values via flags
 ```
 
 **Why this restriction?**
@@ -747,7 +747,7 @@ Interactive mode is designed for guided human interaction. Auto-accepting AI sug
 When `project.toml` already exists:
 
 ```
-⚠ Configuration already exists at .nia/config/project.toml
+⚠ Configuration already exists at .forge/config/project.toml
 
 Would you like to:
   [E] Edit existing configuration interactively
@@ -793,8 +793,8 @@ Interactive mode sends the following to your configured AI agent:
 **Data flow:**
 
 ```
-Repository → nia CLI → Your AI Agent → Suggestions → Local config file
-             (local)    (configured)    (returned)    (.nia/config/)
+Repository → frg CLI → Your AI Agent → Suggestions → Local config file
+             (local)    (configured)    (returned)    (.forge/config/)
 ```
 
 All data is processed by the AI agent you have configured (GitHub Copilot, Gemini, Claude, or OpenCode). Review your agent's privacy policy for data handling details.
@@ -805,10 +805,10 @@ If you prefer not to send repository structure to AI:
 
 ```bash
 # Use manual mode instead
-nia config init
+frg config init
 
 # Or use app mode with explicit values
-nia config init --app
+frg config init --app
 ```
 
 **See Also:**
@@ -820,16 +820,16 @@ nia config init --app
 Set user identity for OpenSearch enterprise reporting.
 
 ```bash
-nia config user --name "John Doe" --email "john@company.com"
+frg config user --name "John Doe" --email "john@company.com"
 ```
 
-Stores user identity in `.nia/context.toml` for use when git config is unavailable (common in CI/CD environments and containers).
+Stores user identity in `.forge/context.toml` for use when git config is unavailable (common in CI/CD environments and containers).
 
 **Persistence:**
-Unlike other context values (issue_id, pr_id), user identity persists across `nia config clear-context` calls since it's considered persistent configuration.
+Unlike other context values (issue_id, pr_id), user identity persists across `frg config clear-context` calls since it's considered persistent configuration.
 
 **Resolution Order:**
-1. Environment variables (`NIA_USER_NAME`, `NIA_USER_EMAIL`)
+1. Environment variables (`FORGE_USER_NAME`, `FORGE_USER_EMAIL`)
 2. Context.toml (this setting)
 3. Git config (`user.name`, `user.email`)
 4. System user (OS username)
@@ -841,8 +841,8 @@ Unlike other context values (issue_id, pr_id), user identity persists across `ni
 
 **Example:**
 ```bash
-$ nia config user --name "Jane Smith" --email "jane.smith@company.com"
-✓ User identity saved to .nia/context.toml
+$ frg config user --name "Jane Smith" --email "jane.smith@company.com"
+✓ User identity saved to .forge/context.toml
 
 Current identity:
   Name:  Jane Smith
@@ -852,12 +852,12 @@ Current identity:
 **CI/CD Usage:**
 ```bash
 # GitHub Actions
-export NIA_USER_NAME="${{ github.actor }}"
-export NIA_USER_EMAIL="${{ github.actor }}@users.noreply.github.com"
+export FORGE_USER_NAME="${{ github.actor }}"
+export FORGE_USER_EMAIL="${{ github.actor }}@users.noreply.github.com"
 
 # GitLab CI
-export NIA_USER_NAME="$GITLAB_USER_NAME"
-export NIA_USER_EMAIL="$GITLAB_USER_EMAIL"
+export FORGE_USER_NAME="$GITLAB_USER_NAME"
+export FORGE_USER_EMAIL="$GITLAB_USER_EMAIL"
 ```
 
 See [OpenSearch Integration](../advanced/opensearch.md) for user identity configuration and more CI/CD examples.
@@ -866,30 +866,30 @@ See [OpenSearch Integration](../advanced/opensearch.md) for user identity config
 
 ## update
 
-Update nia to the latest version. See the [Update
+Update frg to the latest version. See the [Update
 Command](../commands/update.md) for full details, including `--check`,
 `--version`, and `--force`, package-manager detection, and troubleshooting.
 
 ```bash
-nia update
+frg update
 ```
 
 ---
 
 ## guide
 
-Access Nia user documentation.
+Access Progress Forge user documentation.
 
 ### open
 
-Open the Nia user guide in your default browser.
+Open the Progress Forge user guide in your default browser.
 
 ```bash
-nia guide open
+frg guide open
 ```
 
 Opens the mdBook documentation at:
-- Local build: `file:///path/to/nia/user-docs/book/index.html`
+- Local build: `file:///path/to/forge/user-docs/book/index.html`
 - Web hosted: `https://your-docs-url` (if configured)
 
 **Characteristics:**
@@ -908,7 +908,7 @@ Shell completion installation and management.
 Install shell completions for your shell.
 
 ```bash
-nia shell install <SHELL>
+frg shell install <SHELL>
 ```
 
 **Supported Shells:**
@@ -925,7 +925,7 @@ nia shell install <SHELL>
 
 **Example:**
 ```bash
-$ nia shell install bash
+$ frg shell install bash
 Detected profile: /home/user/.bashrc
 Created backup: /home/user/.bashrc.backup.1703012345
 Added completion line to profile
@@ -940,7 +940,7 @@ Please restart your shell or run:
 Display manual installation instructions without modifying profile.
 
 ```bash
-nia shell install bash --manual
+frg shell install bash --manual
 ```
 
 **Output:**
@@ -948,13 +948,13 @@ nia shell install bash --manual
 Manual installation for bash:
 
 Add this line to your ~/.bashrc:
-  source <(nia shell completion bash)
+  source <(frg shell completion bash)
 
 Or generate completion file:
-  nia shell completion bash > ~/.nia-completion.bash
+  frg shell completion bash > ~/.forge-completion.bash
 
 Then add to ~/.bashrc:
-  source ~/.nia-completion.bash
+  source ~/.forge-completion.bash
 ```
 
 ### uninstall
@@ -962,14 +962,14 @@ Then add to ~/.bashrc:
 Remove completions from shell profile.
 
 ```bash
-nia shell uninstall <SHELL>
+frg shell uninstall <SHELL>
 ```
 
-Removes the completion line added by `nia shell install`, but keeps backup files.
+Removes the completion line added by `frg shell install`, but keeps backup files.
 
 **Example:**
 ```bash
-$ nia shell uninstall bash
+$ frg shell uninstall bash
 Removed completion line from /home/user/.bashrc
 Backup preserved: /home/user/.bashrc.backup.1703012345
 ✓ Uninstall complete
@@ -982,15 +982,15 @@ Restart your shell to apply changes.
 Generate raw completion script (internal use).
 
 ```bash
-nia shell completion <SHELL>
+frg shell completion <SHELL>
 ```
 
 Generates completion script that can be sourced or saved. Typically used internally by `install` command.
 
 **Example:**
 ```bash
-$ nia shell completion bash > nia-completion.bash
-$ source nia-completion.bash
+$ frg shell completion bash > forge-completion.bash
+$ source forge-completion.bash
 ```
 
 ---

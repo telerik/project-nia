@@ -42,13 +42,13 @@ Solving configuration-related problems.
 **Debugging**:
 ```bash
 # Check if file exists
-ls -la .nia/config.toml
+ls -la .forge/config.toml
 
 # Check current directory
 pwd
 
 # Verify path
-nia config validate --file .nia/config.toml
+frg config validate --file .forge/config.toml
 ```
 
 ### Permission Issues
@@ -58,10 +58,10 @@ nia config validate --file .nia/config.toml
 **Solution**:
 ```bash
 # Fix permissions
-chmod 644 .nia/config.toml
+chmod 644 .forge/config.toml
 
 # Check owner
-ls -l .nia/config.toml
+ls -l .forge/config.toml
 ```
 
 ### Lock File Issues
@@ -76,18 +76,18 @@ ls -l .nia/config.toml
 **Cause**: Configuration changed but lock file not updated
 
 **Solution**:
-1. **Let Nia rebuild automatically** (recommended):
+1. **Let Progress Forge rebuild automatically** (recommended):
    - This is normal after config changes
-   - Nia rebuilds lock file automatically
+   - Progress Forge rebuilds lock file automatically
    - Only intervene if rebuild fails repeatedly
 
 2. **Manual rebuild** (if automatic fails):
    ```bash
-   rm .nia/.config_lock
-   nia config validate
+   rm .forge/.config_lock
+   frg config validate
    ```
 
-**Prevention**: Run `nia config validate` after configuration changes
+**Prevention**: Run `frg config validate` after configuration changes
 
 ---
 
@@ -116,18 +116,18 @@ Working directory: /path/to/project
 **Possible Causes**:
 
 1. **Missing Configuration** (Most Common):
-   - Project not initialized with nia configuration
-   - **Solution**: Run `nia config init` to create project configuration
-   - **Verification**: Check if `.nia/config/project.toml` exists
+   - Project not initialized with frg configuration
+   - **Solution**: Run `frg config init` to create project configuration
+   - **Verification**: Check if `.forge/config/project.toml` exists
 
 2. **Wrong Directory**:
    - Not in a project root directory
-   - **Solution**: Navigate to the directory containing `.nia/config/`
+   - **Solution**: Navigate to the directory containing `.forge/config/`
    - **Verification**: Run `pwd` and ensure you're in the project root
 
 3. **Internal Propagation Bug** (Rare):
    - Configuration discovered but lost during command execution
-   - **Action**: Report to https://github.com/Progress-Copilot/nia/issues
+   - **Action**: Report to https://github.com/Progress-Copilot/forge/issues
    - **Include**: The full error message with debug information
 
 **Debug Steps**:
@@ -135,22 +135,22 @@ Working directory: /path/to/project
 1. **Check configuration exists**:
    ```bash
    # For project context
-   ls -la .nia/config/project.toml
+   ls -la .forge/config/project.toml
 
    # For application context
-   ls -la .nia/config/application.toml
+   ls -la .forge/config/application.toml
    ```
 
 2. **Verify you're in the right directory**:
    ```bash
    pwd
-   nia config show-context
+   frg config show-context
    ```
 
 3. **Test with simple command**:
    ```bash
-   nia status
-   nia config validate
+   frg status
+   frg config validate
    ```
 
 4. **If config exists but error persists**:
@@ -173,30 +173,30 @@ Working directory: /path/to/project
    cd /path/to/your/project
 
    # Verify project structure
-   ls .nia/config/
+   ls .forge/config/
    ```
 
 2. **Missing configuration files**:
    ```bash
    # Initialize configuration
-   nia config init
+   frg config init
    ```
 
 3. **Permission errors**:
    ```bash
    # Check permissions
-   ls -la .nia/config/
+   ls -la .forge/config/
 
    # Fix if needed
-   chmod 644 .nia/config/*.toml
+   chmod 644 .forge/config/*.toml
    ```
 
 **When to Report**:
 If you have valid configuration files with correct permissions and are in the right directory, this may be a bug. Include:
-- Output of `ls -la .nia/config/`
+- Output of `ls -la .forge/config/`
 - Your current working directory (`pwd`)
 - The exact command that failed
-- Any relevant trace logs (`RUST_LOG=nia=trace nia <command>`)
+- Any relevant trace logs (`RUST_LOG=forge=trace frg <command>`)
 
 ---
 
@@ -214,13 +214,13 @@ If you have valid configuration files with correct permissions and are in the ri
 **Solution**:
 ```bash
 # Remove corrupted lock file
-rm .nia/.config_lock
+rm .forge/.config_lock
 
 # Regenerate clean lock file
-nia config validate
+frg config validate
 ```
 
-Nia will rebuild a clean lock file automatically.
+Progress Forge will rebuild a clean lock file automatically.
 
 ---
 
@@ -230,26 +230,26 @@ Nia will rebuild a clean lock file automatically.
 
 **Symptom 1 - File Already Exists**:
 ```
-❌ Error: Workflows file already exists: ./.nia/config/commands.toml
+❌ Error: Workflows file already exists: ./.forge/config/commands.toml
 Use --force to overwrite existing configuration.
 ```
 
 **Solutions**:
 1. Use `--force` to overwrite:
    ```bash
-   nia config export --force
+   frg config export --force
    ```
 
 2. Backup existing config:
    ```bash
-   cp .nia/config/commands.toml .nia/config/commands.toml.bak
-   nia config export --force
+   cp .forge/config/commands.toml .forge/config/commands.toml.bak
+   frg config export --force
    ```
 
 3. Remove and re-export:
    ```bash
-   rm .nia/config/commands.toml
-   nia config export
+   rm .forge/config/commands.toml
+   frg config export
    ```
 
 **Symptom 2 - Target Not Found**:
@@ -263,7 +263,7 @@ Use --force to overwrite existing configuration.
 cat configs/commands.toml | grep "target ="
 
 # Or use one of: issue, code, pr, docs, backlog
-nia config export --target issue
+frg config export --target issue
 ```
 
 ---
@@ -299,7 +299,7 @@ version = "..."
 author = "..."
 
 [cli]  # Required
-name = "nia"
+name = "forge"
 version = "..."
 description = "..."
 
@@ -421,7 +421,7 @@ file = "prompts/custom/my_prompt.md"
    version = "1.0.0"
    author = "Me"
    [cli]
-   name = "nia"
+   name = "forge"
    version = "0.0.1"
    description = "Test"
    [[commands]]
@@ -435,7 +435,7 @@ file = "prompts/custom/my_prompt.md"
 
 2. **Validate**:
    ```bash
-   nia config validate --file .nia/config.toml
+   frg config validate --file .forge/config.toml
    ```
 
 3. **Add Complexity Gradually**:
@@ -508,13 +508,13 @@ name = "my-command"
 
 ## Best Practices
 
-1. **Always Validate**: `nia config validate`
+1. **Always Validate**: `frg config validate`
 2. **Use Version Control**: Track config changes
 3. **Start Simple**: Minimal config first
 4. **Test Incrementally**: After each change
 5. **Follow Examples**: Use provided examples
 
-## Automatic Configuration (`nia app discover --auto`)
+## Automatic Configuration (`frg app discover --auto`)
 
 ### "AI analysis failed for repository X"
 
@@ -524,7 +524,7 @@ name = "my-command"
 1. Ensure the repository has a manifest file (Cargo.toml, package.json, go.mod, etc.)
 2. Add a README.md with project description to provide context
 3. Check that the repository has actual source code in typical locations
-4. Use `nia config init --interactive` for manual setup of that repository
+4. Use `frg config init --interactive` for manual setup of that repository
 
 ### "Invalid UUID in application.toml"
 
@@ -551,19 +551,19 @@ uuidgen
 
 **If you want to regenerate**:
 1. Back up the existing configuration if it has custom values
-2. Delete the existing `project.toml`: `rm .nia/config/project.toml`
-3. Run `nia app discover --auto` again
+2. Delete the existing `project.toml`: `rm .forge/config/project.toml`
+3. Run `frg app discover --auto` again
 
-**Alternative**: Use `nia config init --interactive` in that specific repository to correct individual fields with AI assistance and user approval.
+**Alternative**: Use `frg config init --interactive` in that specific repository to correct individual fields with AI assistance and user approval.
 
 ### "Generated configuration has incorrect values"
 
 **Cause**: AI analysis may misidentify framework, testing tools, or other metadata.
 
 **Solutions**:
-1. **Per-field correction**: Run `nia config init --interactive` in the affected repository to review and correct each field interactively
-2. **Manual edit**: Edit `.nia/config/project.toml` directly and run `nia config validate` to verify
-3. **Full regeneration**: Delete the config and run `nia app discover --auto` again
+1. **Per-field correction**: Run `frg config init --interactive` in the affected repository to review and correct each field interactively
+2. **Manual edit**: Edit `.forge/config/project.toml` directly and run `frg config validate` to verify
+3. **Full regeneration**: Delete the config and run `frg app discover --auto` again
 
 **Common corrections needed:**
 - Framework detection (e.g., "actix" vs "axum" for Rust web frameworks)
@@ -576,7 +576,7 @@ uuidgen
 
 **Solution**: Set the bypass environment variable:
 ```bash
-NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
+FORGE_ACCEPT_AUTO_RISK=true frg app discover --auto
 ```
 
 **Why this matters**: Bulk AI-generated configurations should be reviewed. The environment variable confirms you understand the risks in automated environments.
@@ -591,7 +591,7 @@ NIA_ACCEPT_AUTO_RISK=true nia app discover --auto
 **Solutions**:
 ```bash
 # Check discovery is enabled
-cat .nia/config/application.toml
+cat .forge/config/application.toml
 # Should have: [discovery]
 #              enabled = true
 

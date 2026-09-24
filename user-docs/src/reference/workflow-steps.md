@@ -1,11 +1,11 @@
 # Workflow Steps and Checks
 
 > **Looking for command hooks?**  
-> To add pre/post steps to individual commands (like `nia ask` or `nia issue draft`), see
+> To add pre/post steps to individual commands (like `frg ask` or `frg issue draft`), see
 > [Command Hooks](../advanced/command-hooks.md). This page focuses on workflow-level
 > orchestration that coordinates multiple commands.
 
-Nia supports user-defined pre- and post-execution steps with conditional
+Progress Forge supports user-defined pre- and post-execution steps with conditional
 validation logic in workflow definitions. This enables you to:
 
 - **Orchestrate multiple commands** in a coordinated sequence
@@ -16,7 +16,7 @@ validation logic in workflow definitions. This enables you to:
 
 ## Quick Start
 
-Add steps to a workflow definition file (`.nia/workflows/*.toml`):
+Add steps to a workflow definition file (`.forge/workflows/*.toml`):
 
 ```toml
 # Workflow definition file example
@@ -33,7 +33,7 @@ id = "create-feature-branch"
 type = "shell"
 command = "git checkout -b feature/$FEATURE_NAME"
 
-# Workflow steps (nia commands)
+# Workflow steps (frg commands)
 [[steps]]
 command = "issue draft"
 
@@ -57,10 +57,10 @@ Understanding the difference between these two layers is essential for effective
 
 ### Workflow-Specific Steps
 
-Workflow-specific steps are defined in workflow definition files (`.nia/workflows/*.toml`) and run **only** as part of that specific workflow. These orchestrate multiple commands and manage workflow-level resources.
+Workflow-specific steps are defined in workflow definition files (`.forge/workflows/*.toml`) and run **only** as part of that specific workflow. These orchestrate multiple commands and manage workflow-level resources.
 
 ```toml
-# In .nia/workflows/feature.toml
+# In .forge/workflows/feature.toml
 schema_version = "2.1.0"
 
 [metadata]
@@ -96,7 +96,7 @@ command = "git push origin feature/new-issue"
 
 ### Command-Specific Steps (Command Hooks)
 
-Command-specific steps are defined in `commands.toml` and run **every time** a nia command executes, regardless of invocation method. These ensure command-level prerequisites and cleanup.
+Command-specific steps are defined in `commands.toml` and run **every time** a frg command executes, regardless of invocation method. These ensure command-level prerequisites and cleanup.
 
 For detailed information on command hooks, see [Command Hooks](../advanced/command-hooks.md).
 
@@ -107,7 +107,7 @@ When a workflow executes a command, both layers coordinate:
 ```
 Workflow Executor starts
 ├─ Execute workflow pre-steps (git checkout)
-├─ Call nia command handler
+├─ Call frg command handler
 │   ├─ Execute command pre-hooks (from commands.toml)
 │   ├─ Execute agent
 │   └─ Execute command post-hooks (from commands.toml)
@@ -288,7 +288,7 @@ Checks probe environment state without modifying it.
 kind = "check"
 id = "has-config"
 type = "file_exists"
-path = ".nia/config.toml"
+path = ".forge/config.toml"
 on_false = "skip"  # Missing config is OK, use defaults
 ```
 
@@ -483,7 +483,7 @@ version = "1.0.0"
 kind = "check"
 id = "has-custom-template"
 type = "file_exists"
-path = ".nia/templates/docs.md"
+path = ".forge/templates/docs.md"
 on_false = "skip"
 
 # Use custom template if available
@@ -492,7 +492,7 @@ kind = "step"
 id = "load-custom"
 type = "builtin"
 action = "copy_file"
-source = ".nia/templates/docs.md"
+source = ".forge/templates/docs.md"
 destination = "templates/current.md"
 requires_check = "has-custom-template"
 
@@ -524,7 +524,7 @@ For more examples including command-level validation and setup, see [Command Hoo
 View step execution in the transaction log:
 
 ```bash
-cat .nia/work/job_123/logs/transaction.jsonl | jq 'select(.event_type == "step_execution")'
+cat .forge/work/job_123/logs/transaction.jsonl | jq 'select(.event_type == "step_execution")'
 ```
 
 Each step logs:

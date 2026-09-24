@@ -1,17 +1,17 @@
 # Configuration Overview
 
-Nia's configuration system provides a flexible, hierarchical approach to customizing behavior across projects and teams. Configuration files control AI agent selection, development tool integration, project metadata, and workflow customization.
+Progress Forge's configuration system provides a flexible, hierarchical approach to customizing behavior across projects and teams. Configuration files control AI agent selection, development tool integration, project metadata, and workflow customization.
 
 ## Configuration Files
 
-Nia uses TOML-based configuration files stored in `.nia/config/`:
+Progress Forge uses TOML-based configuration files stored in `.forge/config/`:
 
 | File | Purpose | Location |
 |------|---------|----------|
-| `project.toml` | Project metadata and settings | `.nia/config/project.toml` |
-| `agents.toml` | AI agent selection and model configuration | `.nia/config/agents.toml` |
-| `toolchain.toml` | Development tools (issue trackers, code platforms) | `.nia/config/toolchain.toml` |
-| `commands.toml` | Workflow command customizations | `.nia/config/commands.toml` |
+| `project.toml` | Project metadata and settings | `.forge/config/project.toml` |
+| `agents.toml` | AI agent selection and model configuration | `.forge/config/agents.toml` |
+| `toolchain.toml` | Development tools (issue trackers, code platforms) | `.forge/config/toolchain.toml` |
+| `commands.toml` | Workflow command customizations | `.forge/config/commands.toml` |
 
 ## Quick Links
 
@@ -25,17 +25,17 @@ Nia uses TOML-based configuration files stored in `.nia/config/`:
 
 ## Getting Started
 
-1. Initialize configuration: `nia config init`
-2. Edit `.nia/config/project.toml` with project metadata
-3. Configure your toolchain in `.nia/config/toolchain.toml`
-4. Validate configuration: `nia config validate`
+1. Initialize configuration: `frg config init`
+2. Edit `.forge/config/project.toml` with project metadata
+3. Configure your toolchain in `.forge/config/toolchain.toml`
+4. Validate configuration: `frg config validate`
 
 ## Viewing Your Configuration
 
-Use the `nia config overview` command to view a comprehensive snapshot of your current configuration state:
+Use the `frg config overview` command to view a comprehensive snapshot of your current configuration state:
 
 ```bash
-nia config overview
+frg config overview
 ```
 
 ### Command Options
@@ -81,36 +81,36 @@ The overview command displays the following information:
 
 ```bash
 # Basic overview with colored output
-nia config overview
+frg config overview
 
 # Verbose output with file paths
-nia config overview --verbose
+frg config overview --verbose
 
 # For scripting (plain text, no colors)
-nia config overview --no-color
+frg config overview --no-color
 
 # Piped to other commands
-nia config overview | grep "Issue"
+frg config overview | grep "Issue"
 ```
 
 ### Troubleshooting
 
 If the command shows warnings or errors:
 
-1. **"NIA not initialized"**: Run `nia config init` to set up the project
+1. **"Progress Forge not initialized"**: Run `frg config init` to set up the project
 2. **Parse errors**: Check the mentioned file for TOML syntax errors
 3. **Missing sections**: Some configuration is optional; missing sections are normal
 
-For detailed validation and recommendations, use `nia config validate`.
+For detailed validation and recommendations, use `frg config validate`.
 
 ## Configuration Hierarchy
 
-Nia loads configuration from multiple locations (highest priority first):
+Progress Forge loads configuration from multiple locations (highest priority first):
 
-1. **Repository** (`.nia/config/`)
+1. **Repository** (`.forge/config/`)
 2. **Application** (multi-repo scenarios)
-3. **User** (`~/.config/nia/`)
-4. **System** (`/etc/nia/`)
+3. **User** (`~/.config/forge/`)
+4. **System** (`/etc/forge/`)
 
 Settings from higher-priority sources override those from lower-priority sources. By default, only repository configuration is loaded; external sources must be explicitly enabled in `project.toml` for security reasons.
 

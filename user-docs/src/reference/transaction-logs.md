@@ -1,17 +1,17 @@
 # Transaction Log Format
 
-Nia maintains a machine-readable transaction log in JSON Lines (JSONL) format at `.nia/work/<job_id>/logs/transaction.jsonl`. Each workflow execution is logged for enterprise reporting, cost tracking, and usage analytics.
+Progress Forge maintains a machine-readable transaction log in JSON Lines (JSONL) format at `.forge/work/<job_id>/logs/transaction.jsonl`. Each workflow execution is logged for enterprise reporting, cost tracking, and usage analytics.
 
 ## File Location
 
 ```
-.nia/work/
+.forge/work/
 └── <job_id>/
     └── logs/
         └── transaction.jsonl
 ```
 
-**Example:** `.nia/work/job_399/logs/transaction.jsonl`
+**Example:** `.forge/work/job_399/logs/transaction.jsonl`
 
 ## Format
 
@@ -30,7 +30,7 @@ identify the execution that emitted it:
 > **These two fields are not written to the local file.** The local JSONL records
 > the raw event; the identity is attached when the event is turned into a
 > document for OpenSearch and OTEL. Reconstruct call trees from the backend, not
-> from `transaction.jsonl`. Locally, `.nia/work/<job_id>/` already scopes events
+> from `transaction.jsonl`. Locally, `.forge/work/<job_id>/` already scopes events
 > to one job.
 
 These are the fields to use when reconstructing or querying a call tree (which
@@ -43,7 +43,7 @@ explicit mapping for it.
 
 ### Workflow Event
 
-Logs the execution of a workflow command (e.g., `nia issue draft`, `nia code implement`).
+Logs the execution of a workflow command (e.g., `frg issue draft`, `frg code implement`).
 
 ```json
 {
@@ -178,7 +178,7 @@ The `model`, `role`, and `custom_agent` fields capture the effective AI agent co
 
 ### Utility Event
 
-Logs utility command execution (e.g., `nia config show`, `nia guide`). In addition to the local JSONL log, this event is forwarded to App Insights (when telemetry is enabled), the same way workflow events are.
+Logs utility command execution (e.g., `frg config show`, `frg guide`). In addition to the local JSONL log, this event is forwarded to App Insights (when telemetry is enabled), the same way workflow events are.
 
 ```json
 {
@@ -191,7 +191,7 @@ Logs utility command execution (e.g., `nia config show`, `nia guide`). In additi
 
 ### Workflow Engine Events
 
-`nia workflow run` writes six further event types as the state machine advances.
+`frg workflow run` writes six further event types as the state machine advances.
 They are routed through the same pipeline as workflow and utility events, so they
 also reach a self-hosted OpenSearch/OTEL backend when one is configured. They are
 **not** forwarded to App Insights, which only accepts `workflow` and `utility`

@@ -1,6 +1,6 @@
 # Workflow Execution Model
 
-Understanding nia's execution model helps you write effective workflow
+Understanding forge's execution model helps you write effective workflow
 configurations and debug issues.
 
 ## Single-Threaded Execution
@@ -78,7 +78,7 @@ command = "npm install & pip install -r requirements.txt & wait"
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
 │  ┌──────────────────┐                                          │
-│  │ Input Validation │  ← Nia's built-in checks                 │
+│  │ Input Validation │  ← Progress Forge's built-in checks                 │
 │  └────────┬─────────┘                                          │
 │           │                                                    │
 │  ┌────────▼─────────┐                                          │
@@ -91,7 +91,7 @@ command = "npm install & pip install -r requirements.txt & wait"
 │  └────────┬─────────┘                                          │
 │           │                                                    │
 │  ┌────────▼─────────┐                                          │
-│  │ Output Validation│  ← Nia's built-in checks                 │
+│  │ Output Validation│  ← Progress Forge's built-in checks                 │
 │  └────────┬─────────┘                                          │
 │           │                                                    │
 │  ┌────────▼─────────┐                                          │
@@ -104,7 +104,7 @@ command = "npm install & pip install -r requirements.txt & wait"
 
 ### Phase Details
 
-**Input Validation** (Nia built-in)
+**Input Validation** (Progress Forge built-in)
 - Validates required context files exist
 - Runs before any user-defined items
 - Failure halts workflow immediately
@@ -119,7 +119,7 @@ command = "npm install & pip install -r requirements.txt & wait"
 - Has access to all context files
 - Failure recorded but workflow may continue
 
-**Output Validation** (Nia built-in)
+**Output Validation** (Progress Forge built-in)
 - Validates expected output files exist
 - Runs after agent execution
 - Failure halts workflow
@@ -258,11 +258,11 @@ path = "output"
 
 ```bash
 # See all step executions
-cat .nia/work/job_123/logs/transaction.jsonl | \
+cat .forge/work/job_123/logs/transaction.jsonl | \
   jq 'select(.event_type == "step_execution")'
 
 # See only failures
-cat .nia/work/job_123/logs/transaction.jsonl | \
+cat .forge/work/job_123/logs/transaction.jsonl | \
   jq 'select(.event_type == "step_execution" and .outcome == "failure")'
 ```
 
@@ -271,16 +271,16 @@ cat .nia/work/job_123/logs/transaction.jsonl | \
 Set `RUST_LOG=debug` for detailed step execution logs:
 
 ```bash
-RUST_LOG=debug nia issue draft "Add feature X"
+RUST_LOG=debug frg issue draft "Add feature X"
 ```
 
 ### Test Steps Individually
 
-Test shell commands outside nia first:
+Test shell commands outside frg first:
 
 ```bash
 # Test your shell command
 cd /your/project && your-command
 
-# Then add to nia config
+# Then add to frg config
 ```

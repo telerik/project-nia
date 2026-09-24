@@ -1,10 +1,10 @@
 # Command Hooks
 
-Command hooks allow you to run custom steps and checks before and after any nia command executes. Unlike workflow steps (which orchestrate multiple commands), command hooks apply to individual command invocations and ensure consistent prerequisites and cleanup.
+Command hooks allow you to run custom steps and checks before and after any frg command executes. Unlike workflow steps (which orchestrate multiple commands), command hooks apply to individual command invocations and ensure consistent prerequisites and cleanup.
 
 ## Overview
 
-When you run a nia command like `nia ask` or `nia issue draft`, you can configure pre-flight checks and post-execution steps that run automatically. This ensures your environment is always in the correct state for the command to succeed.
+When you run a frg command like `frg ask` or `frg issue draft`, you can configure pre-flight checks and post-execution steps that run automatically. This ensures your environment is always in the correct state for the command to succeed.
 
 ## Use Cases
 
@@ -18,7 +18,7 @@ Command hooks are ideal for:
 
 ## Configuration
 
-Command hooks are defined in `.nia/config/commands.toml` under the `commands.operations.hooks` section:
+Command hooks are defined in `.forge/config/commands.toml` under the `commands.operations.hooks` section:
 
 ```toml
 [[commands]]
@@ -143,7 +143,7 @@ Command hooks execute in a specific sequence to ensure proper setup and cleanup:
 1. **Pre-hooks** (in definition order)
    - Checks validate prerequisites
    - Steps prepare the environment
-2. **Command Execution** - The actual nia command runs
+2. **Command Execution** - The actual frg command runs
 3. **Post-hooks** (only on success, in definition order)
    - Steps clean up or post-process
    - Checks verify outputs
@@ -307,7 +307,7 @@ while a group is in flight, resuming re-runs the **entire** group, including
 nested steps that had already completed. Design nested steps to be
 idempotent so a re-run is safe.
 
-See [`configs/examples/workflow-steps-parallel.toml`](https://github.com/Progress-Copilot/nia/blob/main/configs/examples/workflow-steps-parallel.toml)
+See [`configs/examples/workflow-steps-parallel.toml`](https://github.com/Progress-Copilot/forge/blob/main/configs/examples/workflow-steps-parallel.toml)
 for a complete, runnable example.
 
 ## Examples
@@ -462,7 +462,7 @@ Command hooks and workflow steps serve different purposes:
 | **When executed** | Command-level (transparent) | Workflow-level (explicit) |
 
 **Example**:
-- **Command hook**: Always create `output/` directory before `nia issue draft`
+- **Command hook**: Always create `output/` directory before `frg issue draft`
 - **Workflow step**: Create git branch before multi-step feature workflow
 
 Both layers can coexist. When a workflow executes a command, both command hooks and workflow steps run:
@@ -479,13 +479,13 @@ View hook execution in the transaction log:
 
 ```bash
 # View all step executions
-cat .nia/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution")'
+cat .forge/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution")'
 
 # View only pre-hooks
-cat .nia/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution" and .phase == "pre")'
+cat .forge/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution" and .phase == "pre")'
 
 # View failures
-cat .nia/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution" and .outcome == "failure")'
+cat .forge/work/job_*/logs/transaction.jsonl | jq 'select(.event_type == "step_execution" and .outcome == "failure")'
 ```
 
 Each log entry includes:

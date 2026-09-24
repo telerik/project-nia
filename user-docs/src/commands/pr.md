@@ -1,36 +1,36 @@
 ---
 title: Pull Requests
-description: Create, review, prepare, publish, and ask questions about pull requests with the NIA command-line workflow.
+description: Create, review, prepare, publish, and ask questions about pull requests with the Progress Forge command-line workflow.
 ---
 
 # Pull Requests
 
-Use the `pr` workflow to move a pull request from description through review and merge preparation. Create or refine a local description, publish only that description to the code management system, generate review reports, investigate blocking issues, and ask questions about the pull request without leaving the `NIA` workflow.
+Use the `pr` workflow to move a pull request from description through review and merge preparation. Create or refine a local description, publish only that description to the code management system, generate review reports, investigate blocking issues, and ask questions about the pull request without leaving the `Progress Forge` workflow.
 
 ## How It Works
 
 Pull Request workflows use the issue and pull request identifiers in the workflow context. When a pull request context is provided, it must be associated with an issue. The workflows use that context to resolve the working directory:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/
 ```
 
-The operation determines whether `NIA` reads or writes local files, accesses the code management system, or both. `merge` prepares a pull request for merging; it does not perform the merge.
+The operation determines whether `Progress Forge` reads or writes local files, accesses the code management system, or both. `merge` prepares a pull request for merging; it does not perform the merge.
 
 ## Prerequisites
 
 Before running a Pull Request workflow, make sure that:
 
-- The `NIA` project is configured for the code management system used by the workflow.
+- The `Progress Forge` project is configured for the code management system used by the workflow.
 - The workflow has an issue ID and, for PR-specific operations, a pull request ID in its context.
 - Set the associated issue ID when you set a pull request ID. A PR context without an associated issue fails validation.
 - Any local review or draft files required by the selected operation already exist.
 
-You can provide context through the supported `NIA` context configuration. The environment variables commonly used in shell workflows are:
+You can provide context through the supported `Progress Forge` context configuration. The environment variables commonly used in shell workflows are:
 
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
 ```
 
 ## Operations
@@ -48,8 +48,8 @@ Choose an operation based on the stage of the pull request workflow:
 Create a pull request description from the pull request changes and the associated issue. The standard operation writes `pull_request.md` under the PR working directory. It does not analyze individual commits or invent testing information that the changes do not make clear.
 
 ```bash
-nia pr draft
-nia pr draft --edit          # Refine PR draft with your instructions
+frg pr draft
+frg pr draft --edit          # Refine PR draft with your instructions
 ```
 
 Use these modifiers when needed:
@@ -61,7 +61,7 @@ Use these modifiers when needed:
 The default role for `draft` is `software_engineer`. The output is:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
 ```
 
 ### Publish
@@ -69,13 +69,13 @@ The default role for `draft` is `software_engineer`. The output is:
 Publish the local pull request description to the configured code management system.
 
 ```bash
-nia pr publish
+frg pr publish
 ```
 
-Before publishing, `NIA` looks for this file:
+Before publishing, `Progress Forge` looks for this file:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
 ```
 
 If the file is missing, the operation falls back to generating the PR description from the branch diff and the issue instead of aborting. Publish updates only the pull request description and preserves its other metadata, such as state, labels, and reviewers. The operation does not create a local output file and has no operation-specific modifier.
@@ -90,18 +90,18 @@ no character is re-escaped in transit.
 
 Review the pull request, retrieve current platform metadata and all existing reviewer feedback, and apply safe, in-scope fixes locally. Review includes Copilot feedback, inline and conversation comments, and review-thread state. It records every actionable item and whether it was applied, deferred, or intentionally not changed.
 
-Before assessing conflicts, `NIA` uses the pull request's declared target branch, base and head commits, and hosting-platform merge state. It does not assume the target branch is `main` or rely on stale local branches. Safe fixes are validated and committed locally according to the configured commit behavior. Review does not push, modify remote PR metadata, reply to or resolve remote review threads, or commit generated review files. Standard review writes these files:
+Before assessing conflicts, `Progress Forge` uses the pull request's declared target branch, base and head commits, and hosting-platform merge state. It does not assume the target branch is `main` or rely on stale local branches. Safe fixes are validated and committed locally according to the configured commit behavior. Review does not push, modify remote PR metadata, reply to or resolve remote review threads, or commit generated review files. Standard review writes these files:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/status_check_fixes.md
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/code_quality_improvements.md
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/minor_merge_conflicts.md
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/high_risk_merge_conflicts.md
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/pr_review.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/status_check_fixes.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/code_quality_improvements.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/minor_merge_conflicts.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/high_risk_merge_conflicts.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/pr_review.md
 ```
 
 ```bash
-nia pr review
+frg pr review
 ```
 
 Use these modifiers to change the review output:
@@ -114,30 +114,30 @@ The default role for `review` is `software_architect`.
 
 ### Merge
 
-Prepare a pull request for a safe merge. `NIA` first retrieves the current PR metadata, verifies that the local checkout is the PR source branch with a clean worktree, fetches the PR's declared target branch, and rebases the local branch onto it. It then applies safe fixes for status checks, code quality issues, and review feedback, validates locally, and commits the resulting project changes.
+Prepare a pull request for a safe merge. `Progress Forge` first retrieves the current PR metadata, verifies that the local checkout is the PR source branch with a clean worktree, fetches the PR's declared target branch, and rebases the local branch onto it. It then applies safe fixes for status checks, code quality issues, and review feedback, validates locally, and commits the resulting project changes.
 
 ```bash
-nia pr merge
-nia pr merge --fix           # Fix merge issues using your instructions
+frg pr merge
+frg pr merge --fix           # Fix merge issues using your instructions
 ```
 
-Use `--fix` with instructions for targeted fixes. `NIA` resolves only non-destructive rebase conflicts. For high-risk or ambiguous conflicts, it aborts the rebase and reports the base/head details and conflicted files for human resolution. It never force-pushes, pushes, performs the final merge, changes remote PR metadata, or resolves remote review threads. Validate the resulting local commits and status checks before publishing and merging through your code management system.
+Use `--fix` with instructions for targeted fixes. `Progress Forge` resolves only non-destructive rebase conflicts. For high-risk or ambiguous conflicts, it aborts the rebase and reports the base/head details and conflicted files for human resolution. It never force-pushes, pushes, performs the final merge, changes remote PR metadata, or resolves remote review threads. Validate the resulting local commits and status checks before publishing and merging through your code management system.
 
 The default role for `merge` is `software_engineer`.
 
 ### Ask
 
-Ask a question about the pull request. `NIA` checks the pull request, codebase, and available review documentation before writing the answer.
+Ask a question about the pull request. `Progress Forge` checks the pull request, codebase, and available review documentation before writing the answer.
 
 ```bash
-nia pr ask "What files changed?"
-nia pr ask "Are there any breaking changes?"
+frg pr ask "What files changed?"
+frg pr ask "Are there any breaking changes?"
 ```
 
 The workflow writes the answer to:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/answer.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/answer.md
 ```
 
 The default role for `ask` is `software_engineer`.
@@ -147,20 +147,20 @@ The default role for `ask` is `software_engineer`.
 ### Create and Review a Pull Request
 
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
 
 # Draft PR description
-nia pr draft --edit
+frg pr draft --edit
 
 # Publish draft to GitHub
-nia pr publish
+frg pr publish
 
 # Review changes
-nia pr review
+frg pr review
 
 # Merge when ready
-nia pr merge
+frg pr merge
 ```
 
 The final command prepares the pull request. Complete the merge through the configured code management system after the checks and review findings are resolved.
@@ -168,14 +168,14 @@ The final command prepares the pull request. Complete the merge through the conf
 ### Handle Merge Conflicts
 
 ```bash
-export NIA_ISSUE_ID=789
-export NIA_PR_ID=101
+export FORGE_ISSUE_ID=789
+export FORGE_PR_ID=101
 
 # Analyze conflicts
-nia pr merge
+frg pr merge
 
 # Fix merge issues using your instructions
-nia pr merge --fix
+frg pr merge --fix
 ```
 
 Review `high_risk_merge_conflicts.md` before applying any additional resolution manually.
@@ -198,15 +198,15 @@ The built-in task used for each operation is `pr_draft`, `pr_publish`, `pr_revie
 
 ### Missing Pull Request Draft
 
-If `nia pr publish` cannot find `pull_request.md`, it generates the PR description from the branch diff and the issue instead of aborting. Run `nia pr draft` first, or place the intended description at the path below, if you want to publish a specific description rather than the auto-generated one:
+If `frg pr publish` cannot find `pull_request.md`, it generates the PR description from the branch diff and the issue instead of aborting. Run `frg pr draft` first, or place the intended description at the path below, if you want to publish a specific description rather than the auto-generated one:
 
 ```text
-.nia/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
+.forge/work/job_<issue_id>/pr/pr_<pr_id>/pull_request.md
 ```
 
 ### Missing or Invalid Context
 
-Set both `NIA_ISSUE_ID` and `NIA_PR_ID` for a PR-specific workflow. A pull request ID without an associated issue ID fails PR context validation. Confirm that the identifiers refer to the intended workflow context before retrying.
+Set both `FORGE_ISSUE_ID` and `FORGE_PR_ID` for a PR-specific workflow. A pull request ID without an associated issue ID fails PR context validation. Confirm that the identifiers refer to the intended workflow context before retrying.
 
 ### High-Risk Merge Conflicts
 
@@ -218,8 +218,8 @@ Confirm whether `--lite` or `--lite-edit` was used. Lite review intentionally wr
 
 ## Best Practices
 
-- Run `nia pr draft` before `nia pr publish` so the local description exists and can be reviewed.
-- Run `nia pr review` before `nia pr merge` to generate the reports used during merge preparation.
+- Run `frg pr draft` before `frg pr publish` so the local description exists and can be reviewed.
+- Run `frg pr review` before `frg pr merge` to generate the reports used during merge preparation.
 - Use `--lite` when you need only blocking findings and actionable merge information.
 - Treat high-risk merge conflicts as escalation items and do not try automatic resolution.
 - Use `--edit` or `--fix` with specific instructions and validate all resulting changes locally.

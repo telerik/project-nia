@@ -1,54 +1,54 @@
 ---
-title: Manage Issues with NIA
-meta_title: NIA Issue Workflow for Drafting, Reviewing, Planning, and Publishing Issues
-description: Use NIA issue workflows to draft, review, plan, triage, split, ask about, and publish issue-tracker work items.
+title: Manage Issues with Progress Forge
+meta_title: Progress Forge Issue Workflow for Drafting, Reviewing, Planning, and Publishing Issues
+description: Use Progress Forge issue workflows to draft, review, plan, triage, split, ask about, and publish issue-tracker work items.
 slug: issue-workflow
 ---
 
 # Issue Management
 
-The `issue` target provides workflows for managing a work item in the configured issue tracker. Each operation requires an Issue ID. NIA uses that ID to resolve the issue context and the job directory used for local inputs and outputs.
+The `issue` target provides workflows for managing a work item in the configured issue tracker. Each operation requires an Issue ID. Progress Forge uses that ID to resolve the issue context and the job directory used for local inputs and outputs.
 
 ## Prerequisites
 
 Before running an Issue workflow:
 
-1. Run the command from the NIA project directory.
-2. Set the Issue ID with the `NIA_ISSUE_ID` environment variable or the NIA configuration command.
+1. Run the command from the Progress Forge project directory.
+2. Set the Issue ID with the `FORGE_ISSUE_ID` environment variable or the Progress Forge configuration command.
 3. Configure a supported coding agent and valid toolchain settings.
 4. For operations that read an existing local issue draft, make sure the expected file exists in the Issue job directory.
 
 Set and inspect the Issue ID with these commands:
 
 ```bash
-export NIA_ISSUE_ID=123
-nia config set-issue 123
-nia config show-context
+export FORGE_ISSUE_ID=123
+frg config set-issue 123
+frg config show-context
 ```
 
-NIA reports a missing Issue ID with the following guidance:
+Progress Forge reports a missing Issue ID with the following guidance:
 
 ```text
 Issue ID required for 'issue' operations
 
 Set the Issue ID using one of these methods:
-  1. Environment variable: export NIA_ISSUE_ID=<number>
-  2. Config file: nia config set-issue <number>
+  1. Environment variable: export FORGE_ISSUE_ID=<number>
+  2. Config file: frg config set-issue <number>
 
-Current context: nia config show-context
+Current context: frg config show-context
 ```
 
 ## Operations
 
 ### Draft an issue
 
-Create or refine a local issue description. The standard draft uses the `product_manager` role and writes `issue.md` to `.nia/work/job_<issue_id>/issue/`.
+Create or refine a local issue description. The standard draft uses the `product_manager` role and writes `issue.md` to `.forge/work/job_<issue_id>/issue/`.
 
 ```bash
-nia issue draft
-nia issue draft --edit       # Refine draft with your instructions
-nia issue draft --lite       # Lightweight output for simple changes
-nia issue draft --lite-edit  # Lightweight output with custom instructions
+frg issue draft
+frg issue draft --edit       # Refine draft with your instructions
+frg issue draft --lite       # Lightweight output for simple changes
+frg issue draft --lite-edit  # Lightweight output with custom instructions
 ```
 
 The draft operation supports `--role`, `--custom-agent`, `--edit`, `--lite`, and `--lite-edit`. The `--role` and `--custom-agent` options are mutually exclusive.
@@ -58,10 +58,10 @@ The draft operation supports `--role`, `--custom-agent`, `--edit`, `--lite`, and
 Publish the local `issue.md` description to the configured issue tracker. This operation updates the description for the Issue ID and does not require an output file. It preserves the issue's other metadata according to the publish prompt.
 
 ```bash
-nia issue publish
+frg issue publish
 ```
 
-The local file is expected at `.nia/work/job_<issue_id>/issue/issue.md`. If it does not exist, the publish operation falls back to retrieving the issue from the issue tracker and proceeds from that instead of aborting.
+The local file is expected at `.forge/work/job_<issue_id>/issue/issue.md`. If it does not exist, the publish operation falls back to retrieving the issue from the issue tracker and proceeds from that instead of aborting.
 
 The draft is transferred to the issue tracker by file reference, so the published
 description is a byte-for-byte copy of the local file and any markup is preserved
@@ -69,26 +69,26 @@ as-authored (rendering depends on the tracker).
 
 ### Review an issue
 
-Review the local issue description for gaps, quality problems, and actionable recommendations. The standard review uses the `product_manager` role and writes `review.md` to `.nia/work/job_<issue_id>/issue/`.
+Review the local issue description for gaps, quality problems, and actionable recommendations. The standard review uses the `product_manager` role and writes `review.md` to `.forge/work/job_<issue_id>/issue/`.
 
 ```bash
-nia issue review
-nia issue review --edit       # Refine review with your instructions
-nia issue review --lite       # Focus on actionable items
-nia issue review --lite-edit  # Focused review with custom instructions
+frg issue review
+frg issue review --edit       # Refine review with your instructions
+frg issue review --lite       # Focus on actionable items
+frg issue review --lite-edit  # Focused review with custom instructions
 ```
 
 The review operation supports `--role`, `--custom-agent`, `--edit`, `--lite`, and `--lite-edit`. Its prompt expects the local `issue.md` file as input.
 
 ### Generate an implementation plan
 
-Generate an implementation plan for the issue. The standard plan uses the `software_architect` role and writes its output under `.nia/work/job_<issue_id>/code/`.
+Generate an implementation plan for the issue. The standard plan uses the `software_architect` role and writes its output under `.forge/work/job_<issue_id>/code/`.
 
 ```bash
-nia issue plan
-nia issue plan --edit       # Refine the plan with your instructions
-nia issue plan --lite       # Lightweight plan for simple changes
-nia issue plan --lite-edit  # Lightweight plan with custom instructions
+frg issue plan
+frg issue plan --edit       # Refine the plan with your instructions
+frg issue plan --lite       # Lightweight plan for simple changes
+frg issue plan --lite-edit  # Lightweight plan with custom instructions
 ```
 
 The standard plan can contain these files:
@@ -102,27 +102,27 @@ The `--lite` modifier selects the lightweight plan prompt. The command configura
 
 ### Triage an issue
 
-Evaluate and prioritize the issue. The operation uses the `product_manager` role and writes `triage.md` to `.nia/work/job_<issue_id>/issue/`.
+Evaluate and prioritize the issue. The operation uses the `product_manager` role and writes `triage.md` to `.forge/work/job_<issue_id>/issue/`.
 
 ```bash
-nia issue triage
+frg issue triage
 ```
 
 ### Split an issue
 
-Split a large issue into smaller work items. The operation uses the `product_manager` role and writes one or more `issue_*.md` files to `.nia/work/job_<issue_id>/issue/`.
+Split a large issue into smaller work items. The operation uses the `product_manager` role and writes one or more `issue_*.md` files to `.forge/work/job_<issue_id>/issue/`.
 
 ```bash
-nia issue split
+frg issue split
 ```
 
 ### Ask about an issue
 
-Ask a question about the current Issue context. The operation uses the `product_manager` role and writes `answer.md` to `.nia/work/job_<issue_id>/issue/`.
+Ask a question about the current Issue context. The operation uses the `product_manager` role and writes `answer.md` to `.forge/work/job_<issue_id>/issue/`.
 
 ```bash
-nia issue ask "What are the acceptance criteria?"
-nia issue ask "What dependencies does this have?"
+frg issue ask "What are the acceptance criteria?"
+frg issue ask "What dependencies does this have?"
 ```
 
 ## Typical Workflow
@@ -130,24 +130,24 @@ nia issue ask "What dependencies does this have?"
 Use the following sequence when you need to prepare and publish an issue description:
 
 1. Set the Issue ID.
-2. Run `nia issue draft` to create the local `issue.md`.
-3. Run `nia issue review` to identify gaps and recommendations.
-4. Refine the draft or use `nia issue draft --edit` with focused instructions.
-5. Run `nia issue publish` to update the issue description in the configured tracker.
+2. Run `frg issue draft` to create the local `issue.md`.
+3. Run `frg issue review` to identify gaps and recommendations.
+4. Refine the draft or use `frg issue draft --edit` with focused instructions.
+5. Run `frg issue publish` to update the issue description in the configured tracker.
 
 ```bash
-export NIA_ISSUE_ID=123
+export FORGE_ISSUE_ID=123
 
-nia issue draft --edit
-nia issue review
-nia issue publish
+frg issue draft --edit
+frg issue review
+frg issue publish
 ```
 
 For implementation work, generate a plan after the issue description is ready:
 
 ```bash
-export NIA_ISSUE_ID=456
-nia issue plan
+export FORGE_ISSUE_ID=456
+frg issue plan
 ```
 
 Use `triage` when you need prioritization, `split` when the issue is too large for one work item, and `ask` when you need an answer grounded in the current issue context.
@@ -163,8 +163,8 @@ The `--lite` modifier is available for `draft`, `review`, and `plan`.
 Use the dedicated `--lite-edit` modifier when you need lightweight output with custom instructions:
 
 ```bash
-nia issue draft --lite-edit "emphasize the security implications"
-nia issue plan --lite-edit "include database migration steps"
+frg issue draft --lite-edit "emphasize the security implications"
+frg issue plan --lite-edit "include database migration steps"
 ```
 
 The `--lite-edit` value supplies the editing instructions used by the corresponding lightweight prompt. The available modifiers come from the command configuration; do not add `--lite` to operations that do not list it, such as `publish`, `triage`, `split`, or `ask`.
@@ -181,11 +181,11 @@ Override the default role with `--role` or select a configured custom agent with
 For example:
 
 ```bash
-nia issue draft --lite --role software_engineer
-nia issue plan --lite --agent copilot
+frg issue draft --lite --role software_engineer
+frg issue plan --lite --agent copilot
 ```
 
-The accepted role and agent names depend on the NIA configuration and installed agent integrations.
+The accepted role and agent names depend on the Progress Forge configuration and installed agent integrations.
 
 ## Troubleshooting
 
@@ -194,20 +194,20 @@ The accepted role and agent names depend on the NIA configuration and installed 
 Set the context before running an Issue operation:
 
 ```bash
-export NIA_ISSUE_ID=123
+export FORGE_ISSUE_ID=123
 ```
 
 or:
 
 ```bash
-nia config set-issue 123
+frg config set-issue 123
 ```
 
-Then verify it with `nia config show-context`.
+Then verify it with `frg config show-context`.
 
 ### Missing local draft
 
-`nia issue publish` expects `.nia/work/job_<issue_id>/issue/issue.md`. When it is missing, the operation retrieves the issue from the issue tracker instead of aborting. Run `nia issue draft` first if you want to publish local edits rather than the tracker's current description.
+`frg issue publish` expects `.forge/work/job_<issue_id>/issue/issue.md`. When it is missing, the operation retrieves the issue from the issue tracker instead of aborting. Run `frg issue draft` first if you want to publish local edits rather than the tracker's current description.
 
 ### Missing input for another operation
 

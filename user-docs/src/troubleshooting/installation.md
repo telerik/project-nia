@@ -4,7 +4,7 @@
 
 **Problem**: `gh release download` shows a rate-limit warning or prompts for authentication.
 
-**Cause**: The Nia release repository is public. `gh release download` works without authentication, but unauthenticated requests are subject to a lower GitHub API rate limit (60 requests/hour per IP). GitHub CLI may warn about this or prompt you to log in.
+**Cause**: The Progress Forge release repository is public. `gh release download` works without authentication, but unauthenticated requests are subject to a lower GitHub API rate limit (60 requests/hour per IP). GitHub CLI may warn about this or prompt you to log in.
 
 **Solution**:
 
@@ -22,30 +22,30 @@ Once authenticated, `gh release download` works without further prompts.
 
 ---
 
-### Nia Binary Not Found in PATH
+### Progress Forge Binary Not Found in PATH
 
-**Problem**: Shell cannot find the `nia` command after installation.
+**Problem**: Shell cannot find the `frg` command after installation.
 
 **Error Message**:
 ```
-bash: nia: command not found
+bash: frg: command not found
 ```
 ```
-'nia' is not recognized as an internal or external command
+'frg' is not recognized as an internal or external command
 ```
 
-**Cause**: The `nia` binary is either not installed or not in your system's PATH environment variable.
+**Cause**: The `frg` binary is either not installed or not in your system's PATH environment variable.
 
 **Solution**:
 
 1. **Verify the binary exists**:
    ```bash
    # Linux/macOS
-   which nia
-   ls -l /usr/local/bin/nia
+   which frg
+   ls -l /usr/local/bin/frg
 
    # Windows (PowerShell)
-   Get-Command nia
+   Get-Command frg
    ```
 
 2. **Check your PATH**:
@@ -57,7 +57,7 @@ bash: nia: command not found
    $env:PATH
    ```
 
-3. **Add nia to PATH** (if installed but not in PATH):
+3. **Add frg to PATH** (if installed but not in PATH):
 
    **Linux/macOS**:
    ```bash
@@ -73,20 +73,20 @@ bash: nia: command not found
    ```powershell
    # Add to user PATH
    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-   [Environment]::SetEnvironmentVariable("Path", "$userPath;C:\path\to\nia", "User")
+   [Environment]::SetEnvironmentVariable("Path", "$userPath;C:\path\to\frg", "User")
    ```
 
 4. **Reinstall to standard location**:
    ```bash
    # Linux/macOS
-   sudo mv nia /usr/local/bin/nia
+   sudo mv frg /usr/local/bin/frg
 
    # Windows - move to C:\Windows\System32 or add to PATH
    ```
 
 5. **Verify installation**:
    ```bash
-   nia --version
+   frg --version
    ```
 
 **Prevention**: Always install system-wide tools to standard locations like `/usr/local/bin` (Linux/macOS) or ensure custom installation directories are in your PATH.
@@ -97,52 +97,52 @@ bash: nia: command not found
 
 ### Permission Denied Errors
 
-**Problem**: Nia cannot execute due to insufficient permissions.
+**Problem**: Progress Forge cannot execute due to insufficient permissions.
 
 **Error Message**:
 ```
--bash: /usr/local/bin/nia: Permission denied
+-bash: /usr/local/bin/frg: Permission denied
 ```
 ```
-Error: Permission denied: .nia/work/
+Error: Permission denied: .forge/work/
 ```
 
-**Cause**: Either the binary lacks execute permissions, or nia cannot write to required directories (`.nia/work/`, `.nia/config/`).
+**Cause**: Either the binary lacks execute permissions, or frg cannot write to required directories (`.forge/work/`, `.forge/config/`).
 
 **Solution**:
 
 1. **Fix binary permissions**:
    ```bash
    # Linux/macOS
-   chmod +x /usr/local/bin/nia
-   ls -l /usr/local/bin/nia  # Should show -rwxr-xr-x
+   chmod +x /usr/local/bin/frg
+   ls -l /usr/local/bin/frg  # Should show -rwxr-xr-x
    ```
 
 2. **Fix work directory permissions**:
    ```bash
    # Check current permissions
-   ls -ld .nia/
-   ls -ld .nia/work/
+   ls -ld .forge/
+   ls -ld .forge/work/
 
    # Fix permissions
-   chmod 755 .nia/
-   chmod 755 .nia/work/
+   chmod 755 .forge/
+   chmod 755 .forge/work/
    ```
 
 3. **Fix ownership** (if wrong user owns the directory):
    ```bash
    # Check ownership
-   ls -l .nia/
+   ls -l .forge/
 
    # Fix ownership
-   sudo chown -R $USER:$USER .nia/
+   sudo chown -R $USER:$USER .forge/
    ```
 
 4. **Create missing directories**:
    ```bash
-   mkdir -p .nia/work/
-   mkdir -p .nia/config/
-   chmod 755 .nia/work/ .nia/config/
+   mkdir -p .forge/work/
+   mkdir -p .forge/config/
+   chmod 755 .forge/work/ .forge/config/
    ```
 
 5. **Check parent directory permissions**:
@@ -154,8 +154,8 @@ Error: Permission denied: .nia/work/
 
 **Prevention**:
 - Always use `chmod +x` after downloading binaries
-- Avoid running nia with `sudo` (creates root-owned files)
-- Initialize `.nia/` directory in writable locations
+- Avoid running frg with `sudo` (creates root-owned files)
+- Initialize `.forge/` directory in writable locations
 
 **Related**: [Installation Guide](../getting-started/installation.md)
 
@@ -169,7 +169,7 @@ Error: Permission denied: .nia/work/
 
 **Error Message**:
 ```
-./nia: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found
+./forge: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found
 ```
 
 **Cause**: You downloaded the **standard** Linux binary, which requires glibc 2.39 or
@@ -188,17 +188,17 @@ CentOS 8 all ship glibc 2.28.
    standard assets instead — see the previous section.)
    ```bash
    # Binary
-   gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux-legacy'
-   chmod +x nia-*-x86_64-linux-legacy
-   sudo mv nia-*-x86_64-linux-legacy /usr/local/bin/nia
-   nia --version
+   gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-linux-legacy'
+   chmod +x frg-*-x86_64-linux-legacy
+   sudo mv frg-*-x86_64-linux-legacy /usr/local/bin/frg
+   frg --version
 
    # or the RPM
-   gh release download --repo telerik/project-nia --pattern 'nia-*-1.el8.x86_64.rpm'
-   sudo dnf install ./nia-*-1.el8.x86_64.rpm
+   gh release download --repo telerik/project-nia --pattern 'frg-*-1.el8.x86_64.rpm'
+   sudo dnf install ./frg-*-1.el8.x86_64.rpm
    ```
 
-   Use `nia-*-aarch64-linux-legacy` / `nia-*-1.el8.aarch64.rpm` on ARM64.
+   Use `frg-*-aarch64-linux-legacy` / `frg-*-1.el8.aarch64.rpm` on ARM64.
 
 3. **Or re-run the installer**, which selects the correct variant automatically from your
    glibc version:
@@ -223,7 +223,7 @@ and picks the matching variant.
 
 **Error Message**:
 ```
-"nia" cannot be opened because the developer cannot be verified
+"frg" cannot be opened because the developer cannot be verified
 ```
 
 **Cause**: macOS Gatekeeper security prevents unsigned binaries from executing.
@@ -232,7 +232,7 @@ and picks the matching variant.
 
 1. **Remove quarantine attribute**:
    ```bash
-   xattr -d com.apple.quarantine /usr/local/bin/nia
+   xattr -d com.apple.quarantine /usr/local/bin/frg
    ```
 
 2. **Or allow via System Preferences**:
@@ -241,7 +241,7 @@ and picks the matching variant.
 
 3. **Verify binary**:
    ```bash
-   nia --version
+   frg --version
    ```
 
 **Prevention**: Install the latest signed release and verify its checksum before running it.
@@ -269,7 +269,7 @@ This app might harm your PC
 2. **Add exception to Windows Defender**:
    ```powershell
    # Run as Administrator
-   Add-MpPreference -ExclusionPath "C:\path\to\nia.exe"
+   Add-MpPreference -ExclusionPath "C:\path\to\frg.exe"
    ```
 
 3. **Verify and reinstall the latest release asset** from [`telerik/project-nia`](https://github.com/telerik/project-nia/releases).
@@ -288,14 +288,14 @@ This section covers issues specific to Windows Server editions (2019, 2022, 2025
 
 #### Command Not Found on Windows Server
 
-**Problem**: `nia` command is not recognized even though the binary is installed and in PATH.
+**Problem**: `frg` command is not recognized even though the binary is installed and in PATH.
 
 **Error Messages**:
 ```
-'nia' is not recognized as the name of a cmdlet, function, script file, or operable program.
+'frg' is not recognized as the name of a cmdlet, function, script file, or operable program.
 ```
 ```
-nia : The term 'nia' is not recognized as the name of a cmdlet...
+frg : The term 'frg' is not recognized as the name of a cmdlet...
 ```
 
 **Cause**: Windows Server PowerShell sessions may not resolve extension-less commands the same way as Windows 11 client, especially in:
@@ -309,19 +309,19 @@ nia : The term 'nia' is not recognized as the name of a cmdlet...
 1. **Use explicit extension**:
    ```powershell
    # Instead of:
-   nia --version
+   frg --version
 
    # Use:
-   nia.exe --version
+   frg.exe --version
    ```
 
 2. **Verify PATH includes installation directory**:
    ```powershell
    # Check current PATH
-   $env:PATH -split ';' | Where-Object { $_ -like '*nia*' }
+   $env:PATH -split ';' | Where-Object { $_ -like '*frg*' }
 
-   # If empty, add Nia to the Machine PATH in an idempotent way:
-   $installDir = "C:\Program Files\Nia"
+   # If empty, add Progress Forge to the Machine PATH in an idempotent way:
+   $installDir = "C:\Program Files\ProgressForge"
    $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
 
    if ($machinePath -notlike "*$installDir*") {
@@ -333,7 +333,7 @@ nia : The term 'nia' is not recognized as the name of a cmdlet...
 3. **Use absolute path for scripts**:
    ```powershell
    # Most reliable method
-   & "C:\Program Files\Nia\nia.exe" --version
+   & "C:\Program Files\ProgressForge\frg.exe" --version
    ```
 
 4. **Check PATHEXT includes .EXE**:
@@ -344,7 +344,7 @@ nia : The term 'nia' is not recognized as the name of a cmdlet...
    ```
 
 **Prevention**:
-- Always use `nia.exe` (with extension) in scripts and automation
+- Always use `frg.exe` (with extension) in scripts and automation
 - Document full path in runbooks and deployment scripts
 
 ---
@@ -389,13 +389,13 @@ Access is denied.
    Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy RemoteSigned
    ```
 
-   **Note**: Execution Policy affects `.ps1` scripts, not compiled `.exe` binaries. Nia binary should execute regardless of policy.
+   **Note**: Execution Policy affects `.ps1` scripts, not compiled `.exe` binaries. Progress Forge binary should execute regardless of policy.
 
 3. **For AppLocker/WDAC restrictions**:
-   - Contact your IT administrator to whitelist the Nia binary
+   - Contact your IT administrator to whitelist the Progress Forge binary
    - Provide SHA256 checksum for verification:
      ```powershell
-     Get-FileHash "C:\Program Files\Nia\nia.exe" -Algorithm SHA256
+     Get-FileHash "C:\Program Files\ProgressForge\frg.exe" -Algorithm SHA256
      ```
 
 4. **For Constrained Language Mode**:
@@ -410,11 +410,11 @@ Access is denied.
 5. **Bypass for testing** (not recommended for production):
    ```powershell
    # Temporarily bypass for current process only
-   powershell -ExecutionPolicy Bypass -Command "nia.exe --version"
+   powershell -ExecutionPolicy Bypass -Command "frg.exe --version"
    ```
 
 **Enterprise Resolution**:
-- Request IT to add Nia to approved software list
+- Request IT to add Progress Forge to approved software list
 - Provide GPG signature and SHA256 checksum for security review
 - Mirror a verified public release artifact in an approved internal package repository
 
@@ -431,17 +431,17 @@ Microsoft Defender SmartScreen prevented an unrecognized app from starting.
 Running this app might put your PC at risk.
 ```
 
-**Cause**: Nia binaries are GPG-signed but not Authenticode-signed. SmartScreen blocks executables from unknown publishers.
+**Cause**: Progress Forge binaries are GPG-signed but not Authenticode-signed. SmartScreen blocks executables from unknown publishers.
 
 **Solution**:
 
 1. **Unblock via PowerShell** (recommended):
    ```powershell
    # Check if file is blocked
-   Get-Item "C:\Program Files\Nia\nia.exe" -Stream Zone.Identifier -ErrorAction SilentlyContinue
+   Get-Item "C:\Program Files\ProgressForge\frg.exe" -Stream Zone.Identifier -ErrorAction SilentlyContinue
 
    # Unblock the file
-   Unblock-File -Path "C:\Program Files\Nia\nia.exe"
+   Unblock-File -Path "C:\Program Files\ProgressForge\frg.exe"
    ```
 
 2. **Verify file integrity first** (recommended before unblocking):
@@ -450,8 +450,8 @@ Running this app might put your PC at risk.
    gh release download --repo telerik/project-nia --pattern '*.sha256'
 
    # Compare checksums
-   $expected = (Get-Content nia-*-x86_64-windows.exe.sha256).Split(' ')[0]
-   $actual = (Get-FileHash nia-*-x86_64-windows.exe -Algorithm SHA256).Hash
+   $expected = (Get-Content frg-*-x86_64-windows.exe.sha256).Split(' ')[0]
+   $actual = (Get-FileHash frg-*-x86_64-windows.exe -Algorithm SHA256).Hash
    if ($expected -eq $actual) { Write-Host "Checksum verified" }
    ```
 
@@ -464,14 +464,14 @@ Running this app might put your PC at risk.
 
 **Prevention**:
 - Verify checksums before running
-- Use signed release assets from the public Nia repository
+- Use signed release assets from the public Progress Forge repository
 - Request enterprise IT to pre-approve via GPO
 
 ---
 
 #### PATH Not Persisting Across Sessions
 
-**Problem**: Nia is added to PATH but not recognized in new sessions.
+**Problem**: Progress Forge is added to PATH but not recognized in new sessions.
 
 **Cause**: PATH was added to process-level or user-level when system-level was needed, or terminal session wasn't restarted.
 
@@ -481,22 +481,22 @@ Running this app might put your PC at risk.
    ```powershell
    # Check all PATH sources
    Write-Host "Machine PATH:"
-   [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';' | Where-Object { $_ -like '*nia*' }
+   [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';' | Where-Object { $_ -like '*frg*' }
 
    Write-Host "User PATH:"
-   [Environment]::GetEnvironmentVariable("Path", "User") -split ';' | Where-Object { $_ -like '*nia*' }
+   [Environment]::GetEnvironmentVariable("Path", "User") -split ';' | Where-Object { $_ -like '*frg*' }
 
    Write-Host "Process PATH:"
-   $env:PATH -split ';' | Where-Object { $_ -like '*nia*' }
+   $env:PATH -split ';' | Where-Object { $_ -like '*frg*' }
    ```
 
 2. **Add to Machine PATH for all users**:
    ```powershell
    # Run as Administrator
    $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-   $niaPath = "C:\Program Files\Nia"
-   if ($machinePath -notlike "*$niaPath*") {
-       [Environment]::SetEnvironmentVariable("Path", "$machinePath;$niaPath", "Machine")
+   $forgePath = "C:\Program Files\ProgressForge"
+   if ($machinePath -notlike "*$forgePath*") {
+       [Environment]::SetEnvironmentVariable("Path", "$machinePath;$forgePath", "Machine")
    }
    ```
 
@@ -506,7 +506,7 @@ Running this app might put your PC at risk.
    $env:PATH = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
 
    # Verify
-   nia.exe --version
+   frg.exe --version
    ```
 
 4. **For services and scheduled tasks**:
@@ -553,10 +553,10 @@ Running this app might put your PC at risk.
 
 **Resolution** (requires IT administrator):
 
-1. **For AppLocker**: Add hash-based rule for nia.exe
+1. **For AppLocker**: Add hash-based rule for frg.exe
    ```powershell
    # Generate hash for IT team
-   Get-AppLockerFileInformation -Path "C:\Program Files\Nia\nia.exe"
+   Get-AppLockerFileInformation -Path "C:\Program Files\ProgressForge\frg.exe"
    ```
 
 2. **For WDAC**: Request addition to CI policy
@@ -576,8 +576,8 @@ $ExecutionContext.SessionState.LanguageMode
 # Output: "ConstrainedLanguage" indicates restricted mode
 ```
 
-**Impact on Nia**:
-- Direct binary execution (`nia.exe`) still works
+**Impact on Progress Forge**:
+- Direct binary execution (`frg.exe`) still works
 - Complex PowerShell wrappers may fail
 - Environment variable manipulation may be limited
 
@@ -586,13 +586,13 @@ $ExecutionContext.SessionState.LanguageMode
 1. **Direct execution still works**:
    ```powershell
    # This works even in CLM
-   C:\Program Files\Nia\nia.exe --version
+   C:\Program Files\ProgressForge\frg.exe --version
    ```
 
 2. **Avoid PowerShell features in automation**:
    ```batch
    REM Use CMD batch files instead
-   "C:\Program Files\Nia\nia.exe" --version
+   "C:\Program Files\ProgressForge\frg.exe" --version
    ```
 
 3. **For full PowerShell functionality**, request IT to:
@@ -603,30 +603,30 @@ $ExecutionContext.SessionState.LanguageMode
 
 #### Enterprise Deployment Best Practices
 
-For IT administrators deploying Nia across Windows Server environments:
+For IT administrators deploying Progress Forge across Windows Server environments:
 
 **Pre-Deployment Verification**
 
 1. **Download and verify binary**:
    ```powershell
    # Download
-   gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+   gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-windows.exe'
    gh release download --repo telerik/project-nia --pattern '*.sha256'
    gh release download --repo telerik/project-nia --pattern '*.asc'
 
    # Verify SHA256
-   $expected = (Get-Content nia-*-x86_64-windows.exe.sha256).Split(' ')[0]
-   $actual = (Get-FileHash nia-*-x86_64-windows.exe -Algorithm SHA256).Hash
+   $expected = (Get-Content frg-*-x86_64-windows.exe.sha256).Split(' ')[0]
+   $actual = (Get-FileHash frg-*-x86_64-windows.exe -Algorithm SHA256).Hash
    if ($expected -ne $actual) { throw "Checksum mismatch!" }
 
    # Verify GPG signature (requires GPG installed)
    gpg --import public-key.asc
-   gpg --verify nia-*-x86_64-windows.exe.asc
+   gpg --verify frg-*-x86_64-windows.exe.asc
    ```
 
 2. **Generate hash for AppLocker/WDAC**:
    ```powershell
-   Get-FileHash nia-*-x86_64-windows.exe -Algorithm SHA256 | Format-List
+   Get-FileHash frg-*-x86_64-windows.exe -Algorithm SHA256 | Format-List
    ```
 
 **Deployment Methods**
@@ -639,32 +639,32 @@ $credential = Get-Credential
 
 foreach ($server in $servers) {
     $session = New-PSSession -ComputerName $server -Credential $credential
-    Copy-Item -Path ".\nia.exe" -Destination "C:\Program Files\Nia\nia.exe" -ToSession $session
+    Copy-Item -Path ".\frg.exe" -Destination "C:\Program Files\ProgressForge\frg.exe" -ToSession $session
     Invoke-Command -Session $session -ScriptBlock {
-        Unblock-File "C:\Program Files\Nia\nia.exe"
+        Unblock-File "C:\Program Files\ProgressForge\frg.exe"
         # Add to PATH
         $path = [Environment]::GetEnvironmentVariable("Path", "Machine")
-        [Environment]::SetEnvironmentVariable("Path", "$path;C:\Program Files\Nia", "Machine")
+        [Environment]::SetEnvironmentVariable("Path", "$path;C:\Program Files\ProgressForge", "Machine")
     }
     Remove-PSSession $session
 }
 ```
 
 **Option B: Group Policy Software Installation**
-1. Place `nia.exe` on network share
+1. Place `frg.exe` on network share
 2. Create startup script:
    ```batch
    @echo off
-   if not exist "C:\Program Files\Nia\nia.exe" (
-       copy "\\fileserver\software\nia.exe" "C:\Program Files\Nia\nia.exe"
+   if not exist "C:\Program Files\ProgressForge\frg.exe" (
+       copy "\\fileserver\software\frg.exe" "C:\Program Files\ProgressForge\frg.exe"
    )
    ```
 3. Assign via Computer Configuration → Policies → Windows Settings → Scripts
 
 **Option C: SCCM/Intune Deployment**
 - Package as application with:
-  - Install command: `copy nia.exe "C:\Program Files\Nia\"`
-  - Detection rule: File exists at `C:\Program Files\Nia\nia.exe`
+  - Install command: `copy frg.exe "C:\Program Files\ProgressForge\"`
+  - Detection rule: File exists at `C:\Program Files\ProgressForge\frg.exe`
   - Dependencies: None
 
 **Post-Deployment Validation**
@@ -672,19 +672,19 @@ foreach ($server in $servers) {
 ```powershell
 # Test on each server type
 Invoke-Command -ComputerName $servers -ScriptBlock {
-    & "C:\Program Files\Nia\nia.exe" --version
+    & "C:\Program Files\ProgressForge\frg.exe" --version
 } -Credential $credential
 ```
 
-**Updating Nia**
+**Updating Progress Forge**
 
 For updates, replace the binary and verify:
 ```powershell
 foreach ($server in $servers) {
     # ... copy new version ...
     Invoke-Command -ComputerName $server -ScriptBlock {
-        Unblock-File "C:\Program Files\Nia\nia.exe"
-        & "C:\Program Files\Nia\nia.exe" --version
+        Unblock-File "C:\Program Files\ProgressForge\frg.exe"
+        & "C:\Program Files\ProgressForge\frg.exe" --version
     }
 }
 ```
@@ -695,7 +695,7 @@ foreach ($server in $servers) {
 
 The following scenarios are known limitations:
 
-1. **No Authenticode Signing**: Nia binaries use GPG signatures but not Authenticode (EV certificate). SmartScreen warnings will persist until the binary gains reputation or is code-signed.
+1. **No Authenticode Signing**: Progress Forge binaries use GPG signatures but not Authenticode (EV certificate). SmartScreen warnings will persist until the binary gains reputation or is code-signed.
 
 2. **Group Policy Override**: Local workarounds may be overridden by domain Group Policy. Contact IT administrators for enterprise policy exceptions.
 

@@ -1,80 +1,80 @@
 ---
 title: Project Setup
-meta_title: NIA Project Setup - Configure Project Metadata
-description: Initialize NIA, configure project metadata, validate settings, and prepare a repository for reliable AI-assisted workflows.
+meta_title: Progress Forge Project Setup - Configure Project Metadata
+description: Initialize Progress Forge, configure project metadata, validate settings, and prepare a repository for reliable AI-assisted workflows.
 slug: project-setup
 ---
 
 # Project Setup
 
-NIA uses project metadata to describe your repository to its AI coding agent. This article explains how to initialize NIA, complete `.nia/config/project.toml`, validate the configuration, and prepare optional monorepo or context settings.
+Progress Forge uses project metadata to describe your repository to its AI coding agent. This article explains how to initialize Progress Forge, complete `.forge/config/project.toml`, validate the configuration, and prepare optional monorepo or context settings.
 
-After completing the setup, your repository has valid project metadata and can load the configuration required by NIA workflows.
+After completing the setup, your repository has valid project metadata and can load the configuration required by Progress Forge workflows.
 
 ## Prerequisites
 
 Before you begin, prepare the following:
 
-- NIA installed and available on your `PATH`.
-- A project directory where you can create `.nia/config/`.
+- Progress Forge installed and available on your `PATH`.
+- A project directory where you can create `.forge/config/`.
 - Permission to create and edit files in the project directory.
 - A terminal opened at the project root, such as the root of a cloned repository.
 - An authenticated AI coding agent when you plan to run workflow commands. See [Configure an AI coding agent](../agents/setup.md) for agent-specific requirements.
 
-NIA can initialize a project outside a Git repository, but a Git repository is recommended for development workflows that inspect changes or create commits.
+Progress Forge can initialize a project outside a Git repository, but a Git repository is recommended for development workflows that inspect changes or create commits.
 
 ## Before You Begin
 
 Keep these points in mind:
 
-- `nia config init` creates a default `project.toml` only when the file does not already exist. It does not overwrite an existing project configuration.
+- `frg config init` creates a default `project.toml` only when the file does not already exist. It does not overwrite an existing project configuration.
 - The `[project]` table has six required fields. `documentation_framework` is not a required core field; add it as an optional custom field when your prompts or team process need it.
-- NIA validates configuration values when it loads `project.toml`. Use `None` for a required tooling field that does not apply to your project.
+- Progress Forge validates configuration values when it loads `project.toml`. Use `None` for a required tooling field that does not apply to your project.
 - Treat project metadata as shared project configuration. Commit it to version control after reviewing the values and any sensitive custom fields.
-- NIA workflows run agents autonomously and bypass approval prompts. Run NIA in a sandbox or development container, not against production systems.
+- Progress Forge workflows run agents autonomously and bypass approval prompts. Run Progress Forge in a sandbox or development container, not against production systems.
 
 ## Set Up Project Configuration
 
 Complete the following steps from the project root.
 
-### Step 1: Initialize NIA
+### Step 1: Initialize Progress Forge
 
-Run `config init` to create the `.nia/` configuration structure and a default `.nia/config/project.toml` file.
+Run `config init` to create the `.forge/` configuration structure and a default `.forge/config/project.toml` file.
 
 #### Manual Initialization
 
 For a local-only project configuration, run:
 
 ```bash
-nia config init
+frg config init
 ```
 
 To configure an AI coding agent during initialization, add `--agent` with a supported agent ID documented in [AI coding agent setup](../agents/setup.md):
 
 ```bash
-nia config init --agent github_copilot
+frg config init --agent github_copilot
 ```
 
 The default model profile is `stable`. Select another profile with `--models` when you configure an agent:
 
 ```bash
-nia config init --agent github_copilot --models balanced
+frg config init --agent github_copilot --models balanced
 ```
 
-NIA creates the project file and reports `project.toml` in the command output. When you provide issue, ticket, or code-platform options, it also creates the corresponding toolchain configuration. The `--code` option requires at least one tracker option, such as `--issues` or `--tickets`.
+Progress Forge creates the project file and reports `project.toml` in the command output. When you provide issue, ticket, or code-platform options, it also creates the corresponding toolchain configuration. The `--code` option requires at least one tracker option, such as `--issues` or `--tickets`.
 
 Use `--force` to replace only the configuration selected by explicit options. For example, this
 regenerates `agents.toml` without changing `project.toml` or `toolchain.toml`:
 
 ```bash
-nia config init --agent github_copilot --models balanced --force
+frg config init --agent github_copilot --models balanced --force
 ```
 
 Similarly, tool options combined with `--force` replace `toolchain.toml`. To edit an existing
 `project.toml` without the initial edit/cancel confirmation, run:
 
 ```bash
-nia config init --interactive --force
+frg config init --interactive --force
 ```
 
 Interactive field review still occurs. The `--force` option cannot be used by itself or combined
@@ -85,14 +85,14 @@ with `--app`.
 Verify that the project file exists:
 
 ```text
-.nia/config/project.toml
+.forge/config/project.toml
 ```
 
-If the file already exists, NIA reports that it already exists and preserves it. Edit the existing file in the next step.
+If the file already exists, Progress Forge reports that it already exists and preserves it. Edit the existing file in the next step.
 
 ### Step 2: Complete Required Metadata
 
-Open `.nia/config/project.toml` and replace the sample values in the `[project]` table.
+Open `.forge/config/project.toml` and replace the sample values in the `[project]` table.
 
 Use this minimum valid configuration:
 
@@ -125,7 +125,7 @@ Verify this step by checking that every required field has a value that describe
 
 ### Step 3: Add Optional Metadata
 
-Add custom fields when the agent needs project information beyond the six required fields. NIA makes custom fields available as template variables.
+Add custom fields when the agent needs project information beyond the six required fields. Progress Forge makes custom fields available as template variables.
 
 For example:
 
@@ -147,7 +147,7 @@ Verify custom fields by checking that each value is safe to include in an AI pro
 
 ### Step 4: Configure a Monorepo
 
-Add a `[monorepo]` table only when one repository contains multiple services that NIA must distinguish.
+Add a `[monorepo]` table only when one repository contains multiple services that Progress Forge must distinguish.
 
 Each service requires a unique `name` and a unique relative `path`. Service metadata is optional:
 
@@ -176,7 +176,7 @@ package_manager = "npm"
 
 When `enabled = true`, define at least one service. Service paths must exist, resolve to directories, and remain inside the repository. Set `enabled = false` or remove the table for a single-project repository.
 
-Verify the monorepo configuration with `nia config validate`. Correct duplicate service names, duplicate paths, missing directories, or paths outside the repository before continuing.
+Verify the monorepo configuration with `frg config validate`. Correct duplicate service names, duplicate paths, missing directories, or paths outside the repository before continuing.
 
 ### Step 5: Add Shared Context
 
@@ -203,7 +203,7 @@ Keep paths meaningful and descriptions concise. Do not include secrets or large 
 Run the validator from the project root:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 Validation checks the available configuration files, including `project.toml`, `toolchain.toml`, `agents.toml`, and `commands.toml`. It also checks agent dependencies and workflows when those components are configured.
@@ -217,12 +217,12 @@ Verify that the command exits successfully and that no configuration file report
 Create a configuration lock after validation succeeds:
 
 ```bash
-nia config lock
+frg config lock
 ```
 
-This command validates the configuration again, hashes each present configuration file, and writes `.nia/.config_lock`. The lock enables configuration drift detection. If a locked configuration file changes, NIA blocks workflow commands until you run `nia config lock` again.
+This command validates the configuration again, hashes each present configuration file, and writes `.forge/.config_lock`. The lock enables configuration drift detection. If a locked configuration file changes, Progress Forge blocks workflow commands until you run `frg config lock` again.
 
-Verify that the command reports `Configuration locked successfully` and that `.nia/.config_lock` exists. Re-run the command after intentional changes to project, agent, toolchain, command, or workflow configuration.
+Verify that the command reports `Configuration locked successfully` and that `.forge/.config_lock` exists. Re-run the command after intentional changes to project, agent, toolchain, command, or workflow configuration.
 
 ## Configuration Details
 
@@ -231,7 +231,7 @@ Verify that the command reports `Configuration locked successfully` and that `.n
 The project configuration file is:
 
 ```text
-.nia/config/project.toml
+.forge/config/project.toml
 ```
 
 The top-level `schema_version` must be `"1.0.0"`. The `[project]` table contains the required metadata, while `[monorepo]`, `[commit]`, `[config]`, and custom fields are optional.
@@ -248,7 +248,7 @@ behavior = "enabled"
 Supported values are:
 
 - `enabled`: Include basic commit instructions. This is the default.
-- `tagged`: Include commit instructions with NIA co-author attribution.
+- `tagged`: Include commit instructions with Progress Forge co-author attribution.
 - `disabled`: Omit commit instructions globally so you manage commits yourself.
 
 This setting is a project-wide override. Command-specific settings can also exist in `agents.toml`; review that file when command-level behavior matters.
@@ -267,7 +267,7 @@ Individual source toggles have no effect when `enabled = false`. Leave this sect
 ### Routing Configuration
 
 The optional `[routing]` section controls the workflow routing classifier used by
-`nia workflow run --auto`:
+`frg workflow run --auto`:
 
 ```toml
 [routing]
@@ -288,34 +288,34 @@ same one every other agent step uses), never a hardcoded agent.
 Run these checks after completing the setup:
 
 ```bash
-nia config validate
-nia config lock
-nia --help
+frg config validate
+frg config lock
+frg --help
 ```
 
 The expected results are:
 
-- `nia config validate` completes without invalid configuration results.
-- `nia config lock` reports a successful lock and writes `.nia/.config_lock`.
-- `nia --help` displays the NIA command-line interface.
+- `frg config validate` completes without invalid configuration results.
+- `frg config lock` reports a successful lock and writes `.forge/.config_lock`.
+- `frg --help` displays the Progress Forge command-line interface.
 
 If an agent is configured, also run:
 
 ```bash
-nia status
+frg status
 ```
 
-Confirm that NIA detects the configured agent and its authentication state. Agent authentication is managed by the agent's own CLI, not by the project metadata file.
+Confirm that Progress Forge detects the configured agent and its authentication state. Agent authentication is managed by the agent's own CLI, not by the project metadata file.
 
 ## Troubleshooting
 
 ### `project.toml` Is Missing
 
-**Symptom:** Validation reports that NIA cannot read `.nia/config/project.toml`.
+**Symptom:** Validation reports that Progress Forge cannot read `.forge/config/project.toml`.
 
-**Cause:** NIA was not initialized in the project root, or the configuration file was removed.
+**Cause:** Progress Forge was not initialized in the project root, or the configuration file was removed.
 
-**Resolution:** Change to the project root and run `nia config init`. If another `.nia` directory exists higher in the path, confirm that NIA resolves the intended project root before editing files.
+**Resolution:** Change to the project root and run `frg config init`. If another `.forge` directory exists higher in the path, confirm that Progress Forge resolves the intended project root before editing files.
 
 ### Required Field Is Missing or Empty
 
@@ -331,7 +331,7 @@ Confirm that NIA detects the configured agent and its authentication state. Agen
 
 **Cause:** `schema_version` is not `"1.0.0"`.
 
-**Resolution:** Set the top-level value to `schema_version = "1.0.0"`, then run `nia config validate` again.
+**Resolution:** Set the top-level value to `schema_version = "1.0.0"`, then run `frg config validate` again.
 
 ### Monorepo Validation Fails
 
@@ -345,32 +345,32 @@ Confirm that NIA detects the configured agent and its authentication state. Agen
 
 **Symptom:** A workflow command is blocked because configuration changed after locking.
 
-**Cause:** One or more files recorded in `.nia/.config_lock` changed after the last lock operation.
+**Cause:** One or more files recorded in `.forge/.config_lock` changed after the last lock operation.
 
 **Resolution:** Review the changes, validate them, and regenerate the lock:
 
 ```bash
-nia config validate
-nia config lock
+frg config validate
+frg config lock
 ```
 
 Do not regenerate the lock until you have reviewed unexpected configuration changes.
 
 ### Agent Dependency or Authentication Check Fails
 
-**Symptom:** Validation or `nia status` reports that an agent is missing or unauthenticated.
+**Symptom:** Validation or `frg status` reports that an agent is missing or unauthenticated.
 
 **Cause:** The selected AI coding agent is not installed, is not on `PATH`, or has not been authenticated.
 
-**Resolution:** Follow [the agent installation and authentication procedures](../agents/setup.md), then run `nia status` again. Project metadata alone cannot install or authenticate an agent.
+**Resolution:** Follow [the agent installation and authentication procedures](../agents/setup.md), then run `frg status` again. Project metadata alone cannot install or authenticate an agent.
 
 ### Permission Error During Initialization
 
-**Symptom:** `nia config init` cannot create `.nia/config/` or write `project.toml`.
+**Symptom:** `frg config init` cannot create `.forge/config/` or write `project.toml`.
 
 **Cause:** The current user cannot write to the project directory, or another process has locked the file.
 
-**Resolution:** Choose a writable project directory, close applications that have the file open, or ask an administrator to grant the required directory permission. Avoid running NIA with elevated privileges unless your environment requires it.
+**Resolution:** Choose a writable project directory, close applications that have the file open, or ask an administrator to grant the required directory permission. Avoid running Progress Forge with elevated privileges unless your environment requires it.
 
 ## Next Steps
 
@@ -379,5 +379,5 @@ After project setup is valid, continue with the task that matches your workflow:
 - [Configure AI coding agents](../agents/setup.md) to install, authenticate, and select an agent.
 - [Configure commit behavior](./commit-behavior.md) to control commit instructions.
 - [Manage workflow context](./context.md) to set issue, pull request, ticket, or service context.
-- [Start with the Quick Start workflow](../quick-start.md) to run an initial NIA command.
+- [Start with the Quick Start workflow](../quick-start.md) to run an initial Progress Forge command.
 - [Review the command reference](../reference/commands.md) to learn available targets and operations.

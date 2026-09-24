@@ -4,11 +4,11 @@ Skills are packages of procedural knowledge that agents load on demand. They fol
 
 ## Installing Built-in Skills
 
-When you initialize a toolchain, Nia installs only the embedded skills required by tools
+When you initialize a toolchain, Progress Forge installs only the embedded skills required by tools
 configured with `method = "skill"`:
 
 ```bash
-nia config init --issues github_issues --code github
+frg config init --issues github_issues --code github
 # Installs .agents/skills/issue-read-github/
 #          .agents/skills/pr-read-github/
 ```
@@ -16,7 +16,7 @@ nia config init --issues github_issues --code github
 To export the complete embedded library, run:
 
 ```bash
-nia config export --skills
+frg config export --skills
 ```
 
 Explicit export writes all 18 embedded skills. Existing files are preserved unless you
@@ -171,7 +171,7 @@ description = "Use the {{skill_name}} skill to read ACME issues."
 ```
 
 Then create `.agents/skills/acme-issue-read/SKILL.md` with your custom instructions.
-During prompt composition, Nia replaces `{{skill_name}}` with `acme-issue-read`. If
+During prompt composition, Progress Forge replaces `{{skill_name}}` with `acme-issue-read`. If
 `skill_name` is omitted, it defaults to the custom tool's exact `name` (`acme_tracker` in
 this example). The field is used only when `method = "skill"`.
 
@@ -228,21 +228,21 @@ Skills can be stored at two levels:
 
 ### Automatic Detection
 
-When you run `nia config export --skills`, the scope is auto-detected:
+When you run `frg config export --skills`, the scope is auto-detected:
 
 | Your Config Location | Skills Export To |
 |---------------------|------------------|
-| `.nia/config/` (in repository) | `.agents/skills/` (project) |
-| `~/.config/nia/` (user home) | `~/.agents/skills/` (global) |
+| `.forge/config/` (in repository) | `.agents/skills/` (project) |
+| `~/.config/forge/` (user home) | `~/.agents/skills/` (global) |
 
 ### Override with --scope
 
 ```bash
 # Force project scope (version-controlled)
-nia config export --skills --scope=project
+frg config export --skills --scope=project
 
 # Force user scope (global, personal)
-nia config export --skills --scope=user
+frg config export --skills --scope=user
 ```
 
 ### Scope Precedence
@@ -266,7 +266,7 @@ The `.agents/skills/` path is the interoperable standard recognized by all three
 
 ### Checking for Updates
 
-When you run `nia config export --skills`, Nia compares each existing skill's frontmatter
+When you run `frg config export --skills`, Progress Forge compares each existing skill's frontmatter
 `version` string with the embedded version. A different string is reported as an update:
 
 ```
@@ -274,7 +274,7 @@ When you run `nia config export --skills`, Nia compares each existing skill's fr
   - issue-read-github: v1.0.0 → v1.1.0
   - pr-read-github: v1.2.0 → v1.3.0
 
-Run 'nia config export --skills --force' to update
+Run 'frg config export --skills --force' to update
 Warning: This will overwrite existing files. Back up custom modifications first.
 ```
 
@@ -289,7 +289,7 @@ Skills are not updated automatically to preserve your customizations. To update:
 
 2. **Re-export with force:**
    ```bash
-   nia config export --skills --force
+   frg config export --skills --force
    ```
 
 3. **Manually merge customizations:**
@@ -307,7 +307,7 @@ version: "1.2.3"
 - **Minor (x.2.x)**: New features or commands added
 - **Patch (x.x.3)**: Bug fixes, clarifications, typo corrections
 
-Nia currently detects only whether version strings differ; it does not determine whether
+Progress Forge currently detects only whether version strings differ; it does not determine whether
 the embedded version is semantically newer.
 
 ## Troubleshooting
@@ -323,7 +323,7 @@ If an agent doesn't load your skill:
 
 ### Skill Update Not Detected
 
-If `nia config export --skills` doesn't detect updates:
+If `frg config export --skills` doesn't detect updates:
 
 1. **Check version field:** Ensure both files contain a nonempty version (for example, "1.0.0")
 2. **Verify frontmatter:** Version field must be in frontmatter, not body
@@ -337,7 +337,7 @@ If agent uses built-in skill instead of custom:
 2. **Verify skill_name:** For custom tools, set `skill_name` field
 3. **Check precedence:** Project skills override user skills
 4. **Check the description:** It must reference `{{skill_name}}` so the final prompt names the skill
-5. **Check the file:** Custom skills are not exported by Nia; create `.agents/skills/<skill_name>/SKILL.md`
+5. **Check the file:** Custom skills are not exported by Progress Forge; create `.agents/skills/<skill_name>/SKILL.md`
 
 ## See Also
 

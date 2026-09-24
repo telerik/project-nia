@@ -1,32 +1,32 @@
 # Version Control Setup
 
-This guide explains how to configure your `.gitignore` for projects using nia. Proper version control setup ensures you don't accidentally commit sensitive credentials, temporary files, or developer-specific artifacts.
+This guide explains how to configure your `.gitignore` for projects using forge. Proper version control setup ensures you don't accidentally commit sensitive credentials, temporary files, or developer-specific artifacts.
 
-## Nia Directory Structure
+## Progress Forge Directory Structure
 
-When you run `nia config init`, nia creates the following structure:
+When you run `frg config init`, frg creates the following structure:
 
 | Directory | Purpose | Version Control |
 |-----------|---------|-----------------|
-| `.nia/config/` | Configuration files (project.toml, agents.toml, toolchain.toml) | **Commit** (except credentials) |
-| `.nia/prompts/` | Custom prompt templates | **Commit** |
-| `.nia/work/` | Job outputs: plans, traces, reviews, issue snapshots, logs | **Team decision** |
-| `.nia/cache/` | Cached prompt data | **Exclude** |
-| `.nia/logs/` | Utility transaction logs | **Exclude** |
-| `.nia/license/` | License key files | **Usually exclude** |
+| `.forge/config/` | Configuration files (project.toml, agents.toml, toolchain.toml) | **Commit** (except credentials) |
+| `.forge/prompts/` | Custom prompt templates | **Commit** |
+| `.forge/work/` | Job outputs: plans, traces, reviews, issue snapshots, logs | **Team decision** |
+| `.forge/cache/` | Cached prompt data | **Exclude** |
+| `.forge/logs/` | Utility transaction logs | **Exclude** |
+| `.forge/license/` | License key files | **Usually exclude** |
 
 ### Runtime Files
 
-Nia also creates these files during operation:
+Progress Forge also creates these files during operation:
 
 | File/Pattern | Purpose |
 |--------------|---------|
-| `.nia/.context.lock` | Concurrent context access lock |
-| `.nia/.workflow.lock` | Workflow execution lock |
-| `.nia/work/**/traces/.heartbeat` | Agent heartbeat tracking |
-| `.nia/work/**/sessions.toml` | Session tracking within jobs |
-| `.nia/work/**/.sessions.lock` | Session lock files |
-| `.nia/work/*/approvals/*.toml` | Approval state |
+| `.forge/.context.lock` | Concurrent context access lock |
+| `.forge/.workflow.lock` | Workflow execution lock |
+| `.forge/work/**/traces/.heartbeat` | Agent heartbeat tracking |
+| `.forge/work/**/sessions.toml` | Session tracking within jobs |
+| `.forge/work/**/.sessions.lock` | Session lock files |
+| `.forge/work/*/approvals/*.toml` | Approval state |
 
 ## Recommended .gitignore Patterns
 
@@ -35,13 +35,13 @@ Nia also creates these files during operation:
 Always add these patterns to your `.gitignore`:
 
 ```gitignore
-# nia CLI - Essential exclusions
-.nia/logs/
-.nia/cache/
-.nia/.context.lock
-.nia/.workflow.lock
-.nia/work/**/traces/.heartbeat
-.nia/config/telemetry.toml
+# frg CLI - Essential exclusions
+.forge/logs/
+.forge/cache/
+.forge/.context.lock
+.forge/.workflow.lock
+.forge/work/**/traces/.heartbeat
+.forge/config/telemetry.toml
 ```
 
 **Why exclude these:**
@@ -52,43 +52,43 @@ Always add these patterns to your `.gitignore`:
 
 ### Work Artifacts (Team Decision)
 
-The `.nia/work/` directory contains job outputs. Your team should decide whether to commit these:
+The `.forge/work/` directory contains job outputs. Your team should decide whether to commit these:
 
 ```gitignore
 # Optional: Exclude work artifacts (uncomment if your team prefers)
-# .nia/work/
+# .forge/work/
 ```
 
-**When to commit `.nia/work/`:**
+**When to commit `.forge/work/`:**
 - Transparency: Team can see generated plans and reviews
 - Auditing: Historical record of what AI produced
 - Knowledge sharing: Traces help onboard new team members
 
-**When to exclude `.nia/work/`:**
+**When to exclude `.forge/work/`:**
 - Noise reduction: Keep repository focused on source code
 - Privacy: Developer-specific traces may contain sensitive context
 - Size: Large projects may generate substantial artifacts
 
-**Selective exclusion** (if you commit `.nia/work/` but want to exclude some artifacts):
+**Selective exclusion** (if you commit `.forge/work/` but want to exclude some artifacts):
 
 ```gitignore
 # Commit plans and reviews, exclude sessions/locks
-.nia/work/**/sessions.toml
-.nia/work/**/.sessions.lock
-.nia/work/*/approvals/*.toml
+.forge/work/**/sessions.toml
+.forge/work/**/.sessions.lock
+.forge/work/*/approvals/*.toml
 ```
 
 ### Files to Commit
 
 These files should be committed for team consistency:
 
-- `.nia/config/project.toml` - Project metadata
-- `.nia/config/agents.toml` - Agent configuration
-- `.nia/config/toolchain.toml` - Toolchain settings
-- `.nia/config/commands.toml` - Workflow customization
-- `.nia/prompts/` - Custom prompts
+- `.forge/config/project.toml` - Project metadata
+- `.forge/config/agents.toml` - Agent configuration
+- `.forge/config/toolchain.toml` - Toolchain settings
+- `.forge/config/commands.toml` - Workflow customization
+- `.forge/prompts/` - Custom prompts
 
-> **Important:** Commit `.nia/config/` but exclude credential files (e.g., `telemetry.toml`).
+> **Important:** Commit `.forge/config/` but exclude credential files (e.g., `telemetry.toml`).
 
 ## Complete Template
 
@@ -96,26 +96,26 @@ Copy this template to get started:
 
 ```gitignore
 # ========================================
-# nia CLI Exclusions
+# frg CLI Exclusions
 # See: https://telerik.github.io/project-nia/configuration/version-control
 # ========================================
 
 # Essential exclusions (always add)
-.nia/logs/
-.nia/cache/
-.nia/.context.lock
-.nia/.workflow.lock
-.nia/work/**/traces/.heartbeat
+.forge/logs/
+.forge/cache/
+.forge/.context.lock
+.forge/.workflow.lock
+.forge/work/**/traces/.heartbeat
 
 # Credential files (security - never commit)
-.nia/config/telemetry.toml
+.forge/config/telemetry.toml
 
 # Optional: Work artifacts (team decision)
 # Uncomment to exclude plans, traces, reviews, logs
-# .nia/work/
+# .forge/work/
 
 # Optional: License key (if stored in project)
-# .nia/license/
+# .forge/license/
 ```
 
 ## Security Best Practices
@@ -126,15 +126,15 @@ Never commit files containing credentials:
 
 | File | Contains | Risk |
 |------|----------|------|
-| `.nia/config/telemetry.toml` | Telemetry configuration | Medium - privacy concern |
-| `.nia/license/*.txt` | License keys | Medium - license violation |
+| `.forge/config/telemetry.toml` | Telemetry configuration | Medium - privacy concern |
+| `.forge/license/*.txt` | License keys | Medium - license violation |
 
 ### If You Accidentally Committed Credentials
 
 1. **Rotate credentials immediately** - assume they are compromised
 2. **Remove from tracking** (does not remove from history):
    ```bash
-   git rm --cached .nia/config/telemetry.toml
+   git rm --cached .forge/config/telemetry.toml
    git commit -m "Remove credential file from tracking"
    ```
 3. **Add to .gitignore** to prevent future commits
@@ -146,37 +146,37 @@ Never commit files containing credentials:
 
 **Transparency-focused team** (commit everything except credentials):
 ```gitignore
-.nia/logs/
-.nia/cache/
-.nia/.context.lock
-.nia/.workflow.lock
-.nia/work/**/traces/.heartbeat
-.nia/config/telemetry.toml
+.forge/logs/
+.forge/cache/
+.forge/.context.lock
+.forge/.workflow.lock
+.forge/work/**/traces/.heartbeat
+.forge/config/telemetry.toml
 ```
 
 **Minimal-noise team** (exclude all runtime artifacts):
 ```gitignore
-.nia/logs/
-.nia/cache/
-.nia/work/
-.nia/.context.lock
-.nia/.workflow.lock
-.nia/work/**/traces/.heartbeat
-.nia/config/telemetry.toml
+.forge/logs/
+.forge/cache/
+.forge/work/
+.forge/.context.lock
+.forge/.workflow.lock
+.forge/work/**/traces/.heartbeat
+.forge/config/telemetry.toml
 ```
 
 **Hybrid approach** (commit plans, exclude traces/sessions):
 ```gitignore
-.nia/logs/
-.nia/cache/
-.nia/.context.lock
-.nia/.workflow.lock
-.nia/work/**/traces/.heartbeat
-.nia/config/telemetry.toml
-.nia/work/**/sessions.toml
-.nia/work/**/.sessions.lock
-.nia/work/*/approvals/*.toml
-.nia/work/*/traces/
+.forge/logs/
+.forge/cache/
+.forge/.context.lock
+.forge/.workflow.lock
+.forge/work/**/traces/.heartbeat
+.forge/config/telemetry.toml
+.forge/work/**/sessions.toml
+.forge/work/**/.sessions.lock
+.forge/work/*/approvals/*.toml
+.forge/work/*/traces/
 ```
 
 ## Migration Guide
@@ -186,15 +186,15 @@ Never commit files containing credentials:
 1. **Update .gitignore** with recommended patterns
 2. **Remove already-tracked files** (keeps local copies):
    ```bash
-   git rm -r --cached .nia/logs/
-   git rm -r --cached .nia/cache/
-   git rm --cached .nia/.context.lock
-   git rm --cached .nia/.workflow.lock
-   git rm --cached .nia/work/**/traces/.heartbeat
+   git rm -r --cached .forge/logs/
+   git rm -r --cached .forge/cache/
+   git rm --cached .forge/.context.lock
+   git rm --cached .forge/.workflow.lock
+   git rm --cached .forge/work/**/traces/.heartbeat
    ```
 3. **Commit the removal**:
    ```bash
-   git commit -m "chore: add nia artifacts to gitignore"
+   git commit -m "chore: add frg artifacts to gitignore"
    ```
 
 ### Removing Sensitive Data from History
@@ -216,17 +216,17 @@ git push --force  # Coordinate with team first!
 In a monorepo, add patterns to the root `.gitignore`:
 
 ```gitignore
-# Root-level nia exclusions for all services
-**/.nia/logs/
-**/.nia/cache/
-**/.nia/.context.lock
-**/.nia/.workflow.lock
-**/.nia/work/**/traces/.heartbeat
-**/.nia/config/telemetry.toml
+# Root-level frg exclusions for all services
+**/.forge/logs/
+**/.forge/cache/
+**/.forge/.context.lock
+**/.forge/.workflow.lock
+**/.forge/work/**/traces/.heartbeat
+**/.forge/config/telemetry.toml
 ```
 
 ## See Also
 
-- [Configuration Overview](./overview.md) - Getting started with nia configuration
+- [Configuration Overview](./overview.md) - Getting started with frg configuration
 - [Configuration Files](./files.md) - Reference for all configuration files
 - [Licensing](../getting-started/licensing.md) - License file handling

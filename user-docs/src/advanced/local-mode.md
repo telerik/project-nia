@@ -2,11 +2,11 @@
 
 ## Overview
 
-Local mode enables Nia workflow orchestration without requiring integration with external issue trackers or code management platforms. This is useful for:
+Local mode enables Progress Forge workflow orchestration without requiring integration with external issue trackers or code management platforms. This is useful for:
 
 - **Offline Development**: Working without internet connectivity
 - **Air-gapped Environments**: Enterprise environments with restricted network access
-- **Learning & Experimentation**: Exploring Nia without existing platform setup
+- **Learning & Experimentation**: Exploring Progress Forge without existing platform setup
 - **Simplified Workflows**: Small projects that don't need external integration
 - **CI/CD Isolation**: Build environments that shouldn't access external systems
 
@@ -17,7 +17,7 @@ Local mode enables Nia workflow orchestration without requiring integration with
 Both issue tracking and code management use local files/Git:
 
 ```toml
-# .nia/config/toolchain.toml
+# .forge/config/toolchain.toml
 schema_version = "2.1.0"
 
 [issue_tracker]
@@ -71,10 +71,10 @@ Choose a unique identifier for your issue:
 
 ```bash
 # Option A: Environment variable
-export NIA_ISSUE_ID=FEAT-123
+export FORGE_ISSUE_ID=FEAT-123
 
 # Option B: Configuration file
-nia config set-issue FEAT-123
+frg config set-issue FEAT-123
 ```
 
 **Important**: Choose an ID that won't conflict with any online issue trackers you might use later.
@@ -82,12 +82,12 @@ nia config set-issue FEAT-123
 ### Step 2: Create Issue Directory
 
 ```bash
-mkdir -p .nia/work/job_FEAT-123/issue
+mkdir -p .forge/work/job_FEAT-123/issue
 ```
 
 ### Step 3: Create Issue Description
 
-Create `.nia/work/job_FEAT-123/issue/issue.md`:
+Create `.forge/work/job_FEAT-123/issue/issue.md`:
 
 ```markdown
 # Add User Authentication
@@ -124,16 +124,16 @@ The application currently has no authentication. Users can access all features w
 ### Step 4: Review the Issue
 
 ```bash
-nia issue review
+frg issue review
 ```
 
-Nia will read the issue description from your local file and review it for completeness and quality.
+Progress Forge will read the issue description from your local file and review it for completeness and quality.
 
 ## Issue File Format
 
 ### Recommended Structure
 
-While any markdown is accepted, this structure works well with Nia's prompts:
+While any markdown is accepted, this structure works well with Progress Forge's prompts:
 
 ```markdown
 # Issue Title
@@ -160,13 +160,13 @@ What this issue does NOT include.
 
 Issue files must be at:
 ```
-.nia/work/job_<issue_id>/issue/issue.md
+.forge/work/job_<issue_id>/issue/issue.md
 ```
 
 Where `<issue_id>` is sanitized for filesystem safety:
-- `FEAT-123` → `.nia/work/job_FEAT-123/issue/issue.md`
-- `AB#456` → `.nia/work/job_AB_456/issue/issue.md` (# becomes _)
-- `123` → `.nia/work/job_123/issue/issue.md`
+- `FEAT-123` → `.forge/work/job_FEAT-123/issue/issue.md`
+- `AB#456` → `.forge/work/job_AB_456/issue/issue.md` (# becomes _)
+- `123` → `.forge/work/job_123/issue/issue.md`
 
 ### Size Limit
 
@@ -188,10 +188,10 @@ When using `code_platform.name = "local"`:
 
 ```bash
 # For tracking purposes
-export NIA_PR_ID=1
+export FORGE_PR_ID=1
 
 # Or via config
-nia config set-pr 1
+frg config set-pr 1
 ```
 
 ### Git Workflow
@@ -239,7 +239,7 @@ git merge feature/FEAT-123
 
 **Solution**:
 1. Check the expected path in the error message
-2. Create the directory: `mkdir -p .nia/work/job_<id>/issue`
+2. Create the directory: `mkdir -p .forge/work/job_<id>/issue`
 3. Create `issue.md` with your issue description
 
 ### "Issue ID not set"
@@ -248,9 +248,9 @@ git merge feature/FEAT-123
 
 **Solution**:
 ```bash
-export NIA_ISSUE_ID=YOUR-ISSUE-ID
+export FORGE_ISSUE_ID=YOUR-ISSUE-ID
 # or
-nia config set-issue YOUR-ISSUE-ID
+frg config set-issue YOUR-ISSUE-ID
 ```
 
 ### "File exceeds maximum size"
@@ -267,7 +267,7 @@ nia config set-issue YOUR-ISSUE-ID
 1. **Use descriptive issue IDs**: `FEAT-auth-system` is better than `1`
 2. **Follow consistent format**: Use the recommended structure for all issues
 3. **Keep files focused**: One issue per file, clear scope
-4. **Version control issue files**: Commit `.nia/work/` to Git for history
+4. **Version control issue files**: Commit `.forge/work/` to Git for history
 5. **Document decisions**: Use the issue file to record design decisions
 6. **Update as you go**: Keep the issue file current during development
 
@@ -279,14 +279,14 @@ When ready to move to an external platform:
 
 1. Create issue on external platform (GitHub, JIRA, etc.)
 2. Update `toolchain.toml` with external tracker
-3. Set new issue ID: `nia config set-issue <new-id>`
+3. Set new issue ID: `frg config set-issue <new-id>`
 4. Archive local issue file if desired
 
 ### From External to Local
 
 1. Copy issue content to local file
 2. Update `toolchain.toml` to use local tracker
-3. Set issue ID: `nia config set-issue <id>`
+3. Set issue ID: `frg config set-issue <id>`
 
 ## Related Documentation
 

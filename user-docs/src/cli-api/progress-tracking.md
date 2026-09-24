@@ -1,6 +1,6 @@
 # Progress Tracking
 
-The nia CLI provides real-time visibility into workflow execution through terminal-based progress tracking. This feature gives you instant feedback on what the agent is doing and what outputs to expect.
+The frg CLI provides real-time visibility into workflow execution through terminal-based progress tracking. This feature gives you instant feedback on what the agent is doing and what outputs to expect.
 
 ## Overview
 
@@ -12,7 +12,7 @@ Progress tracking consists of three main components:
 
 ## Input Validation
 
-Before starting a workflow, nia automatically validates that all required input files exist. These requirements are extracted from the `<context>` section of the workflow's task prompt.
+Before starting a workflow, frg automatically validates that all required input files exist. These requirements are extracted from the `<context>` section of the workflow's task prompt.
 
 ### Example: Successful Validation
 
@@ -20,12 +20,12 @@ Before starting a workflow, nia automatically validates that all required input 
 Issue ID: 42
 PR ID: (not set)
 
-✓ Workspace validated: .nia/work/job_42/
+✓ Workspace validated: .forge/work/job_42/
 
 Required Inputs:
-  ✓ .nia/work/job_42/issue/issue.md
-  ✓ .nia/work/job_42/code/README.md
-  ✓ .nia/work/job_42/code/phase_1.md
+  ✓ .forge/work/job_42/issue/issue.md
+  ✓ .forge/work/job_42/code/README.md
+  ✓ .forge/work/job_42/code/phase_1.md
 
 ⠸ Executing AI agent (github-copilot)...
 ```
@@ -38,15 +38,15 @@ All required files exist, so the workflow proceeds.
 Issue ID: 42
 PR ID: (not set)
 
-✓ Workspace validated: .nia/work/job_42/
+✓ Workspace validated: .forge/work/job_42/
 
 Required Inputs:
-  ✓ .nia/work/job_42/issue/issue.md
-  ✗ .nia/work/job_42/code/README.md
-  ✗ .nia/work/job_42/code/research.md
+  ✓ .forge/work/job_42/issue/issue.md
+  ✗ .forge/work/job_42/code/README.md
+  ✗ .forge/work/job_42/code/research.md
 
 Error: Required input files missing: README.md, research.md
-Hint: Run 'nia issue plan' to generate implementation plan
+Hint: Run 'frg issue plan' to generate implementation plan
 ```
 
 The workflow command exits with a clear error message when required files are missing.
@@ -57,7 +57,7 @@ Some workflow commands define fallback instructions for missing inputs. When a f
 
 ```
 Required Inputs:
-  ✗ .nia/work/job_42/issue/issue.md
+  ✗ .forge/work/job_42/issue/issue.md
 
 ⚠ Some required files are missing, but fallback is available:
   - issue.md
@@ -69,7 +69,7 @@ The fallback instructions are defined in the workflow's prompt template and tell
 
 ## Real-Time Output Tracking
 
-During execution, nia monitors expected output files defined in the `<output_requirements>` section of the workflow prompt. File status updates are detected at workflow finalization when the agent completes execution.
+During execution, frg monitors expected output files defined in the `<output_requirements>` section of the workflow prompt. File status updates are detected at workflow finalization when the agent completes execution.
 
 > **Note:** File status indicators update at finalization rather than during execution. The "Expected Outputs" section shows which files to expect, and status transitions (○ → ✓ or ⚠) occur when the workflow completes.
 
@@ -111,7 +111,7 @@ After workflow completion, a summary shows which outputs were successfully creat
 
 ✓ All 5 expected outputs created
 
-→ Outputs written to: .nia/work/job_42/code/
+→ Outputs written to: .forge/work/job_42/code/
 ```
 
 ### Example: Some Outputs Missing
@@ -123,7 +123,7 @@ After workflow completion, a summary shows which outputs were successfully creat
   Missing files:
     - phase_3.md
 
-→ Outputs written to: .nia/work/job_42/code/
+→ Outputs written to: .forge/work/job_42/code/
 ```
 
 The warning icon (⚠) indicates some expected files weren't created. This might happen if:
@@ -240,7 +240,7 @@ If a pattern matches zero files, the requirement is marked as **Missing** with a
 ### Concurrent Workflows
 
 Progress tracking is designed for single-workflow execution per repository.
-Running multiple nia workflows simultaneously in the same repository may result in:
+Running multiple frg workflows simultaneously in the same repository may result in:
 
 - Inaccurate file status reporting
 - Missed file change notifications
@@ -250,10 +250,10 @@ Running multiple nia workflows simultaneously in the same repository may result 
 
 ```bash
 # Create worktree for separate issue
-git worktree add ../nia-issue-43 main
-cd ../nia-issue-43
-nia config set-issue 43
-nia issue plan
+git worktree add ../forge-issue-43 main
+cd ../forge-issue-43
+frg config set-issue 43
+frg issue plan
 ```
 
 Each worktree provides an isolated environment for tracking progress independently.

@@ -2,7 +2,7 @@
 
 ## Formatted Output
 
-The `nia --tail` command now formats JSONL output from agents (OpenCode, Claude Code, and Gemini CLI when available/re-enabled) into human-readable text. This makes it easier to follow agent progress during execution.
+The `frg --tail` command now formats JSONL output from agents (OpenCode, Claude Code, and Gemini CLI when available/re-enabled) into human-readable text. This makes it easier to follow agent progress during execution.
 
 ### Example: OpenCode Agent
 
@@ -39,7 +39,7 @@ The `nia --tail` command now formats JSONL output from agents (OpenCode, Claude 
 
 ### Important Notes
 
-- **Trace files on disk remain unchanged** - The raw JSONL is preserved in `.nia/work/job_*/traces/*.trace.md` for debugging and analysis
+- **Trace files on disk remain unchanged** - The raw JSONL is preserved in `.forge/work/job_*/traces/*.trace.md` for debugging and analysis
 - **Formatting only affects live `--tail` display** - The actual trace files are never modified
 - **Plain-text agents unaffected** - Agents like GitHub Copilot CLI that output plain text are displayed unchanged
 - **Graceful fallback** - If an agent cannot be resolved or a line cannot be parsed, the raw line is displayed
@@ -48,13 +48,13 @@ The `nia --tail` command now formats JSONL output from agents (OpenCode, Claude 
 
 ### "No active job context found"
 
-**Problem**: Error when running `nia <target> <operation> --tail` without setting job context.
+**Problem**: Error when running `frg <target> <operation> --tail` without setting job context.
 
 **Error Message**:
 ```
 Error: No active job context found
 
-Set NIA_ISSUE_ID or NIA_PR_ID environment variable before using --tail.
+Set FORGE_ISSUE_ID or FORGE_PR_ID environment variable before using --tail.
 ```
 
 **Cause**: The `--tail` flag requires a job context (issue ID or PR ID) to determine which trace directory to monitor, but no context is currently set.
@@ -63,37 +63,37 @@ Set NIA_ISSUE_ID or NIA_PR_ID environment variable before using --tail.
 
 1. **Set job context via environment variable**:
    ```bash
-   export NIA_ISSUE_ID=42
-   nia issue draft --tail
+   export FORGE_ISSUE_ID=42
+   frg issue draft --tail
    ```
 
    Or for PRs:
    ```bash
-   export NIA_PR_ID=123
-   nia pr review --tail
+   export FORGE_PR_ID=123
+   frg pr review --tail
    ```
 
 2. **Set job context via config command**:
    ```bash
-   nia config set-issue 42
-   nia issue draft --tail
+   frg config set-issue 42
+   frg issue draft --tail
    ```
 
 3. **Verify context is set**:
    ```bash
-   nia status
+   frg status
    # Should show: Current Issue: #42
    ```
 
 4. **Retry with --tail**:
    ```bash
-   nia issue draft --tail
+   frg issue draft --tail
    ```
 
 **Prevention**:
-- Always set `NIA_ISSUE_ID` or `NIA_PR_ID` before using `--tail`
-- Add context to your shell profile for active work: `export NIA_ISSUE_ID=42`
-- Use `nia status` to verify context before running workflow commands
+- Always set `FORGE_ISSUE_ID` or `FORGE_PR_ID` before using `--tail`
+- Add context to your shell profile for active work: `export FORGE_ISSUE_ID=42`
+- Use `frg status` to verify context before running workflow commands
 
 **Related**: [Context Requirements](../reference/commands.md#context-requirements)
 
@@ -105,7 +105,7 @@ Set NIA_ISSUE_ID or NIA_PR_ID environment variable before using --tail.
 
 **Error Message**:
 ```
-Error: Validation error: Trace directory not found: .nia/work/job_42/traces
+Error: Validation error: Trace directory not found: .forge/work/job_42/traces
 
 This usually means the workflow hasn't been executed yet or the job ID is incorrect.
 ```
@@ -120,23 +120,23 @@ This usually means the workflow hasn't been executed yet or the job ID is incorr
 
 1. **Verify job ID is correct**:
    ```bash
-   nia status
+   frg status
    # Check: Current Issue: #42
    ```
 
 2. **Check if job directory exists**:
    ```bash
-   ls -la .nia/work/
+   ls -la .forge/work/
    # Look for job_42/ or job_issue_42/
    ```
 
 3. **If directory is missing, run the workflow first**:
    ```bash
    # Run workflow without --tail to create directory
-   nia issue draft
+   frg issue draft
 
    # Then in another terminal, watch with --tail
-   nia issue draft --tail
+   frg issue draft --tail
    ```
 
 4. **Verify you're in the correct repository**:
@@ -149,12 +149,12 @@ This usually means the workflow hasn't been executed yet or the job ID is incorr
 5. **If job was deleted, recreate it**:
    ```bash
    # Job directories are created on first workflow execution
-   nia issue draft
+   frg issue draft
    ```
 
 **Prevention**:
 - Run workflow at least once before using `--tail`
-- Don't manually delete `.nia/work/` directories during active work
+- Don't manually delete `.forge/work/` directories during active work
 - Use `--tail` from the same terminal/directory as the main workflow
 
 **Related**: [Workflow Commands](../reference/commands.md#workflow-commands)
@@ -171,7 +171,7 @@ Waiting for trace file to be created...
 Error: Timeout waiting for trace file (waited 60 seconds)
 
 The agent may have failed to start or encountered an error before creating a trace.
-Check .nia/work/job_42/logs/ for error details.
+Check .forge/work/job_42/logs/ for error details.
 ```
 
 **Cause**:
@@ -184,25 +184,25 @@ Check .nia/work/job_42/logs/ for error details.
 
 1. **Check agent logs**:
    ```bash
-   ls .nia/work/job_<id>/logs/
-   cat .nia/work/job_<id>/logs/agent_*.log
+   ls .forge/work/job_<id>/logs/
+   cat .forge/work/job_<id>/logs/agent_*.log
    ```
 
 2. **Verify agent is installed**:
    ```bash
-   nia status
+   frg status
    # Should show: Coding Agent: GitHub Copilot CLI (authenticated)
    ```
 
 3. **Run command without --tail to see errors**:
    ```bash
    # This will show immediate error messages
-   nia issue draft
+   frg issue draft
    ```
 
 4. **Check directory permissions**:
    ```bash
-   ls -la .nia/work/job_<id>/
+   ls -la .forge/work/job_<id>/
    # Ensure you have write permissions
    ```
 
@@ -229,7 +229,7 @@ Check .nia/work/job_42/logs/ for error details.
 ```
 Error: Failed to open trace file: Permission denied
 
-Check file permissions: .nia/work/job_42/traces/20240115_143022_issue.trace.md
+Check file permissions: .forge/work/job_42/traces/20240115_143022_issue.trace.md
 ```
 
 **Cause**: Trace file has restrictive permissions preventing read access.
@@ -238,34 +238,34 @@ Check file permissions: .nia/work/job_42/traces/20240115_143022_issue.trace.md
 
 1. **Check file permissions**:
    ```bash
-   ls -la .nia/work/job_<id>/traces/
+   ls -la .forge/work/job_<id>/traces/
    ```
 
 2. **Fix permissions**:
    ```bash
    # Make trace files readable
-   chmod 644 .nia/work/job_<id>/traces/*.trace.md
+   chmod 644 .forge/work/job_<id>/traces/*.trace.md
 
    # Or fix entire traces directory
-   chmod -R 755 .nia/work/job_<id>/traces/
+   chmod -R 755 .forge/work/job_<id>/traces/
    ```
 
 3. **Retry tail**:
    ```bash
-   nia issue draft --tail
+   frg issue draft --tail
    ```
 
 4. **If running as different user**:
    ```bash
-   # Ensure consistent user for all nia commands
+   # Ensure consistent user for all frg commands
    whoami
    # Compare with file owner
-   ls -l .nia/work/job_<id>/traces/
+   ls -l .forge/work/job_<id>/traces/
    ```
 
 **Prevention**:
-- Run all nia commands as the same user
-- Avoid manually changing permissions in `.nia/` directories
+- Run all frg commands as the same user
+- Avoid manually changing permissions in `.forge/` directories
 - Use `umask 022` to ensure readable files by default
 
 **Related**: [Installation Guide](../getting-started/installation.md)
@@ -284,7 +284,7 @@ Check file permissions: .nia/work/job_42/traces/20240115_143022_issue.trace.md
 **Cause**:
 - This is **normal behavior** - tail uses 500ms polling by design
 - Agent writes to trace file in batches
-- Network filesystem latency (if `.nia/` is on network storage)
+- Network filesystem latency (if `.forge/` is on network storage)
 - High system load causing delays
 
 **Expected Behavior**:
@@ -299,7 +299,7 @@ This is typically **not a bug**, but if updates are very delayed:
 1. **Verify it's actually updating**:
    ```bash
    # In another terminal, watch file size
-   watch -n 1 ls -lh .nia/work/job_<id>/traces/*.trace.md
+   watch -n 1 ls -lh .forge/work/job_<id>/traces/*.trace.md
    ```
 
 2. **Check system load**:
@@ -310,15 +310,15 @@ This is typically **not a bug**, but if updates are very delayed:
 
 3. **If on network filesystem**:
    - Network file systems (NFS, SMB) may have slower sync
-   - Consider moving `.nia/work/` to local disk:
+   - Consider moving `.forge/work/` to local disk:
      ```bash
-     mkdir ~/nia-work-local
-     ln -s ~/nia-work-local .nia/work
+     mkdir ~/forge-work-local
+     ln -s ~/forge-work-local .forge/work
      ```
 
 4. **Check agent is still running**:
    ```bash
-   ps aux | grep nia
+   ps aux | grep frg
    # Verify agent process is active
    ```
 
@@ -366,13 +366,13 @@ This is typically **not a bug**, but if updates are very delayed:
 
 3. **Verify agent completion**:
    ```bash
-   ps aux | grep nia
+   ps aux | grep frg
    # Check if agent process is still running
    ```
 
 4. **Check trace file**:
    ```bash
-   tail -20 .nia/work/job_<id>/traces/*.trace.md
+   tail -20 .forge/work/job_<id>/traces/*.trace.md
    # Look for completion markers
    ```
 
@@ -395,23 +395,23 @@ This is typically **not a bug**, but if updates are very delayed:
 Add `--continue` to automatically follow new tracefiles across commands:
 
 ```bash
-nia --tail --continue
+frg --tail --continue
 ```
 
 ### What Continuous Mode Does
 
-1. **Automatic tracefile following**: When you run successive nia commands, `--continue`
+1. **Automatic tracefile following**: When you run successive frg commands, `--continue`
    automatically switches to the newest tracefile without manual intervention.
 
-2. **Context awareness**: If you change `NIA_ISSUE_ID` (or `NIA_TICKET_ID`, when no
+2. **Context awareness**: If you change `FORGE_ISSUE_ID` (or `FORGE_TICKET_ID`, when no
    Issue ID is set) in another terminal, the tail command detects this and switches to
    the new job's trace directory.
 
-3. **Standalone commands are also monitored**: `nia ask` and `nia run` write tracefiles
-   to a fixed location (`.nia/work/ask/traces/`, `.nia/work/run/traces/`) that is
+3. **Standalone commands are also monitored**: `frg ask` and `frg run` write tracefiles
+   to a fixed location (`.forge/work/ask/traces/`, `.forge/work/run/traces/`) that is
    independent of the active job context. Continuous mode polls these directories
    alongside the active job's own `traces/` directory, so it will detect and switch to
-   a tracefile from `nia ask` or `nia run` when it becomes the most recent one.
+   a tracefile from `frg ask` or `frg run` when it becomes the most recent one.
 
 ### Timing Behavior
 
@@ -425,15 +425,15 @@ nia --tail --continue
 
 ```bash
 # Terminal 1: Start continuous tail
-$ export NIA_ISSUE_ID=42
-$ nia --tail --continue
+$ export FORGE_ISSUE_ID=42
+$ frg --tail --continue
 Continuous tail mode active. Press Ctrl+C to stop.
 [2026-08-13 14:30:00] Starting trace: 2026-08-13_143000_issue.trace.md
 ... agent output ...
 
 # Terminal 2: Run another command
-$ export NIA_ISSUE_ID=42
-$ nia issue draft "Add user authentication"
+$ export FORGE_ISSUE_ID=42
+$ frg issue draft "Add user authentication"
 # Creates new tracefile
 
 # Terminal 1: Automatically switches
@@ -460,13 +460,13 @@ will automatically discover newer files within the next polling cycle (10 second
 
 ### Context changes not detected
 
-**Problem**: Changed `NIA_ISSUE_ID` (or `NIA_TICKET_ID`) but tail is still monitoring
+**Problem**: Changed `FORGE_ISSUE_ID` (or `FORGE_TICKET_ID`) but tail is still monitoring
 old context.
 
 **Cause**: Context is re-checked on its own fixed 10-second interval, independent of
 whether the current tracefile is idle or actively streaming.
 
-**Solution**: Wait up to 10 seconds after changing `NIA_ISSUE_ID`/`NIA_TICKET_ID` for
+**Solution**: Wait up to 10 seconds after changing `FORGE_ISSUE_ID`/`FORGE_TICKET_ID` for
 the tail to adapt - this happens even while content is actively streaming, so no idle
 wait is required.
 
@@ -482,8 +482,8 @@ wait is required.
 tracefile. Intermediate files can be viewed manually:
 
 ```bash
-ls -la .nia/work/job_42/traces/
-cat .nia/work/job_42/traces/<filename>.trace.md
+ls -la .forge/work/job_42/traces/
+cat .forge/work/job_42/traces/<filename>.trace.md
 ```
 
 ---

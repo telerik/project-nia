@@ -1,12 +1,12 @@
 # AI Coding Agent Setup
 
-NIA delegates workflow execution to an external AI coding agent. The agent reads the prompt that NIA generates, uses the available command-line tools, and returns its output to NIA. Configure one supported agent before you run workflows that analyze issues, modify files, run tests, or create pull requests.
+Progress Forge delegates workflow execution to an external AI coding agent. The agent reads the prompt that Progress Forge generates, uses the available command-line tools, and returns its output to Progress Forge. Configure one supported agent before you run workflows that analyze issues, modify files, run tests, or create pull requests.
 
-> **Warning:** NIA runs agents in autonomous mode. The agent can execute commands and modify files without waiting for approval. Run NIA in a sandbox or development container, and review changes before you accept or push them.
+> **Warning:** Progress Forge runs agents in autonomous mode. The agent can execute commands and modify files without waiting for approval. Run Progress Forge in a sandbox or development container, and review changes before you accept or push them.
 
 ## Choose an Agent
 
-NIA includes these built-in agents:
+Progress Forge includes these built-in agents:
 
 | Agent ID | Agent | Default command |
 | --- | --- | --- |
@@ -14,25 +14,25 @@ NIA includes these built-in agents:
 | `opencode` | OpenCode CLI | `opencode` |
 | `claude_code` | Claude Code CLI | `claude` |
 
-Use the exact agent ID in `.nia/config/agents.toml` and with the `--agent` command-line option. Agent IDs are case-sensitive.
+Use the exact agent ID in `.forge/config/agents.toml` and with the `--agent` command-line option. Agent IDs are case-sensitive.
 
-Select an agent based on the CLI already approved and authenticated for your environment. NIA does not provide the external agent, its subscription, or its credentials.
+Select an agent based on the CLI already approved and authenticated for your environment. Progress Forge does not provide the external agent, its subscription, or its credentials.
 
 ## Prerequisites
 
 Before configuring an agent, make sure that:
 
-- NIA is installed and available as `nia` in your `PATH`.
+- Progress Forge is installed and available as `frg` in your `PATH`.
 - The selected agent CLI is installed and available in your `PATH`, or you know its executable path.
 - The selected agent is authenticated according to its own product requirements.
-- You have initialized NIA in the repository with `nia config init`.
+- You have initialized Progress Forge in the repository with `frg config init`.
 - You can run the agent in an isolated development environment.
 
-Use the external agent's installation and authentication documentation for provider-specific prerequisites. NIA verifies the executable and authentication through the selected agent integration; it does not replace the agent's login process.
+Use the external agent's installation and authentication documentation for provider-specific prerequisites. Progress Forge verifies the executable and authentication through the selected agent integration; it does not replace the agent's login process.
 
 ## Install a Supported Agent
 
-Install only the agent that your project uses. The commands below install the external CLIs; they do not install NIA.
+Install only the agent that your project uses. The commands below install the external CLIs; they do not install Progress Forge.
 
 ### Install GitHub Copilot CLI
 
@@ -43,14 +43,14 @@ npm install -g @github/copilot
 copilot --version
 ```
 
-Authenticate with GitHub CLI before running NIA workflows:
+Authenticate with GitHub CLI before running Progress Forge workflows:
 
 ```bash
 gh auth login
 gh auth status
 ```
 
-NIA uses the standalone `copilot` command by default. Do not configure GitHub Copilot with `command = "gh"` or `command = "gh.exe"`; NIA rejects that wrapper because long prompts can exceed Windows command-line limits.
+Progress Forge uses the standalone `copilot` command by default. Do not configure GitHub Copilot with `command = "gh"` or `command = "gh.exe"`; Progress Forge rejects that wrapper because long prompts can exceed Windows command-line limits.
 
 ### Install OpenCode CLI
 
@@ -61,7 +61,7 @@ curl -fsSL https://opencode.ai/install | sh
 opencode --version
 ```
 
-Complete OpenCode's provider authentication flow before using NIA. Then test a minimal request:
+Complete OpenCode's provider authentication flow before using Progress Forge. Then test a minimal request:
 
 ```bash
 opencode run hello
@@ -71,13 +71,13 @@ OpenCode can also use a custom executable path through the `command` setting des
 
 ### Install Claude Code CLI
 
-Before installing Claude Code, make sure that Node.js and npm are available and that you have an Anthropic API key. Set `ANTHROPIC_API_KEY` in the environment used to run NIA:
+Before installing Claude Code, make sure that Node.js and npm are available and that you have an Anthropic API key. Set `ANTHROPIC_API_KEY` in the environment used to run Progress Forge:
 
 ```bash
 export ANTHROPIC_API_KEY="your-anthropic-api-key"
 ```
 
-On PowerShell, use `$env:ANTHROPIC_API_KEY = "your-anthropic-api-key"` instead. Do not commit the key or place it in an NIA configuration file.
+On PowerShell, use `$env:ANTHROPIC_API_KEY = "your-anthropic-api-key"` instead. Do not commit the key or place it in an Progress Forge configuration file.
 
 Install the CLI globally, then verify the executable:
 
@@ -86,7 +86,7 @@ npm install -g @anthropic-ai/claude-code
 claude --version
 ```
 
-Complete Claude Code's authentication flow before using NIA. Test a headless request with the same permission and output modes that NIA uses:
+Complete Claude Code's authentication flow before using Progress Forge. Test a headless request with the same permission and output modes that Progress Forge uses:
 
 ```bash
 claude -p "hello" --permission-mode auto --output-format json
@@ -94,35 +94,35 @@ claude -p "hello" --permission-mode auto --output-format json
 
 Claude Code's `--permission-mode auto` allows headless execution without interactive approval prompts. Run it only in the isolated environment described in the warning at the start of this article.
 
-Initialize NIA with the balanced Claude Code model profile:
+Initialize Progress Forge with the balanced Claude Code model profile:
 
 ```bash
-nia config init --agent claude_code --models balanced
+frg config init --agent claude_code --models balanced
 ```
 
 Run a workflow or ask a question with Claude Code explicitly selected:
 
 ```bash
-nia issue draft --agent claude_code
-nia ask "Question" --agent claude_code
+frg issue draft --agent claude_code
+frg ask "Question" --agent claude_code
 ```
 
 ## Understand the Agent Workflow
 
-NIA uses the following flow for a workflow command:
+Progress Forge uses the following flow for a workflow command:
 
-1. NIA loads `.nia/config/agents.toml` and selects the configured default agent.
+1. Progress Forge loads `.forge/config/agents.toml` and selects the configured default agent.
 2. A command-line `--agent` selection can choose a specific registered agent for the current command.
-3. NIA creates the selected agent with its configured command override, when one exists.
-4. NIA verifies that the executable is available and that the agent can authenticate.
-5. NIA sends the generated workflow prompt to the agent in headless mode.
-6. NIA captures the agent output and records workflow session information.
+3. Progress Forge creates the selected agent with its configured command override, when one exists.
+4. Progress Forge verifies that the executable is available and that the agent can authenticate.
+5. Progress Forge sends the generated workflow prompt to the agent in headless mode.
+6. Progress Forge captures the agent output and records workflow session information.
 
-The external agent remains responsible for model access, credentials, and provider-specific command behavior. NIA supplies the workflow prompt and coordinates execution.
+The external agent remains responsible for model access, credentials, and provider-specific command behavior. Progress Forge supplies the workflow prompt and coordinates execution.
 
 ## Configure the Default Agent
 
-Create or edit `.nia/config/agents.toml` with the following minimum configuration:
+Create or edit `.forge/config/agents.toml` with the following minimum configuration:
 
 ```toml
 schema_version = "1.0.0"
@@ -131,7 +131,7 @@ schema_version = "1.0.0"
 default = "github_copilot"
 ```
 
-The `default` value must match one of the built-in IDs listed in [Choose an Agent](#choose-an-agent). NIA uses GitHub Copilot when the file selects `github_copilot`, OpenCode when it selects `opencode`, and Claude Code when it selects `claude_code`.
+The `default` value must match one of the built-in IDs listed in [Choose an Agent](#choose-an-agent). Progress Forge uses GitHub Copilot when the file selects `github_copilot`, OpenCode when it selects `opencode`, and Claude Code when it selects `claude_code`.
 
 ### Select OpenCode
 
@@ -151,11 +151,11 @@ schema_version = "1.0.0"
 default = "claude_code"
 ```
 
-NIA loads agent configuration hierarchically. A repository configuration takes part in the project configuration hierarchy, and user or system configuration can be enabled through the external-source settings described in [Hierarchical Configuration](../configuration/hierarchical.md). Keep shared configuration limited to settings that are appropriate for every repository that uses it.
+Progress Forge loads agent configuration hierarchically. A repository configuration takes part in the project configuration hierarchy, and user or system configuration can be enabled through the external-source settings described in [Hierarchical Configuration](../configuration/hierarchical.md). Keep shared configuration limited to settings that are appropriate for every repository that uses it.
 
 ## Configure an Agent Command
 
-NIA uses the default executable name for each agent unless you set `command` under the corresponding agent table:
+Progress Forge uses the default executable name for each agent unless you set `command` under the corresponding agent table:
 
 ```toml
 schema_version = "1.0.0"
@@ -167,9 +167,9 @@ default = "opencode"
 command = "/opt/opencode/bin/opencode"
 ```
 
-Use an executable name when the command is in `PATH`, or use an absolute path when the executable is installed elsewhere. NIA validates command values and rejects empty values and shell operators.
+Use an executable name when the command is in `PATH`, or use an absolute path when the executable is installed elsewhere. Progress Forge validates command values and rejects empty values and shell operators.
 
-For GitHub Copilot, do not set `command = "gh"` or `command = "gh.exe"`. NIA rejects the GitHub CLI wrapper because it can fail with long workflow prompts. Remove the override so NIA can discover the Copilot installation, install the standalone CLI, or set an explicit path to the Copilot executable.
+For GitHub Copilot, do not set `command = "gh"` or `command = "gh.exe"`. Progress Forge rejects the GitHub CLI wrapper because it can fail with long workflow prompts. Remove the override so Progress Forge can discover the Copilot installation, install the standalone CLI, or set an explicit path to the Copilot executable.
 
 ## Configure Model and Agent Options
 
@@ -187,14 +187,14 @@ custom_agent = "code-reviewer"
 prompt_format = "markdown"
 ```
 
-NIA supports these settings at the agent level:
+Progress Forge supports these settings at the agent level:
 
 | Setting | Purpose |
 | --- | --- |
 | `command` | Replaces the default executable name or path. |
 | `model` | Sets the default model passed to the agent when the agent supports model selection. |
-| `custom_agent` | Selects a provider-specific custom agent when supported. NIA currently documents this option for GitHub Copilot. |
-| `prompt_format` | Selects `xml` or `markdown` prompt formatting. If omitted, NIA selects a format based on the model. |
+| `custom_agent` | Selects a provider-specific custom agent when supported. Progress Forge currently documents this option for GitHub Copilot. |
+| `prompt_format` | Selects `xml` or `markdown` prompt formatting. If omitted, Progress Forge selects a format based on the model. |
 
 You can also set `model`, `custom_agent`, and `prompt_format` for individual targets or operations with the extended target and operation forms:
 
@@ -210,13 +210,13 @@ Use the [AI Model Selection](./model-selection.md) article for model names and p
 
 ## Initialize Configuration with a Profile
 
-NIA can generate an agent configuration during initialization. Use the configuration command from the repository root:
+Progress Forge can generate an agent configuration during initialization. Use the configuration command from the repository root:
 
 ```bash
-nia config init --agent github_copilot
+frg config init --agent github_copilot
 ```
 
-Replace `github_copilot` with `opencode` or `claude_code` when you want another built-in agent. NIA writes the generated file to `.nia/config/agents.toml`. If the file already exists, NIA preserves it instead of regenerating the configuration.
+Replace `github_copilot` with `opencode` or `claude_code` when you want another built-in agent. Progress Forge writes the generated file to `.forge/config/agents.toml`. If the file already exists, Progress Forge preserves it instead of regenerating the configuration.
 
 When the initialization flow asks for a model profile, choose the profile that matches the external agent and the project requirements. Review generated values before running an autonomous workflow.
 
@@ -225,7 +225,7 @@ When the initialization flow asks for a model profile, choose the profile that m
 Run configuration validation from the repository root:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 Validation checks the TOML structure, the required `schema_version` and `agent.default` values, command overrides, model values, and supported configuration fields. Warnings about unknown model names do not necessarily prevent execution, because new, preview, or custom models can be valid for the external agent.
@@ -233,56 +233,56 @@ Validation checks the TOML structure, the required `schema_version` and `agent.d
 Run the status command after validation:
 
 ```bash
-nia status
+frg status
 ```
 
-NIA reports installation and authentication health for the configured dependency check. GitHub Copilot authentication uses GitHub CLI authentication status. The current status implementation does not provide equivalent provider-specific status checks for every registered agent, so test OpenCode or Claude Code directly with a minimal command when `nia status` does not reflect the selected agent.
+Progress Forge reports installation and authentication health for the configured dependency check. GitHub Copilot authentication uses GitHub CLI authentication status. The current status implementation does not provide equivalent provider-specific status checks for every registered agent, so test OpenCode or Claude Code directly with a minimal command when `frg status` does not reflect the selected agent.
 
-If the status command reports a problem, fix the external agent installation or authentication first. Then rerun `nia status` from the repository that contains `.nia/config/agents.toml`. For a definitive check of the selected agent, run its own version and minimal-prompt commands.
+If the status command reports a problem, fix the external agent installation or authentication first. Then rerun `frg status` from the repository that contains `.forge/config/agents.toml`. For a definitive check of the selected agent, run its own version and minimal-prompt commands.
 
 ## Run a Workflow
 
 After validation succeeds, run a low-risk workflow in an isolated checkout:
 
 ```bash
-nia code review
+frg code review
 ```
 
 Use a specific agent for one command with `--agent`:
 
 ```bash
-nia code review --agent opencode
+frg code review --agent opencode
 ```
 
 The command-line selection applies to that workflow invocation. The configured default remains unchanged.
 
 ## Troubleshoot Agent Setup
 
-### NIA Cannot Find the Agent
+### Progress Forge Cannot Find the Agent
 
-**Symptom:** NIA reports that the selected agent is not installed or cannot be found.
+**Symptom:** Progress Forge reports that the selected agent is not installed or cannot be found.
 
 **Resolution:**
 
 1. Run the agent's version command directly, such as `copilot --version`, `opencode --version`, or `claude --version`.
 2. Confirm that the executable directory is in `PATH`.
 3. Set `command` to the executable name or absolute path in the matching `[agent.<id>]` table.
-4. Run `nia config validate`, then run `nia status` again.
+4. Run `frg config validate`, then run `frg status` again.
 
-### NIA Reports an Authentication Failure
+### Progress Forge Reports an Authentication Failure
 
-**Symptom:** The executable is available, but NIA reports that authentication failed.
+**Symptom:** The executable is available, but Progress Forge reports that authentication failed.
 
 **Resolution:**
 
 1. Run the external agent's authentication or login flow.
-2. Confirm that the required subscription, account, or provider credentials are available to the same user that runs NIA.
+2. Confirm that the required subscription, account, or provider credentials are available to the same user that runs Progress Forge.
 3. Test the agent directly with a minimal prompt using the agent's own documented command.
-4. Run `nia status` again.
+4. Run `frg status` again.
 
-NIA does not store or refresh provider credentials. Follow the external agent's security guidance for API keys, tokens, and account sessions.
+Progress Forge does not store or refresh provider credentials. Follow the external agent's security guidance for API keys, tokens, and account sessions.
 
-### NIA Uses the Wrong Agent
+### Progress Forge Uses the Wrong Agent
 
 **Symptom:** A workflow runs with a different agent than expected.
 
@@ -291,9 +291,9 @@ NIA does not store or refresh provider credentials. Follow the external agent's 
 1. Check `[agent].default` in the loaded `agents.toml` file.
 2. Check whether the command includes `--agent`, which selects an agent for that invocation.
 3. Confirm that the agent ID uses an underscore, such as `github_copilot` or `claude_code`.
-4. Run `nia config validate` from the repository root.
+4. Run `frg config validate` from the repository root.
 
-### NIA Rejects the Agent Configuration
+### Progress Forge Rejects the Agent Configuration
 
 **Symptom:** Validation reports a configuration error.
 
@@ -304,7 +304,7 @@ NIA does not store or refresh provider credentials. Follow the external agent's 
 3. Use a supported built-in ID: `github_copilot`, `opencode`, or `claude_code`.
 4. Remove empty `command` values and shell operators from command settings.
 5. Remove `command = "gh"` or `command = "gh.exe"` for GitHub Copilot.
-6. Run `nia config validate` again.
+6. Run `frg config validate` again.
 
 ## Best Practices
 
@@ -314,30 +314,30 @@ Follow these practices when you configure and run AI coding agents:
 - Start with one default agent and add target or operation overrides only when the workflow requires them.
 - Keep credentials outside repository files and follow the external agent's credential-management guidance.
 - Validate configuration after changing `agents.toml`.
-- Test the external CLI directly before troubleshooting NIA integration.
+- Test the external CLI directly before troubleshooting Progress Forge integration.
 - Run a read-only or review workflow before allowing a workflow that modifies files.
 - Inspect the generated changes, command output, and session records before accepting results.
 - Keep the selected agent and model documented for reproducible team workflows.
 
 ## CI/CD Environment Setup
 
-When running Nia in CI/CD pipelines, you must acknowledge beta software terms
+When running Progress Forge in CI/CD pipelines, you must acknowledge beta software terms
 by setting an environment variable. This is required because interactive
 consent prompts are not possible in automated environments.
 
 ### Why This Is Required
 
-Nia has autonomous capabilities that can modify files, execute commands, and
-create commits. Before allowing these actions, Nia requires explicit
+Progress Forge has autonomous capabilities that can modify files, execute commands, and
+create commits. Before allowing these actions, Progress Forge requires explicit
 acknowledgement that you understand and accept these capabilities.
 
-In interactive terminals, Nia presents a consent prompt. In CI/CD environments
-where no terminal is available, you must set the `NIA_ACCEPT_BETA_RISK`
+In interactive terminals, Progress Forge presents a consent prompt. In CI/CD environments
+where no terminal is available, you must set the `FORGE_ACCEPT_BETA_RISK`
 environment variable to confirm your acknowledgement.
 
 ### Setting the Environment Variable
 
-Set `NIA_ACCEPT_BETA_RISK` to a truthy value (`true`, `1`, `yes`, or `on`):
+Set `FORGE_ACCEPT_BETA_RISK` to a truthy value (`true`, `1`, `yes`, or `on`):
 
 #### GitHub Actions
 
@@ -346,33 +346,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      NIA_ACCEPT_BETA_RISK: true
+      FORGE_ACCEPT_BETA_RISK: true
     steps:
       - uses: actions/checkout@v4
-      - name: Run Nia
-        run: nia code review
+      - name: Run Progress Forge
+        run: frg code review
 ```
 
 #### GitLab CI
 
 ```yaml
 variables:
-  NIA_ACCEPT_BETA_RISK: "true"
+  FORGE_ACCEPT_BETA_RISK: "true"
 
 review:
   script:
-    - nia code review
+    - frg code review
 ```
 
 #### Azure Pipelines
 
 ```yaml
 variables:
-  NIA_ACCEPT_BETA_RISK: 'true'
+  FORGE_ACCEPT_BETA_RISK: 'true'
 
 steps:
-  - script: nia code review
-    displayName: 'Run Nia Review'
+  - script: frg code review
+    displayName: 'Run Progress Forge Review'
 ```
 
 #### Jenkins
@@ -380,12 +380,12 @@ steps:
 ```groovy
 pipeline {
     environment {
-        NIA_ACCEPT_BETA_RISK = 'true'
+        FORGE_ACCEPT_BETA_RISK = 'true'
     }
     stages {
         stage('Review') {
             steps {
-                sh 'nia code review'
+                sh 'frg code review'
             }
         }
     }
@@ -401,10 +401,10 @@ jobs:
     docker:
       - image: cimg/base:stable
     environment:
-      NIA_ACCEPT_BETA_RISK: true
+      FORGE_ACCEPT_BETA_RISK: true
     steps:
       - checkout
-      - run: nia code review
+      - run: frg code review
 ```
 
 ### Troubleshooting CI/CD Issues
@@ -413,21 +413,21 @@ If you see "Beta acknowledgement required" errors in your pipeline:
 
 1. Verify the environment variable is set in the correct scope
 2. Check that the value is truthy (true, 1, yes, on)
-3. Ensure the variable is available to the step running Nia
-4. Check for typos in the variable name: `NIA_ACCEPT_BETA_RISK`
+3. Ensure the variable is available to the step running Progress Forge
+4. Check for typos in the variable name: `FORGE_ACCEPT_BETA_RISK`
 
 Common mistakes:
-- Setting the variable in a different job or stage than where Nia runs
+- Setting the variable in a different job or stage than where Progress Forge runs
 - Using incorrect YAML syntax for your CI platform
 - Variable not exported to child processes
 
 ## Limitations and Considerations
 
-NIA does not provide the external agent executable, model service, account, subscription, or credentials. Each provider can change its installation, authentication, command-line options, and model availability independently of NIA.
+Progress Forge does not provide the external agent executable, model service, account, subscription, or credentials. Each provider can change its installation, authentication, command-line options, and model availability independently of Progress Forge.
 
-NIA includes three built-in agent integrations. The registry can support additional implementations in code, but an arbitrary `default` value in `agents.toml` does not create a new agent.
+Progress Forge includes three built-in agent integrations. The registry can support additional implementations in code, but an arbitrary `default` value in `agents.toml` does not create a new agent.
 
-Headless execution can bypass interactive approval prompts. Treat prompts, repository content, toolchain commands, and agent output as inputs that require review in the environment where NIA runs.
+Headless execution can bypass interactive approval prompts. Treat prompts, repository content, toolchain commands, and agent output as inputs that require review in the environment where Progress Forge runs.
 
 ## Related Information
 

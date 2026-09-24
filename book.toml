@@ -1,7 +1,7 @@
 [book]
-title = "Nia CLI User Guide"
-description = "User documentation for Nia agentic SDLC CLI"
-authors = ["Nia CLI Contributors"]
+title = "Progress Forge CLI User Guide"
+description = "User documentation for Progress Forge agentic SDLC CLI"
+authors = ["Progress Forge Contributors"]
 language = "en"
 src = "user-docs/src"
 

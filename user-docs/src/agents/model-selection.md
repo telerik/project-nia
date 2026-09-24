@@ -1,27 +1,27 @@
 # AI Model Selection
 
-Configure the AI model that NIA passes to your selected coding agent. NIA supports a default model, target-specific overrides, operation-specific overrides, and generated model profiles.
+Configure the AI model that Progress Forge passes to your selected coding agent. Progress Forge supports a default model, target-specific overrides, operation-specific overrides, and generated model profiles.
 
-Model selection helps administrators standardize agent behavior across a project and helps users choose a practical cost and quality tradeoff. NIA does not score models by latency, context size, multimodal capability, or price. It resolves the model name in configuration and lets the selected agent handle execution.
+Model selection helps administrators standardize agent behavior across a project and helps users choose a practical cost and quality tradeoff. Progress Forge does not score models by latency, context size, multimodal capability, or price. It resolves the model name in configuration and lets the selected agent handle execution.
 
 ## Understand Model Selection
 
-NIA resolves a model for each workflow from the most specific applicable setting:
+Progress Forge resolves a model for each workflow from the most specific applicable setting:
 
 1. An operation-specific setting, such as `issue.draft`.
 2. A target-specific setting, such as `issue`.
 3. The agent's default `model` setting.
 4. No model, when none of these settings exists.
 
-A command-line model override has higher precedence than the configuration levels above. NIA validates the override and then passes it to the selected agent.
+A command-line model override has higher precedence than the configuration levels above. Progress Forge validates the override and then passes it to the selected agent.
 
 A target is the broad workflow area, such as `issue`, `code`, or `pr`. An operation combines a target and an action, such as `issue.draft` or `pr.review`.
 
 ## Supported Agents and Profiles
 
-NIA is currently optimised for the Anthropic model family, especially the 4.5 series which has a good balance of cost and performance. There are pre-defined model profiles to help you get started quickly. Otimised and validated prompts for other model families are in progress.
+Progress Forge is currently optimised for the Anthropic model family, especially the 4.5 series which has a good balance of cost and performance. There are pre-defined model profiles to help you get started quickly. Otimised and validated prompts for other model families are in progress.
 
-NIA can generate model settings for these agent IDs:
+Progress Forge can generate model settings for these agent IDs:
 
 - `claude_code`&mdash;Claude Code CLI.
 - `github_copilot`&mdash;GitHub Copilot CLI.
@@ -34,7 +34,7 @@ The available profiles are:
 - `stable` (recommended) &mdash;Configured for reliable & predictable behavior.
 - `heavy`&mdash;Uses high-cost models for most operations.
 
-Profile names are case-insensitive when supplied to `nia config init`. An invalid profile stops initialization and reports the valid values.
+Profile names are case-insensitive when supplied to `frg config init`. An invalid profile stops initialization and reports the valid values.
 
 ### GitHub Copilot Profile Mappings
 
@@ -70,17 +70,17 @@ Claude Code receives these model aliases directly through its CLI.
 
 ## Configure Model Selection
 
-Store model settings in `.nia/config/agents.toml`. The `agent.default` value selects the agent whose settings NIA resolves. Each agent settings table can contain `model`, `targets`, and `operations`.
+Store model settings in `.forge/config/agents.toml`. The `agent.default` value selects the agent whose settings Progress Forge resolves. Each agent settings table can contain `model`, `targets`, and `operations`.
 
 Defining a model at the right level of control depends on what you need:
 
-- Use a generated profile when you want NIA to create agent-specific defaults and operation overrides.
+- Use a generated profile when you want Progress Forge to create agent-specific defaults and operation overrides.
 - Set only `model` when one model should handle every target and operation.
 - Set `targets` when different workflow areas need different models.
 - Set `operations` when one action needs a different model from the rest of its target.
 - Use a command-line model override for a single execution.
 
-NIA does not determine which model is superior for a task. The profile mapper assigns model names and operation overrides for each supported agent. For manually selected models, use names accepted by the selected agent.
+Progress Forge does not determine which model is superior for a task. The profile mapper assigns model names and operation overrides for each supported agent. For manually selected models, use names accepted by the selected agent.
 
 ### Configure a Default Model
 
@@ -120,9 +120,9 @@ The target setting can be a model string or an extended table when you also need
 
 **Result:**
 
-- `nia issue draft` uses `claude-haiku-4.5`.
-- `nia code review` uses `claude-opus-5`.
-- `nia pr create` uses `claude-sonnet-5` from the default setting.
+- `frg issue draft` uses `claude-haiku-4.5`.
+- `frg code review` uses `claude-opus-5`.
+- `frg pr create` uses `claude-sonnet-5` from the default setting.
 
 ### Configure Operation-Specific Models
 
@@ -145,20 +145,20 @@ issue = "claude-haiku-4.5"
 "code.review" = "claude-opus-4.8" # Max for code review
 ```
 
-The operation key uses the form `target.operation`. NIA checks the complete key, such as `issue.draft`, before it checks the target setting.
+The operation key uses the form `target.operation`. Progress Forge checks the complete key, such as `issue.draft`, before it checks the target setting.
 
 **Result:**
 
-- `nia issue draft` uses `claude-opus-5`.
-- `nia issue triage` uses `claude-haiku-4.5` from the `issue` target setting.
-- `nia code review` uses `claude-opus-4.8`.
-- `nia code refactor` uses `claude-sonnet-5` from the default setting.
+- `frg issue draft` uses `claude-opus-5`.
+- `frg issue triage` uses `claude-haiku-4.5` from the `issue` target setting.
+- `frg code review` uses `claude-opus-4.8`.
+- `frg code refactor` uses `claude-sonnet-5` from the default setting.
 
 ## Use Supported Model Names
 
-NIA validates model names with agent-specific patterns. Even though it is currently recommended to use the Claude Sonnet-4.5 and Opus-4.5 models, NIA does not restrict you from using others. Validation produces warnings for unknown models; it does not block execution when the name has a valid format.
+Progress Forge validates model names with agent-specific patterns. Even though it is currently recommended to use the Claude Sonnet-4.5 and Opus-4.5 models, Progress Forge does not restrict you from using others. Validation produces warnings for unknown models; it does not block execution when the name has a valid format.
 
-NIA warns when a model is empty, contains invalid characters, or does not match the selected agent's known patterns. A model that has a valid-looking format but is not in the known list produces a warning and execution continues.
+Progress Forge warns when a model is empty, contains invalid characters, or does not match the selected agent's known patterns. A model that has a valid-looking format but is not in the known list produces a warning and execution continues.
 
 For GitHub Copilot, the warning uses this form:
 
@@ -179,36 +179,36 @@ Model names are case-sensitive. The pattern validator allows future and preview 
 
 ### Other Agent Models
 
-NIA's model registry provides agent-specific validation for the configured agent. OpenCode profile output uses `auto` as a provider-neutral value. Claude Code profile output uses Anthropic model names.
+Progress Forge's model registry provides agent-specific validation for the configured agent. OpenCode profile output uses `auto` as a provider-neutral value. Claude Code profile output uses Anthropic model names.
 
-Do not treat the representative model names in NIA's registry as a complete catalog of models provided by an external agent.
+Do not treat the representative model names in Progress Forge's registry as a complete catalog of models provided by an external agent.
 
 ## Initialize Model Profiles
 
-Use `nia config init` with `--agent` to generate an agent configuration. When `--models` is omitted, NIA uses the `stable` profile:
+Use `frg config init` with `--agent` to generate an agent configuration. When `--models` is omitted, Progress Forge uses the `stable` profile:
 
 ```bash
 # GitHub Copilot CLI with cost-conscious development
-nia config init --agent github_copilot --models lite
+frg config init --agent github_copilot --models lite
 
 # GitHub Copilot CLI with latest-generation models, balanced cost/quality
-nia config init --agent github_copilot --models balanced
+frg config init --agent github_copilot --models balanced
 
 # GitHub Copilot CLI with predictable behaviour (default profile when --models omitted)
-nia config init --agent github_copilot --models stable
+frg config init --agent github_copilot --models stable
 
 # OpenCode with maximum quality for critical projects
-nia config init --agent opencode --models heavy
+frg config init --agent opencode --models heavy
 
 # If --models is omitted, the stable profile is used automatically
-nia config init --agent github_copilot
+frg config init --agent github_copilot
 ```
 
-The `--agent` flag is required when you use `--models`. The command supports `github_copilot`, `opencode`, and `claude_code`. Model profiles generate `.nia/config/agents.toml`; they do not select a provider's account, install an agent, or verify external model availability.
+The `--agent` flag is required when you use `--models`. The command supports `github_copilot`, `opencode`, and `claude_code`. Model profiles generate `.forge/config/agents.toml`; they do not select a provider's account, install an agent, or verify external model availability.
 
 ## Use Automatic Model Selection
 
-Most agents now support automatic model routing. NIA does support the use of `auto` as a model name which is then passed to the selected agent as the model name. While supported, we do not recommend this method as it leads to much more variation in output quality and is not reliable. NIA does not control the agent algorithm that selects a model from prompt complexity, context size, cost, or latency. The selected external agent controls the meaning of `auto`.
+Most agents now support automatic model routing. Progress Forge does support the use of `auto` as a model name which is then passed to the selected agent as the model name. While supported, we do not recommend this method as it leads to much more variation in output quality and is not reliable. Progress Forge does not control the agent algorithm that selects a model from prompt complexity, context size, cost, or latency. The selected external agent controls the meaning of `auto`.
 
 The following existing example is valid for GitHub Copilot's accepted model pattern:
 
@@ -234,23 +234,23 @@ Use the agent-specific form:
 
 ```bash
 # Instead of:
-nia config init --models stable
+frg config init --models stable
 
 # Use:
-nia config init --agent github_copilot --models stable
+frg config init --agent github_copilot --models stable
 # or
-nia config init --agent opencode --models stable
+frg config init --agent opencode --models stable
 ```
 
 **Available agents:**
 - `github_copilot` - GitHub Copilot CLI
 - `opencode` - Multi-provider AI CLI
 
-**Why this changed:** Different AI agents support different models. By requiring the `--agent` flag, nia ensures your configuration matches your chosen agent's capabilities.
+**Why this changed:** Different AI agents support different models. By requiring the `--agent` flag, frg ensures your configuration matches your chosen agent's capabilities.
 
 ### Fix an Unrecognized Model
 
-If the external agent rejects a model, verify the exact model name with that agent's documentation. NIA's pattern validation does not prove that the external agent or provider offers the model.
+If the external agent rejects a model, verify the exact model name with that agent's documentation. Progress Forge's pattern validation does not prove that the external agent or provider offers the model.
 
 ```
 Error: Unknown model 'custom-model'
@@ -260,7 +260,7 @@ Error: Unknown model 'custom-model'
 
 Check the configuration in this order:
 
-1. Confirm `.nia/config/agents.toml` exists and parses as TOML.
+1. Confirm `.forge/config/agents.toml` exists and parses as TOML.
 2. Confirm `agent.default` matches the configured agent table.
 3. Check the target name against the command target.
 4. Check the operation key format, such as `issue.draft`.
@@ -269,7 +269,7 @@ Check the configuration in this order:
 
 ### Fix Invalid Model Settings
 
-NIA reports these model configuration problems as warnings:
+Progress Forge reports these model configuration problems as warnings:
 
 - An empty model string.
 - Invalid model-name characters. Valid names use alphanumeric characters, dashes, underscores, dots, and forward slashes in a model name or provider/model name.
@@ -281,8 +281,8 @@ Review the warning location, such as `model`, `targets.issue`, or `operations.is
 
 Apply these practices when managing model configuration:
 
-- Commit `.nia/config/agents.toml` when the project needs a shared model policy.
-- Use generated profiles when you want NIA's agent-specific mappings.
+- Commit `.forge/config/agents.toml` when the project needs a shared model policy.
+- Use generated profiles when you want Progress Forge's agent-specific mappings.
 - Use operation overrides for high-impact actions instead of changing every workflow.
 - Keep model names exactly as the selected agent expects them.
 - Treat unknown-model warnings as a prompt to verify provider availability.
@@ -298,7 +298,7 @@ Apply these practices when managing model configuration:
 
 ## Model Used for Health Checks
 
-`nia status`, `nia config validate`, and the `learn` readiness check confirm that
+`frg status`, `frg config validate`, and the `learn` readiness check confirm that
 your coding agent is authenticated by sending it a very short prompt. There is no
 free way to ask an agent CLI whether it is signed in, so this check consumes a
 small number of tokens each time you run one of those commands.
@@ -307,8 +307,8 @@ To keep that cost predictable, NIA sends the check with the model **you already
 configured for that agent**, instead of letting the agent CLI pick one
 automatically:
 
-- If you set an agent-level `model` in `.nia/config/agents.toml`, NIA uses exactly
-  that model for the check. `nia config init` writes this value for you, so it is
+- If you set an agent-level `model` in `.forge/config/agents.toml`, NIA uses exactly
+  that model for the check. `frg config init` writes this value for you, so it is
   normally already set.
 - If no agent-level `model` is set, NIA sends no model name at all and the agent
   CLI applies its own default.

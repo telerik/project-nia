@@ -37,16 +37,16 @@ The fastest way to add context is via CLI flags:
 
 ```bash
 # Single file
-nia issue draft --context-file docs/requirements.md
+frg issue draft --context-file docs/requirements.md
 
 # Multiple files
-nia code create --context-file docs/api.yaml --context-file docs/models.md
+frg code create --context-file docs/api.yaml --context-file docs/models.md
 
 # Entire directory
-nia code review --context-dir docs/patterns/
+frg code review --context-dir docs/patterns/
 
 # Combined
-nia issue plan \
+frg issue plan \
   --context-file docs/architecture.md \
   --context-dir docs/adr/
 ```
@@ -58,7 +58,7 @@ nia issue plan \
 **Solution:** Add project-level context:
 
 ```toml
-# .nia/config/project.toml
+# .forge/config/project.toml
 
 [[project.context]]
 type = "file"
@@ -71,7 +71,7 @@ path = "docs/CONVENTIONS.md"
 description = "Team coding conventions and standards"
 ```
 
-Now every `nia` command includes this context automatically.
+Now every `frg` command includes this context automatically.
 
 ## Pattern 2: Review Checklists for Code Review
 
@@ -80,7 +80,7 @@ Now every `nia` command includes this context automatically.
 **Solution:** Add operation-level context:
 
 ```toml
-# .nia/config/commands.toml
+# .forge/config/commands.toml
 
 [[workflows.operations]]
 name = "review"
@@ -99,7 +99,7 @@ description = "Required checks for all code reviews"
 **Solution:** Add target-level context:
 
 ```toml
-# .nia/config/commands.toml
+# .forge/config/commands.toml
 
 [[workflows]]
 target = "code"
@@ -119,7 +119,7 @@ description = "OpenAPI specifications for all services"
 
 ```bash
 # Add feature-specific docs alongside configured context
-nia code create \
+frg code create \
   --context-file docs/features/new-auth-flow.md \
   --context-dir spike/auth-research/
 ```
@@ -131,7 +131,7 @@ nia code create \
 **Solution:** Configure context at the service level:
 
 ```toml
-# services/payments/.nia/config/commands.toml
+# services/payments/.forge/config/commands.toml
 
 [[workflows]]
 target = "code"
@@ -199,7 +199,7 @@ Check which context was included:
 
 ```bash
 # View recent transactions
-cat .nia/logs/transactions/latest.json | jq '.context_sources'
+cat .forge/logs/transactions/latest.json | jq '.context_sources'
 ```
 
 ### 5. Test with --print-prompt
@@ -207,7 +207,7 @@ cat .nia/logs/transactions/latest.json | jq '.context_sources'
 Verify what context is being sent to the AI:
 
 ```bash
-nia code create --print-prompt | grep -A 20 "Additional Context"
+frg code create --print-prompt | grep -A 20 "Additional Context"
 ```
 
 ## Troubleshooting
@@ -241,24 +241,24 @@ nia code create --print-prompt | grep -A 20 "Additional Context"
 
 ```bash
 # 1. Draft issue with requirements context
-nia issue draft --context-file docs/requirements/auth-v2.md
+frg issue draft --context-file docs/requirements/auth-v2.md
 
 # 2. Create plan with architecture context (from project.toml)
-nia issue plan
+frg issue plan
 
 # 3. Generate code with API specs (from commands.toml) and examples
-nia code create --context-dir examples/auth/
+frg code create --context-dir examples/auth/
 
 # 4. Review with checklist (from commands.toml operation context)
-nia code review
+frg code review
 ```
 
 ### Bug Fix with Investigation Notes
 
 ```bash
 # Create code fix with investigation notes as context
-nia code create \
-  --context-file .nia/work/job_123/investigation.md \
+frg code create \
+  --context-file .forge/work/job_123/investigation.md \
   --context-file tests/failing_test.rs
 ```
 
@@ -266,7 +266,7 @@ nia code create \
 
 ```bash
 # Update docs with existing architecture as context
-nia docs create \
+frg docs create \
   --context-file docs/ARCHITECTURE.md \
   --context-file docs/API.md \
   --context-dir examples/

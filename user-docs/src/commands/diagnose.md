@@ -1,6 +1,6 @@
 # Diagnostic Command
 
-`nia diagnose` performs an offline readiness check and collects diagnostic metadata
+`frg diagnose` performs an offline readiness check and collects diagnostic metadata
 for troubleshooting. It does not make network authentication probes. The
 command reports configuration and local status checks by default; traces and
 logs are opt-in.
@@ -8,10 +8,10 @@ logs are opt-in.
 ## Common Commands
 
 ```bash
-nia diagnose
-nia diagnose --format json
-nia diagnose --include-traces --include-logs
-nia diagnose --bundle --include-traces --include-logs
+frg diagnose
+frg diagnose --format json
+frg diagnose --include-traces --include-logs
+frg diagnose --bundle --include-traces --include-logs
 ```
 
 Use `--verbose` to include additional collection details.

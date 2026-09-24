@@ -1,16 +1,16 @@
 # Installation
 
-Nia CLI is a Rust-based command-line utility for agentic software development life cycle (SDLC) workflows. This article explains how to select a supported platform, download and install Nia, verify the installation, and remove it when necessary.
+Progress Forge CLI is a Rust-based command-line utility for agentic software development life cycle (SDLC) workflows. This article explains how to select a supported platform, download and install Progress Forge, verify the installation, and remove it when necessary.
 
 ## Before You Begin
 
 Use the following sequence to complete the installation:
 
 1. Check the prerequisites and confirm your platform support tier.
-2. Download Nia from the public release repository.
+2. Download Progress Forge from the public release repository.
 3. Choose the recommended quick install, a manual release asset, or a Linux package.
 4. Install any required companion software described in this article.
-5. Verify that the `nia` command runs in a new terminal.
+5. Verify that the `frg` command runs in a new terminal.
 
 The quick-install scripts are the recommended option for most users. Use the manual, package, or container procedures when your environment requires them.
 
@@ -20,12 +20,12 @@ The quick-install scripts are the recommended option for most users. Use the man
 
 > **WARNING: BETA SOFTWARE WARNING**
 >
-> Nia is beta software with **autonomous agent capabilities**. Before installing,
+> Progress Forge is beta software with **autonomous agent capabilities**. Before installing,
 > understand the following:
 
 #### Autonomous Actions
 
-Nia can perform the following actions **without individual confirmation**:
+Progress Forge can perform the following actions **without individual confirmation**:
 
 - **Command Execution**: Run shell commands on your system
 - **File Modifications**: Create, edit, and delete files in your workspace
@@ -34,7 +34,7 @@ Nia can perform the following actions **without individual confirmation**:
 
 #### Recommended Environment
 
-Install and run Nia **ONLY** in isolated development environments:
+Install and run Progress Forge **ONLY** in isolated development environments:
 
 | Recommended | Not Recommended |
 |----------------|-------------------|
@@ -60,12 +60,12 @@ For information on configuring agent behavior, see:
 
 ### System Requirements
 
-Before installing Nia CLI, ensure you have:
+Before installing Progress Forge CLI, ensure you have:
 
 - A 64-bit operating system (Linux, macOS, or Windows)
 - Terminal/command prompt access
 - Internet connection (for initial download)
-- **PowerShell 6 or later** (Windows only) — Windows ships with PowerShell 5.1 by default, which is not compatible with nia. Install PowerShell 7 via:
+- **PowerShell 6 or later** (Windows only) — Windows ships with PowerShell 5.1 by default, which is not compatible with forge. Install PowerShell 7 via:
    - **WinGet**: `winget install Microsoft.PowerShell`.
    - **PowerShell GitHub Releases**: Download PowerShell from [PowerShell GitHub Releases](https://github.com/PowerShell/PowerShell/releases).
 
@@ -77,7 +77,7 @@ Before installing Nia CLI, ensure you have:
 
 ## Platform Support
 
-Nia CLI is available for the following platforms:
+Progress Forge CLI is available for the following platforms:
 
 ### Support Tiers
 
@@ -91,18 +91,18 @@ Nia CLI is available for the following platforms:
 
 | Platform | Architecture | Tier | Binary Name |
 |----------|--------------|------|-------------|
-| Linux (glibc 2.39+) | x86_64 | Tier 1 | `nia-*-x86_64-linux` |
-| Linux (glibc 2.39+) | aarch64 (ARM64) | Tier 2 | `nia-*-aarch64-linux` |
-| Linux legacy (glibc 2.28+) | x86_64 | Tier 2 | `nia-*-x86_64-linux-legacy` |
-| Linux legacy (glibc 2.28+) | aarch64 (ARM64) | Tier 3 | `nia-*-aarch64-linux-legacy` |
-| macOS Intel | x86_64 | Tier 1 | `nia-*-x86_64-darwin` |
-| macOS Apple Silicon | aarch64 | Tier 1 | `nia-*-aarch64-darwin` |
-| Windows 11 | x86_64 | Tier 1 | `nia-*-x86_64-windows.exe` |
-| Windows Server 2025 | x86_64 | Tier 1 | `nia-*-x86_64-windows.exe` |
-| Windows Server 2022 | x86_64 | Tier 2 | `nia-*-x86_64-windows.exe` |
-| Windows 10 | x86_64 | Tier 3 | `nia-*-x86_64-windows.exe` |
-| Windows Server 2019 | x86_64 | Tier 3 | `nia-*-x86_64-windows.exe` |
-| Windows Server 2016 | x86_64 | Tier 3 | `nia-*-x86_64-windows.exe` |
+| Linux (glibc 2.39+) | x86_64 | Tier 1 | `frg-*-x86_64-linux` |
+| Linux (glibc 2.39+) | aarch64 (ARM64) | Tier 2 | `frg-*-aarch64-linux` |
+| Linux legacy (glibc 2.28+) | x86_64 | Tier 2 | `frg-*-x86_64-linux-legacy` |
+| Linux legacy (glibc 2.28+) | aarch64 (ARM64) | Tier 3 | `frg-*-aarch64-linux-legacy` |
+| macOS Intel | x86_64 | Tier 1 | `frg-*-x86_64-darwin` |
+| macOS Apple Silicon | aarch64 | Tier 1 | `frg-*-aarch64-darwin` |
+| Windows 11 | x86_64 | Tier 1 | `frg-*-x86_64-windows.exe` |
+| Windows Server 2025 | x86_64 | Tier 1 | `frg-*-x86_64-windows.exe` |
+| Windows Server 2022 | x86_64 | Tier 2 | `frg-*-x86_64-windows.exe` |
+| Windows 10 | x86_64 | Tier 3 | `frg-*-x86_64-windows.exe` |
+| Windows Server 2019 | x86_64 | Tier 3 | `frg-*-x86_64-windows.exe` |
+| Windows Server 2016 | x86_64 | Tier 3 | `frg-*-x86_64-windows.exe` |
 
 > **Note**: Windows Server editions use the same binary as Windows 11 but may require additional configuration. See [Installing on Windows Server](#windows-server-installation).
 
@@ -132,13 +132,13 @@ To force a specific variant when downloading manually:
 
 ```bash
 # Rocky Linux / RHEL 8.x - binary
-gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux-legacy'
-chmod +x nia-*-x86_64-linux-legacy
-sudo mv nia-*-x86_64-linux-legacy /usr/local/bin/nia
+gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-linux-legacy'
+chmod +x frg-*-x86_64-linux-legacy
+sudo mv frg-*-x86_64-linux-legacy /usr/local/bin/frg
 
 # Rocky Linux / RHEL 8.x - RPM
-gh release download --repo telerik/project-nia --pattern 'nia-*-1.el8.x86_64.rpm'
-sudo dnf install ./nia-*-1.el8.x86_64.rpm
+gh release download --repo telerik/project-nia --pattern 'frg-*-1.el8.x86_64.rpm'
+sudo dnf install ./frg-*-1.el8.x86_64.rpm
 ```
 
 If your glibc is older than 2.28, build from source instead; compilation on those systems
@@ -148,7 +148,7 @@ is supported and links against your local glibc.
 
 ### Version Compatibility
 
-| Windows Edition | Nia 2.6+ | Nia 2.5 | Notes |
+| Windows Edition | Progress Forge 2.6+ | Progress Forge 2.5 | Notes |
 |-----------------|----------|---------|-------|
 | Windows 11 | ✅ | ✅ | Primary target |
 | Windows Server 2025 | ✅ | ⚠️ | Full support starting v2.6 |
@@ -167,7 +167,7 @@ is supported and links against your local glibc.
 
 ### Use the Quick Installer
 
-The quick installer detects the release asset for your platform and provides the shortest installation path. Nia releases are published in the public [`telerik/project-nia`](https://github.com/telerik/project-nia) repository.
+The quick installer detects the release asset for your platform and provides the shortest installation path. Progress Forge releases are published in the public [`telerik/project-nia`](https://github.com/telerik/project-nia) repository.
 
 #### Install with GitHub CLI
 
@@ -201,7 +201,7 @@ sh install.sh --quiet                      # Quiet mode for CI/CD
 gh release download --repo telerik/project-nia --pattern 'install.ps1'
 .\install.ps1 -Version '4.0.1'             # Install specific version
 .\install.ps1 -PreRelease                  # Install pre-release
-.\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\nia"  # Custom directory
+.\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\frg"  # Custom directory
 .\install.ps1 -SkipVerify                  # Skip verification (not recommended)
 .\install.ps1 -Quiet                       # Quiet mode for CI/CD
 ```
@@ -215,10 +215,10 @@ Use a binary release when you need to manage the executable yourself or distribu
 #### Install on Linux (x86_64)
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-linux'
-chmod +x nia-*-x86_64-linux
-sudo mv nia-*-x86_64-linux /usr/local/bin/nia
-nia --version
+gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-linux'
+chmod +x frg-*-x86_64-linux
+sudo mv frg-*-x86_64-linux /usr/local/bin/frg
+frg --version
 ```
 
 #### Install on Linux (aarch64/ARM64)
@@ -226,10 +226,10 @@ nia --version
 For ARM64 Linux systems (e.g., AWS Graviton, Raspberry Pi 4+, Linux containers on Apple Silicon):
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-linux'
-chmod +x nia-*-aarch64-linux
-sudo mv nia-*-aarch64-linux /usr/local/bin/nia
-nia --version
+gh release download --repo telerik/project-nia --pattern 'frg-*-aarch64-linux'
+chmod +x frg-*-aarch64-linux
+sudo mv frg-*-aarch64-linux /usr/local/bin/frg
+frg --version
 ```
 
 > **Note**: Use this binary for Linux ARM64 systems and containers. For native macOS execution on Apple Silicon, use the aarch64-darwin binary instead.
@@ -248,45 +248,45 @@ uname -m
 For Intel Macs:
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-darwin'
+gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-darwin'
 
 # Make executable
-chmod +x nia-*-x86_64-darwin
+chmod +x frg-*-x86_64-darwin
 
 # Remove macOS quarantine attribute (required for unsigned binaries)
-xattr -d com.apple.quarantine nia-*-x86_64-darwin
+xattr -d com.apple.quarantine frg-*-x86_64-darwin
 
 # Alternative: Control-click the file in Finder → Open → confirm
 
 # Move to PATH
-sudo mv nia-*-x86_64-darwin /usr/local/bin/nia
+sudo mv frg-*-x86_64-darwin /usr/local/bin/frg
 
 # Verify installation
-nia --version
+frg --version
 ```
 
-**Note**: macOS Gatekeeper will initially block the binary because it's not signed with an Apple Developer certificate. Use the `xattr` command or Control-click method to bypass this security warning. This is safe for nia as all binaries are GPG signed for verification.
+**Note**: macOS Gatekeeper will initially block the binary because it's not signed with an Apple Developer certificate. Use the `xattr` command or Control-click method to bypass this security warning. This is safe for frg as all binaries are GPG signed for verification.
 
 #### Install on macOS (Apple Silicon aarch64)
 
 For Apple Silicon Macs (M1/M2/M3/M4):
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-darwin'
+gh release download --repo telerik/project-nia --pattern 'frg-*-aarch64-darwin'
 
 # Make executable
-chmod +x nia-*-aarch64-darwin
+chmod +x frg-*-aarch64-darwin
 
 # Remove macOS quarantine attribute (required for unsigned binaries)
-xattr -d com.apple.quarantine nia-*-aarch64-darwin
+xattr -d com.apple.quarantine frg-*-aarch64-darwin
 
 # Alternative: Control-click the file in Finder → Open → confirm
 
 # Move to PATH
-sudo mv nia-*-aarch64-darwin /usr/local/bin/nia
+sudo mv frg-*-aarch64-darwin /usr/local/bin/frg
 
 # Verify installation
-nia --version
+frg --version
 ```
 
 **Note**: Apple Silicon Macs can run Intel binaries via Rosetta 2, but native aarch64 binaries provide better performance. Always use the aarch64 version for Apple Silicon.
@@ -303,13 +303,13 @@ nia --version
 
 ```powershell
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-windows.exe'
 
 # Create programs directory if it doesn't exist
 New-Item -ItemType Directory -Force -Path "$env:LOCALAPPDATA\Programs"
 
 # Move to local programs directory
-Move-Item nia-*-x86_64-windows.exe "$env:LOCALAPPDATA\Programs\nia.exe"
+Move-Item frg-*-x86_64-windows.exe "$env:LOCALAPPDATA\Programs\frg.exe"
 
 # Add to user PATH (if not already present)
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -318,10 +318,10 @@ if ($userPath -notlike "*$env:LOCALAPPDATA\Programs*") {
 }
 
 # Restart PowerShell, then verify:
-nia --version
+frg --version
 ```
 
-> **Without the GitHub CLI:** Download the `nia-<version>-x86_64-windows.exe` asset directly from the [telerik/project-nia releases page](https://github.com/telerik/project-nia/releases/latest). The repository is public, so no GitHub sign-in is required. After downloading, move the file to `%LOCALAPPDATA%\Programs`, **rename it to `nia.exe`** (so you can run it as `nia`), then add that folder to your `PATH`. You can do this through the Start menu: search for **"Edit the system environment variables"**, click **Environment Variables**, select **Path** under **User variables**, click **Edit → New**, and add the folder path. Open a new terminal and run `nia --version` to confirm.
+> **Without the GitHub CLI:** Download the `frg-<version>-x86_64-windows.exe` asset directly from the [telerik/project-nia releases page](https://github.com/telerik/project-nia/releases/latest). The repository is public, so no GitHub sign-in is required. After downloading, move the file to `%LOCALAPPDATA%\Programs`, **rename it to `frg.exe`** (so you can run it as `frg`), then add that folder to your `PATH`. You can do this through the Start menu: search for **"Edit the system environment variables"**, click **Environment Variables**, select **Path** under **User variables**, click **Edit → New**, and add the folder path. Open a new terminal and run `frg --version` to confirm.
 
 #### Install on Windows Server
 
@@ -329,7 +329,7 @@ Windows Server editions (2019, 2022, 2025) use the same binary as Windows 11 but
 
 > **Support Level**: Windows Server 2025 is **Tier 1 (Fully Supported)**, Server 2022 is **Tier 2 (Supported)**, and Server 2019/2016 are **Tier 3 (Community Supported)**. See [Platform Support](#platform-support) for details.
 
-> **PowerShell Requirement**: Windows Server ships with PowerShell 5.1, which is **not compatible** with nia. You must install PowerShell 7 before proceeding:
+> **PowerShell Requirement**: Windows Server ships with PowerShell 5.1, which is **not compatible** with forge. You must install PowerShell 7 before proceeding:
 > ```powershell
 > # Check current version
 > $PSVersionTable.PSVersion.Major  # Must be 6 or higher
@@ -346,7 +346,7 @@ Windows Server editions (2019, 2022, 2025) use the same binary as Windows 11 but
 
 ```powershell
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*-x86_64-windows.exe'
+gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-windows.exe'
 ```
 
 If `gh` (GitHub CLI) is not available, download manually from [GitHub Releases](https://github.com/telerik/project-nia/releases).
@@ -355,27 +355,27 @@ If `gh` (GitHub CLI) is not available, download manually from [GitHub Releases](
 
 ```powershell
 # Create program directory (run as Administrator)
-New-Item -ItemType Directory -Force -Path "C:\Program Files\Nia"
+New-Item -ItemType Directory -Force -Path "C:\Program Files\ProgressForge"
 
 # Move binary to installation directory
-Move-Item nia-*-x86_64-windows.exe "C:\Program Files\Nia\nia.exe"
+Move-Item frg-*-x86_64-windows.exe "C:\Program Files\ProgressForge\frg.exe"
 ```
 
-##### Add Nia to the System PATH
+##### Add Progress Forge to the System PATH
 
 ```powershell
 # Add to system PATH (run as Administrator)
-$niaPath = "C:\Program Files\Nia"
+$forgePath = "C:\Program Files\ProgressForge"
 $currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
 
 if ([string]::IsNullOrEmpty($currentPath)) {
-    # No existing PATH: set it to the Nia directory
-    $newPath = $niaPath
-} elseif ($currentPath.Split(';') -notcontains $niaPath) {
-    # Append Nia directory if it is not already present
-    $newPath = "$currentPath;$niaPath"
+    # No existing PATH: set it to the Progress Forge directory
+    $newPath = $forgePath
+} elseif ($currentPath.Split(';') -notcontains $forgePath) {
+    # Append Progress Forge directory if it is not already present
+    $newPath = "$currentPath;$forgePath"
 } else {
-    # Nia directory already present: leave PATH unchanged
+    # Progress Forge directory already present: leave PATH unchanged
     $newPath = $currentPath
 }
 [Environment]::SetEnvironmentVariable("Path", $newPath, "Machine")
@@ -389,13 +389,13 @@ if ([string]::IsNullOrEmpty($currentPath)) {
 
 ```powershell
 # Open a new PowerShell window, then verify:
-nia.exe --version
+frg.exe --version
 
 # If the above fails, try with explicit path:
-& "C:\Program Files\Nia\nia.exe" --version
+& "C:\Program Files\ProgressForge\frg.exe" --version
 ```
 
-> **Note**: Always use `nia.exe` (with extension) in scripts and automation on Windows Server. The extension-less `nia` command may not resolve correctly in all contexts.
+> **Note**: Always use `frg.exe` (with extension) in scripts and automation on Windows Server. The extension-less `frg` command may not resolve correctly in all contexts.
 
 ##### Handle Security Warnings
 
@@ -413,55 +413,55 @@ For Windows Server Core (no GUI):
 ```powershell
 # All steps above work in Server Core
 # Verification:
-nia.exe --version
+frg.exe --version
 
 # If needed, bypass SmartScreen via PowerShell:
-Unblock-File -Path "C:\Program Files\Nia\nia.exe"
+Unblock-File -Path "C:\Program Files\ProgressForge\frg.exe"
 ```
 
-#### Resolve the Nia Command on Windows
+#### Resolve the Progress Forge Command on Windows
 
-Understanding how Windows resolves the `nia` command helps avoid common issues:
+Understanding how Windows resolves the `frg` command helps avoid common issues:
 
 ##### Choose a Command Format
 
 | Format | Description | When to Use |
 |--------|-------------|-------------|
-| `nia` | Extension-less | Works in most interactive shells on Windows 11 |
-| `nia.exe` | Explicit extension | Recommended for scripts, automation, and Windows Server |
-| `.\nia.exe` | Relative path | Required when running from current directory |
+| `frg` | Extension-less | Works in most interactive shells on Windows 11 |
+| `frg.exe` | Explicit extension | Recommended for scripts, automation, and Windows Server |
+| `.\frg.exe` | Relative path | Required when running from current directory |
 | Full path | Absolute path | Most reliable, works in all contexts |
 
 ##### Follow Command Recommendations
 
 For Interactive Use:
-- Windows 11: `nia` usually works
-- Windows Server: Use `nia.exe` for reliability
+- Windows 11: `frg` usually works
+- Windows Server: Use `frg.exe` for reliability
 
 For Scripts and Automation:
 ```powershell
 # Recommended - explicit extension
-nia.exe config validate
+frg.exe config validate
 
 # Most reliable - full path
-& "C:\Program Files\Nia\nia.exe" config validate
+& "C:\Program Files\ProgressForge\frg.exe" config validate
 ```
 
 For CI/CD Pipelines:
 ```yaml
 # GitHub Actions example
-- name: Run Nia
-  run: nia.exe config validate
+- name: Run Progress Forge
+  run: frg.exe config validate
   shell: pwsh
 ```
 
 ##### Troubleshoot Command Resolution
 
-If `nia` is not recognized:
+If `frg` is not recognized:
 
 1. **Check PATH**:
    ```powershell
-   $env:PATH -split ';' | Where-Object { $_ -like '*nia*' }
+   $env:PATH -split ';' | Where-Object { $_ -like '*frg*' }
    ```
 
 2. **Check PATHEXT** (should include .EXE):
@@ -472,81 +472,81 @@ If `nia` is not recognized:
 
 3. **Locate the binary**:
    ```powershell
-   Get-Command nia.exe -ErrorAction SilentlyContinue | Select-Object Source
+   Get-Command frg.exe -ErrorAction SilentlyContinue | Select-Object Source
    ```
 
 4. **Use explicit path as workaround**:
    ```powershell
-   & (Get-Command nia.exe).Source --version
+   & (Get-Command frg.exe).Source --version
    ```
 
 **Note:** The `gh release download` examples require an authenticated [GitHub CLI](https://cli.github.com/). The repository and its release assets are public; use the direct-download quick installer if you do not use GitHub CLI.
 
 ### Install a Linux Package
 
-For supported Linux distributions, use the package that matches your architecture. Package installation integrates Nia with the distribution's package manager and avoids manually moving the binary.
+For supported Linux distributions, use the package that matches your architecture. Package installation integrates Progress Forge with the distribution's package manager and avoids manually moving the binary.
 
 #### Debian or Ubuntu (x86_64)
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia_*_amd64.deb'
+gh release download --repo telerik/project-nia --pattern 'frg_*_amd64.deb'
 
 # Install package
-sudo dpkg -i nia_*_amd64.deb
+sudo dpkg -i frg_*_amd64.deb
 
 # Verify installation
-nia --version
+frg --version
 ```
 
 #### Debian or Ubuntu (ARM64)
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia_*_arm64.deb'
+gh release download --repo telerik/project-nia --pattern 'frg_*_arm64.deb'
 
 # Install package
-sudo dpkg -i nia_*_arm64.deb
+sudo dpkg -i frg_*_arm64.deb
 
 # Verify installation
-nia --version
+frg --version
 ```
 
 #### RHEL, Fedora, or CentOS (x86_64)
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*x86_64.rpm'
+gh release download --repo telerik/project-nia --pattern 'frg-*x86_64.rpm'
 
 # Install package (Fedora/RHEL 8+)
-sudo dnf install ./nia-*x86_64.rpm
+sudo dnf install ./frg-*x86_64.rpm
 
 # Or for older systems
-sudo rpm -i nia-*x86_64.rpm
+sudo rpm -i frg-*x86_64.rpm
 
 # Verify installation
-nia --version
+frg --version
 ```
 
 #### RHEL, Fedora, or CentOS (ARM64)
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'nia-*aarch64.rpm'
+gh release download --repo telerik/project-nia --pattern 'frg-*aarch64.rpm'
 
 # Install package (Fedora/RHEL 8+)
-sudo dnf install ./nia-*aarch64.rpm
+sudo dnf install ./frg-*aarch64.rpm
 
 # Or for older systems
-sudo rpm -i nia-*aarch64.rpm
+sudo rpm -i frg-*aarch64.rpm
 
 # Verify installation
-nia --version
+frg --version
 ```
 
 ## Install GitHub Copilot CLI on Windows
 
-If you use GitHub Copilot CLI for AI-powered workflows, choose an installation method that lets Nia invoke the executable without the command-line length limitations of Windows Command Shell. Nia also supports OpenCode and Claude Code; see [AI Coding Agent Setup](../agents/setup.md) for the supported agents and their provider-specific prerequisites.
+If you use GitHub Copilot CLI for AI-powered workflows, choose an installation method that lets Progress Forge invoke the executable without the command-line length limitations of Windows Command Shell. Progress Forge also supports OpenCode and Claude Code; see [AI Coding Agent Setup](../agents/setup.md) for the supported agents and their provider-specific prerequisites.
 
 ### Supported Installation Methods
 
@@ -558,15 +558,15 @@ On Windows, we recommend installing GitHub Copilot CLI using one of these method
 winget install GitHub.CopilotCLI
 ```
 
-This installs a native Windows executable that works reliably with Nia.
+This installs a native Windows executable that works reliably with Progress Forge.
 
 **Do Not Use the GitHub CLI Extension on Windows**
 
 > **Warning**: The GitHub CLI extension method (`gh extension install github/gh-copilot`)
-> is **not supported** by nia on Windows.
+> is **not supported** by frg on Windows.
 
 The `gh copilot` command uses Windows Command Shell (`cmd.exe`) internally, which has
-an ~8191 character command-line limit. This limit is frequently exceeded with nia's
+an ~8191 character command-line limit. This limit is frequently exceeded with forge's
 prompts that include multi-file context, detailed instructions, and XML formatting.
 
 **Symptoms of this issue:**
@@ -577,10 +577,10 @@ prompts that include multi-file context, detailed instructions, and XML formatti
 **If you have gh extension installed:**
 1. Install via WinGet instead: `winget install GitHub.CopilotCLI`
 2. Or use npm with automatic wrapper discovery (see below)
-3. Remove any `command = "gh"` from your `.nia/config/agents.toml`
+3. Remove any `command = "gh"` from your `.forge/config/agents.toml`
 
 The gh CLI itself works fine for other purposes—only the Copilot extension
-integration with nia is affected.
+integration with frg is affected.
 
 #### Install with npm
 
@@ -590,23 +590,23 @@ You can install GitHub Copilot CLI via npm:
 npm install -g @github/copilot
 ```
 
-**Automatic Wrapper Discovery**: Nia automatically detects npm installations and
+**Automatic Wrapper Discovery**: Progress Forge automatically detects npm installations and
 parses the `.cmd` wrapper scripts to find the underlying Node.js entry point.
-This allows nia to invoke Node.js directly, bypassing Windows Command Shell
+This allows frg to invoke Node.js directly, bypassing Windows Command Shell
 limitations.
 
 **How it works:**
-1. Nia finds `copilot.cmd` in your PATH
+1. Progress Forge finds `copilot.cmd` in your PATH
 2. Parses the wrapper to extract the Node.js script path
 3. Invokes `node <script>` directly instead of using the wrapper
-4. Logs the discovery process (visible with `nia status --verbose`)
+4. Logs the discovery process (visible with `frg status --verbose`)
 
-**No configuration needed** - wrapper discovery is automatic. Nia will log:
+**No configuration needed** - wrapper discovery is automatic. Progress Forge will log:
 ```text
 Successfully parsed wrapper script, will invoke Node.js directly
 ```
 
-If wrapper parsing fails, nia falls back to using the wrapper directly and logs a warning.
+If wrapper parsing fails, frg falls back to using the wrapper directly and logs a warning.
 In that case, consider switching to the WinGet installation.
 
 ### Verify GitHub Copilot CLI
@@ -614,18 +614,18 @@ In that case, consider switching to the WinGet installation.
 After installation, verify everything is working:
 
 ```powershell
-# Check Nia can find and use the agent
-nia status
+# Check Progress Forge can find and use the agent
+frg status
 
 # Test a simple command
-nia issue draft --lite
+frg issue draft --lite
 ```
 
 ### Configure an Alternative Copilot Command
 
-In most cases, **no configuration is needed** - nia automatically discovers and uses the best invocation method.
+In most cases, **no configuration is needed** - frg automatically discovers and uses the best invocation method.
 
-If you need to specify a direct path, you can configure it in `.nia/config/agents.toml`:
+If you need to specify a direct path, you can configure it in `.forge/config/agents.toml`:
 
 ```toml
 schema_version = "2.1.0"
@@ -646,15 +646,15 @@ See [Custom Agent Configurations](../agents/custom-agent-configurations.md) for 
 
 ## Verify the Installation
 
-Run the version command from a new terminal to confirm that Nia is on your PATH:
+Run the version command from a new terminal to confirm that Progress Forge is on your PATH:
 
 ```bash
-nia --version
+frg --version
 ```
 
 You should see output similar to:
 ```text
-nia 4.1.1
+frg 4.1.1
 ```
 
 ## Upgrading
@@ -665,26 +665,26 @@ atomically swaps it into place — it never requires you to remove anything by
 hand first.
 
 - **Binary installation** (install script or a downloaded release binary):
-  run `nia update` to upgrade in place. See the [Update
+  run `frg update` to upgrade in place. See the [Update
   Command](../commands/update.md) for `--check`, `--version`, and `--force`
   options.
 - **Package manager installation**: upgrade through the same package manager
-  you installed with. `nia update` detects a package-managed installation and
+  you installed with. `frg update` detects a package-managed installation and
   tells you the exact command to run instead of attempting to replace the
   binary itself:
 
   | Installed via | Upgrade with |
   |---|---|
-  | Homebrew | `brew upgrade nia` |
-  | apt (Debian/Ubuntu) | `sudo apt update && sudo apt install --only-upgrade nia` |
-  | dnf (RHEL/Fedora) | `sudo dnf upgrade nia` |
-  | winget | `winget upgrade nia` |
-  | Scoop | `scoop update nia` |
-  | Chocolatey | `choco upgrade nia` |
+  | Homebrew | `brew upgrade progress-forge` |
+  | apt (Debian/Ubuntu) | `sudo apt update && sudo apt install --only-upgrade progress-forge` |
+  | dnf (RHEL/Fedora) | `sudo dnf upgrade progress-forge` |
+  | winget | `winget upgrade progress-forge` |
+  | Scoop | `scoop update progress-forge` |
+  | Chocolatey | `choco upgrade progress-forge` |
 
-On Windows, a file named `.nia.old.<pid>.exe` may briefly appear in the
-install directory if an old `nia` process was still running during the
-swap. It is removed automatically the next time `nia` runs and does not need
+On Windows, a file named `.frg.old.<pid>.exe` may briefly appear in the
+install directory if an old `frg` process was still running during the
+swap. It is removed automatically the next time `frg` runs and does not need
 to be deleted by hand.
 
 ## Container Deployment
@@ -698,19 +698,19 @@ When running Linux containers on Apple Silicon Macs (M1/M2/M3/M4), use the **Lin
 ```dockerfile
 FROM fedora:latest
 
-# Install curl for downloading nia
+# Install curl for downloading forge
 RUN dnf install -y curl ca-certificates
 
-# Download and install nia (ARM64)
-RUN curl -fsSL -o /tmp/nia.rpm \
+# Download and install frg (ARM64)
+RUN curl -fsSL -o /tmp/progress-forge.rpm \
    $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | grep "browser_download_url.*aarch64.rpm" | cut -d'"' -f4) \
-    && dnf install -y /tmp/nia.rpm \
+    && dnf install -y /tmp/progress-forge.rpm \
     && dnf clean all \
-    && rm /tmp/nia.rpm
+    && rm /tmp/progress-forge.rpm
 
 # Verify installation
-RUN nia --version
+RUN frg --version
 ```
 
 #### Debian-Based Dockerfile
@@ -718,18 +718,18 @@ RUN nia --version
 ```dockerfile
 FROM ubuntu:latest
 
-# Install curl for downloading nia
+# Install curl for downloading frg
 RUN apt-get update && apt-get install -y curl ca-certificates
 
-# Download and install nia (ARM64)
-RUN curl -fsSL -o /tmp/nia.deb \
+# Download and install frg (ARM64)
+RUN curl -fsSL -o /tmp/frg.deb \
    $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | grep "browser_download_url.*arm64.deb" | cut -d'"' -f4) \
-    && apt-get install -y /tmp/nia.deb \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/nia.deb
+    && apt-get install -y /tmp/frg.deb \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/frg.deb
 
 # Verify installation
-RUN nia --version
+RUN frg --version
 ```
 
 #### Optimize the Image with a Multi-Stage Build
@@ -742,15 +742,15 @@ For production deployments, use multi-stage builds to reduce final image size:
 # Build stage - download package
 FROM fedora:latest as builder
 RUN dnf install -y curl jq
-RUN curl -fsSL -o /tmp/nia.rpm \
+RUN curl -fsSL -o /tmp/progress-forge.rpm \
    $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | jq -r '.assets[] | select(.name | contains("aarch64.rpm")) | .browser_download_url')
 
 # Runtime stage - minimal image
 FROM fedora:latest
-COPY --from=builder /tmp/nia.rpm /tmp/nia.rpm
-RUN dnf install -y /tmp/nia.rpm && dnf clean all && rm /tmp/nia.rpm
-RUN nia --version
+COPY --from=builder /tmp/progress-forge.rpm /tmp/progress-forge.rpm
+RUN dnf install -y /tmp/progress-forge.rpm && dnf clean all && rm /tmp/progress-forge.rpm
+RUN frg --version
 ```
 
 ##### Debian-Based Image
@@ -759,15 +759,15 @@ RUN nia --version
 # Build stage - download package
 FROM ubuntu:latest as builder
 RUN apt-get update && apt-get install -y curl jq
-RUN curl -fsSL -o /tmp/nia.deb \
+RUN curl -fsSL -o /tmp/progress-forge.deb \
    $(curl -s https://api.github.com/repos/telerik/project-nia/releases/latest \
     | jq -r '.assets[] | select(.name | contains("arm64.deb")) | .browser_download_url')
 
 # Runtime stage - minimal image
 FROM ubuntu:latest
-COPY --from=builder /tmp/nia.deb /tmp/nia.deb
-RUN apt-get update && apt-get install -y /tmp/nia.deb && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/nia.deb
-RUN nia --version
+COPY --from=builder /tmp/progress-forge.deb /tmp/progress-forge.deb
+RUN apt-get update && apt-get install -y /tmp/progress-forge.deb && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/progress-forge.deb
+RUN frg --version
 ```
 
 > **Tip**: Multi-stage builds eliminate curl and jq from the final image, reducing size and attack surface.
@@ -776,18 +776,18 @@ RUN nia --version
 
 | Host System | Container Type | Use This Binary |
 |-------------|----------------|-----------------|
-| Apple Silicon Mac (native) | - | `nia-*-aarch64-darwin` |
-| Apple Silicon Mac | Linux ARM64 container | `nia-*-aarch64-linux` or ARM64 packages |
-| Intel Mac | Linux x86_64 container | `nia-*-x86_64-linux` or x86_64 packages |
-| AWS Graviton (ARM64) | Linux ARM64 | `nia-*-aarch64-linux` or ARM64 packages |
-| Standard x86_64 Linux (glibc 2.39+) | - | `nia-*-x86_64-linux` or x86_64 packages |
-| Rocky Linux / RHEL / AlmaLinux 8.x | - | `nia-*-x86_64-linux-legacy` or `nia-*-1.el8.x86_64.rpm` |
+| Apple Silicon Mac (native) | - | `frg-*-aarch64-darwin` |
+| Apple Silicon Mac | Linux ARM64 container | `frg-*-aarch64-linux` or ARM64 packages |
+| Intel Mac | Linux x86_64 container | `frg-*-x86_64-linux` or x86_64 packages |
+| AWS Graviton (ARM64) | Linux ARM64 | `frg-*-aarch64-linux` or ARM64 packages |
+| Standard x86_64 Linux (glibc 2.39+) | - | `frg-*-x86_64-linux` or x86_64 packages |
+| Rocky Linux / RHEL / AlmaLinux 8.x | - | `frg-*-x86_64-linux-legacy` or `frg-*-1.el8.x86_64.rpm` |
 
 > **Important**: The macOS aarch64 binary (`aarch64-darwin`) is for native macOS execution only. It will **not** work inside Linux containers, even on Apple Silicon Macs. Use the Linux aarch64 binary or packages for container deployments.
 
 ## Next Steps
 
-- [Quick Start Guide](quick-start.md) - Get started with Nia in 5 minutes
+- [Quick Start Guide](quick-start.md) - Get started with Progress Forge in 5 minutes
 
 ## Troubleshoot Installation Problems
 
@@ -795,7 +795,7 @@ Start with these checks when installation does not complete successfully:
 
 - **Command not found**: Ensure the binary is in your PATH or use the full path to execute
 - **Permission denied**: Run with appropriate permissions (e.g., `sudo` on Linux/macOS)
-- **Binary won't execute**: Verify file permissions (`chmod +x nia` on Unix systems)
+- **Binary won't execute**: Verify file permissions (`chmod +x frg` on Unix systems)
 
 ### Troubleshoot macOS
 
@@ -807,9 +807,9 @@ Start with these checks when installation does not complete successfully:
 
 Method 1 - Remove quarantine attribute (recommended):
 ```bash
-xattr -d com.apple.quarantine /usr/local/bin/nia
+xattr -d com.apple.quarantine /usr/local/bin/frg
 # Or for the downloaded file:
-xattr -d com.apple.quarantine nia-*-darwin
+xattr -d com.apple.quarantine frg-*-darwin
 ```
 
 Method 2 - Control-click bypass:
@@ -826,13 +826,13 @@ Method 3 - System Settings (macOS 13+):
 4. Click "Open Anyway" next to the blocked app message
 5. Re-run the binary
 
-**Why this happens**: macOS applies Gatekeeper checks to downloaded applications. Nia release assets include signatures and checksums for authenticity verification.
+**Why this happens**: macOS applies Gatekeeper checks to downloaded applications. Progress Forge release assets include signatures and checksums for authenticity verification.
 
 ---
 
 #### Binary Not in PATH
 
-**Problem**: `nia: command not found`
+**Problem**: `frg: command not found`
 
 **Solution**:
 
@@ -864,22 +864,22 @@ fish_add_path /usr/local/bin
 
 #### Permission Denied
 
-**Problem**: `Permission denied` when running `nia`
+**Problem**: `Permission denied` when running `frg`
 
 **Solution**:
 
 Ensure the binary is executable:
 ```bash
-chmod +x /usr/local/bin/nia
+chmod +x /usr/local/bin/frg
 ```
 
 If you moved the file without `sudo`, you might not have write permissions:
 ```bash
-ls -la /usr/local/bin/nia
+ls -la /usr/local/bin/frg
 # Should show: -rwxr-xr-x
 
 # Fix if needed:
-sudo chmod 755 /usr/local/bin/nia
+sudo chmod 755 /usr/local/bin/frg
 ```
 
 ---
@@ -899,7 +899,7 @@ sudo chmod 755 /usr/local/bin/nia
 
 2. Check downloaded binary architecture:
    ```bash
-   file /usr/local/bin/nia
+   file /usr/local/bin/frg
    # Should show: Mach-O 64-bit executable x86_64 (for Intel)
    # Or: Mach-O 64-bit executable arm64 (for Apple Silicon)
    ```
@@ -929,7 +929,7 @@ sudo chmod 755 /usr/local/bin/nia
 4. Force color output:
    ```bash
    export CLICOLOR_FORCE=1
-   nia --help
+   frg --help
    ```
 
 ---
@@ -962,7 +962,7 @@ sudo chmod 755 /usr/local/bin/nia
 
 #### Slow Performance on Apple Silicon
 
-**Problem**: Nia runs slower than expected on M1/M2/M3/M4
+**Problem**: Progress Forge runs slower than expected on M1/M2/M3/M4
 
 **Possible Cause**: Running Intel binary via Rosetta 2 instead of native aarch64 binary.
 
@@ -970,14 +970,14 @@ sudo chmod 755 /usr/local/bin/nia
 
 1. Check what you're running:
    ```bash
-   file $(which nia)
+   file $(which frg)
    # Should show: Mach-O 64-bit executable arm64
    # If shows x86_64, you're running the Intel version via Rosetta
    ```
 
 2. Download and install the aarch64-darwin binary:
    ```bash
-   gh release download --repo telerik/project-nia --pattern 'nia-*-aarch64-darwin'
+   gh release download --repo telerik/project-nia --pattern 'frg-*-aarch64-darwin'
    # Follow installation instructions above
    ```
 
@@ -998,7 +998,7 @@ sudo chmod 755 /usr/local/bin/nia
 
 2. Verify signature:
    ```bash
-   gpg --verify nia-*-darwin.asc nia-*-darwin
+   gpg --verify frg-*-darwin.asc frg-*-darwin
    ```
 
 3. If verification still fails, re-download both the binary and signature.
@@ -1056,7 +1056,7 @@ sudo chmod 755 /usr/local/bin/nia
    curl -fsSL https://.../ install.sh | sh -s -- --skip-verify
    ```
 
-3. Report persistent checksum issues to the Nia CLI team.
+3. Report persistent checksum issues to the Progress Forge CLI team.
 
 **Problem**: Windows PowerShell version error
 
@@ -1081,10 +1081,10 @@ The installation script requires PowerShell 6 or later. Windows includes PowerSh
 The installation script automatically removes the quarantine attribute. If you still see a warning:
 
 1. Open System Preferences → Security & Privacy
-2. Click "Open Anyway" next to the nia warning
+2. Click "Open Anyway" next to the frg warning
 3. Or manually remove the quarantine attribute:
    ```bash
-   sudo xattr -d com.apple.quarantine /usr/local/bin/nia
+   sudo xattr -d com.apple.quarantine /usr/local/bin/frg
    ```
 
 ---
@@ -1111,36 +1111,36 @@ For more help, see the [Troubleshooting Guide](../troubleshooting/common-issues.
 
 ---
 
-## Uninstall Nia CLI
+## Uninstall Progress Forge CLI
 
-Remove the Nia executable from the location where you installed it. The commands below cover the default and custom installation locations.
+Remove the Progress Forge executable from the location where you installed it. The commands below cover the default and custom installation locations.
 
-### Remove Nia on Linux or macOS
+### Remove Progress Forge on Linux or macOS
 ```bash
 # If installed to default location
-sudo rm -f /usr/local/bin/nia
+sudo rm -f /usr/local/bin/frg
 
 # If installed to custom location
-rm -f /path/to/custom/dir/nia
+rm -f /path/to/custom/dir/frg
 ```
 
-### Remove Nia on Windows
+### Remove Progress Forge on Windows
 ```powershell
 # If installed to default location
-Remove-Item "C:\Program Files\Nia\nia.exe" -Force
+Remove-Item "C:\Program Files\ProgressForge\frg.exe" -Force
 
 # If installed to custom location
-Remove-Item "C:\Path\To\Custom\Dir\nia.exe" -Force
+Remove-Item "C:\Path\To\Custom\Dir\frg.exe" -Force
 ```
 
 > **Note**: You may need administrator/sudo privileges depending on the installation location.
 
-To also remove Nia's configuration and data directories, run the matching command:
+To also remove Progress Forge's configuration and data directories, run the matching command:
 
 ```bash
 # Linux/macOS
-rm -rf ~/.nia
+rm -rf ~/.forge
 
 # Windows
-Remove-Item "$env:USERPROFILE\.nia" -Recurse -Force
+Remove-Item "$env:USERPROFILE\.forge" -Recurse -Force
 ```

@@ -11,13 +11,13 @@ Solving runtime and execution problems.
 **Debugging**:
 ```bash
 # Linux/macOS - Use debug logging
-RUST_LOG=debug nia command
+RUST_LOG=debug frg command
 
 # Windows PowerShell - Use debug logging
-$env:RUST_LOG="debug"; nia command
+$env:RUST_LOG="debug"; frg command
 
 # Check what was received
-nia issue plan
+frg issue plan
 ```
 
 ### Stub Commands
@@ -44,9 +44,9 @@ Options: edit=true
 1. Check help flag syntax: `--help` not `-help`
 2. Try at different levels:
    ```bash
-   nia --help
-   nia issue --help
-   nia issue plan --help
+   frg --help
+   frg issue --help
+   frg issue plan --help
    ```
 3. Check configuration defines help properly
 
@@ -60,15 +60,15 @@ Options: edit=true
 ls configs/help/mycommand.md
 
 # Check configuration
-cat .nia/config.toml | grep help_file
+cat .forge/config.toml | grep help_file
 
 # Validate references
-nia config validate
+frg config validate
 ```
 
 ## Documentation Issues
 
-### `nia docs` Fails
+### `frg docs` Fails
 
 **Problem**: Documentation command doesn't work
 
@@ -117,17 +117,17 @@ mdbook serve
 **Debugging**:
 ```bash
 # Time the command
-time nia config validate
+time frg config validate
 
 # Check config size
-wc -l .nia/config.toml
+wc -l .forge/config.toml
 
 # Simplify configuration
 ```
 
 ### Slow Validation
 
-**Problem**: `nia config validate` is slow
+**Problem**: `frg config validate` is slow
 
 **Solutions**:
 1. Reduce config complexity
@@ -143,13 +143,13 @@ wc -l .nia/config.toml
 **Solutions**:
 ```bash
 # Fix file permissions
-chmod 644 .nia/config.toml
+chmod 644 .forge/config.toml
 
 # Fix directory permissions
-chmod 755 .nia
+chmod 755 .forge
 
 # Check ownership
-ls -la .nia/
+ls -la .forge/
 ```
 
 ### Can't Write Logs
@@ -182,11 +182,11 @@ ls -la logs/
 # Check PATH
 echo $PATH
 
-# Check which nia
-which nia
+# Check which forge
+which frg
 
 # Try with full path
-/usr/local/bin/nia --help
+/usr/local/bin/frg --help
 ```
 
 ### CI/CD Pipeline Failures
@@ -201,8 +201,8 @@ which nia
 **Solutions**:
 ```bash
 # In CI pipeline
-export PATH=$PATH:/path/to/nia
-nia config validate
+export PATH=$PATH:/path/to/frg
+frg config validate
 ```
 
 ## Error Recovery
@@ -217,20 +217,20 @@ nia config validate
 2. **Enable Debug Logging**:
    ```bash
    # Linux/macOS
-   RUST_LOG=debug nia command
+   RUST_LOG=debug frg command
 
    # Windows PowerShell
-   $env:RUST_LOG="debug"; nia command
+   $env:RUST_LOG="debug"; frg command
    ```
 
 3. **Validate Configuration**:
    ```bash
-   nia config validate
+   frg config validate
    ```
 
 4. **Check Help**:
    ```bash
-   nia command --help
+   frg command --help
    ```
 
 5. **Simplify**:
@@ -256,7 +256,7 @@ nia config validate
 ### macOS
 
 **Common Issues**:
-- Gatekeeper blocking: `xattr -d com.apple.quarantine nia`
+- Gatekeeper blocking: `xattr -d com.apple.quarantine frg`
 - Permission issues: Check Security & Privacy settings
 
 ### Windows
@@ -270,17 +270,17 @@ nia config validate
 
 ### Secret Visible in Trace Files
 
-**Problem**: Sensitive data appears in `.nia/work/job_*/traces/` files
+**Problem**: Sensitive data appears in `.forge/work/job_*/traces/` files
 
 **Solutions**:
 1. **Check pattern coverage:**
    ```bash
    # View loaded patterns
-   RUST_LOG=debug nia ask "test" 2>&1 | grep "patterns"
+   RUST_LOG=debug frg ask "test" 2>&1 | grep "patterns"
    ```
 
 2. **Add custom pattern:**
-   Create or edit `.nia/config/.gitleaks.toml`:
+   Create or edit `.forge/config/.gitleaks.toml`:
    ```toml
    [[rules]]
    id = "custom-secret"
@@ -290,7 +290,7 @@ nia config validate
    ```
 
 3. **Verify config location:**
-   Ensure `.gitleaks.toml` is in `.nia/config/` (not project root)
+   Ensure `.gitleaks.toml` is in `.forge/config/` (not project root)
 
 ### Over-Redaction (Legitimate Data Masked)
 
@@ -317,5 +317,5 @@ If problems persist:
 
 1. Review common issues: [Common Problems](common-issues.md)
 2. Validate configuration: [Config Troubleshooting](config.md)
-3. Use `RUST_LOG=debug` for agent diagnostics, or run `nia status --verbose` for configuration diagnostics
+3. Use `RUST_LOG=debug` for agent diagnostics, or run `frg status --verbose` for configuration diagnostics
 4. Simplify to minimal test case

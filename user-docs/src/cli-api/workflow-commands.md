@@ -10,7 +10,7 @@ Workflow commands are AI-powered operations that perform complex, context-aware 
 User Command → CLI Parser → Workflow Registry → Prompt Composer → AI Agent → Result
 ```
 
-1. **User runs command**: `nia issue draft --edit`
+1. **User runs command**: `frg issue draft --edit`
 2. **CLI parses command**: Extracts target (issue), operation (draft), modifier (edit)
 3. **Registry lookup**: Finds workflow definition in TOML config
 4. **Prompt composition**: Combines role + task + input prompts
@@ -26,13 +26,13 @@ Each workflow operation uses a **multi-part prompt system**:
 3. **Task Prompt**: Specifies the operation to perform
 4. **Input File**: Optional user-provided context (for modifiers)
 
-**Example:** `nia issue draft --edit`
+**Example:** `frg issue draft --edit`
 
 ```
 Role: prompts/issue_planner.role.md     (who the agent is)
 Project: prompts/project.config.md      (project context)
 Task: prompts/issue_draft.task.md       (what to do)
-Input: .nia/work/job_<job_id>/issue/edit.md  (user context)
+Input: .forge/work/job_<job_id>/issue/edit.md  (user context)
 ```
 
 The composed prompt is sent to the AI agent for execution.
@@ -51,26 +51,26 @@ All workflow commands support these short flags:
 
 ```bash
 # Select AI coding agent
-nia issue draft -a copilot
+frg issue draft -a copilot
 
 # Override AI role
-nia code review -r software_engineer
+frg code review -r software_engineer
 
 # Include single context file
-nia pr review -c docs/architecture.md
+frg pr review -c docs/architecture.md
 
 # Include multiple context files
-nia code create -c docs/design.md -c examples/reference.rs -c CHANGELOG.md
+frg code create -c docs/design.md -c examples/reference.rs -c CHANGELOG.md
 
 # Combine multiple flags
-nia issue plan -a copilot -r software_architect -c docs/requirements.md
+frg issue plan -a copilot -r software_architect -c docs/requirements.md
 ```
 
 **Note:** The `-c` flag can be used multiple times to include several files as context for the AI agent.
 
 ## Built-in Workflows
 
-Nia includes 5 built-in workflow targets:
+Progress Forge includes 5 built-in workflow targets:
 
 | Target | Description | Operations |
 |--------|-------------|-----------|
@@ -91,8 +91,8 @@ Required for: `issue`, `code`, `pr` commands
 
 Set via environment variable:
 ```bash
-export NIA_ISSUE_ID=123
-nia issue draft              # Uses Issue #123
+export FORGE_ISSUE_ID=123
+frg issue draft              # Uses Issue #123
 ```
 
 ### PR ID
@@ -101,9 +101,9 @@ Required for: `pr` commands
 
 Set via environment variable:
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
-nia pr review                # Uses PR #456 in Issue #123
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
+frg pr review                # Uses PR #456 in Issue #123
 ```
 
 ### No Context Required
@@ -117,15 +117,15 @@ These targets work without context:
 If required context is missing, commands abort with helpful error:
 
 ```bash
-$ nia issue draft
-Error: Missing required context: NIA_ISSUE_ID
+$ frg issue draft
+Error: Missing required context: FORGE_ISSUE_ID
 
 To set Issue ID:
-  export NIA_ISSUE_ID=123
+  export FORGE_ISSUE_ID=123
 
 Or in GitHub Actions:
   env:
-    NIA_ISSUE_ID: ${{ github.event.issue.number }}
+    FORGE_ISSUE_ID: ${{ github.event.issue.number }}
 ```
 
 ## Modifiers
@@ -143,12 +143,12 @@ Modifiers customize operation behavior without changing the core task.
 
 Modifiers can:
 1. **Override task prompt**: Use different task prompt (e.g., `issue_draft` → `issue_draft_edit`)
-2. **Load input file**: Read user context from `.nia/work/job_<job_id>/<target>/<modifier>.md`
+2. **Load input file**: Read user context from `.forge/work/job_<job_id>/<target>/<modifier>.md`
 
-**Example:** `nia code review --fix`
+**Example:** `frg code review --fix`
 
 - Task prompt changes: `code_review` → `code_review_fix`
-- Input file checked: `.nia/work/job_<job_id>/code/fix.md` (optional)
+- Input file checked: `.forge/work/job_<job_id>/code/fix.md` (optional)
 
 ### Input Files
 
@@ -156,16 +156,16 @@ Input files provide job-specific context to modifiers:
 
 ```bash
 # Create input file
-mkdir -p .nia/work/Job_42/issue
-cat > .nia/work/Job_42/issue/edit.md << 'EOF'
+mkdir -p .forge/work/Job_42/issue
+cat > .forge/work/Job_42/issue/edit.md << 'EOF'
 Focus on:
 - Performance requirements
 - Security considerations
 EOF
 
 # Run with modifier
-export NIA_JOB_ID=Job_42
-nia issue draft --edit       # Reads edit.md as additional context
+export FORGE_JOB_ID=Job_42
+frg issue draft --edit       # Reads edit.md as additional context
 ```
 
 **Note:** Input files are optional. Execution proceeds normally if file doesn't exist.
@@ -175,12 +175,12 @@ nia issue draft --edit       # Reads edit.md as additional context
 ### Standard Execution
 
 ```bash
-$ nia issue draft
+$ frg issue draft
 ⟳ Initializing workflow...
 ⟳ Loading prompts...
 ⟳ Composing request...
 ⟳ Executing AI agent...
-✓ Issue draft created: .nia/work/job_1703012345/issue/draft.md
+✓ Issue draft created: .forge/work/job_1703012345/issue/draft.md
 ```
 
 ## Performance
@@ -197,11 +197,11 @@ Typical execution times:
 
 ## Best Practices
 
-1. **Set context early**: Export `NIA_ISSUE_ID` and `NIA_PR_ID` in your shell profile or CI config
+1. **Set context early**: Export `FORGE_ISSUE_ID` and `FORGE_PR_ID` in your shell profile or CI config
 2. **Use modifiers intentionally**: `--edit` for iterative work, `--fix` for automated corrections
 3. **Provide input files**: Give context via modifier input files for better results
-4. **Check help first**: Run `nia <target> <operation> --help` to see available options
-5. **Validate custom workflows**: Always run `nia config validate` after editing `.nia/config/commands.toml`
+4. **Check help first**: Run `frg <target> <operation> --help` to see available options
+5. **Validate custom workflows**: Always run `frg config validate` after editing `.forge/config/commands.toml`
 
 ## Troubleshooting
 
@@ -209,17 +209,17 @@ Typical execution times:
 
 If a workflow command isn't recognized:
 
-1. Check spelling: `nia issue draft` not `nia issues draft`
-2. Validate config: `nia config validate`
-3. Check lock file: `.nia/.config_lock` should exist
-4. Regenerate registry: Delete `.nia/.config_lock` and run any nia command
+1. Check spelling: `frg issue draft` not `frg issues draft`
+2. Validate config: `frg config validate`
+3. Check lock file: `.forge/.config_lock` should exist
+4. Regenerate registry: Delete `.forge/.config_lock` and run any frg command
 
 ### Workflow Execution Fails
 
 If execution fails:
 
-1. Check context: Ensure `NIA_ISSUE_ID` is set (if required)
-2. Verify prompts exist: Built-in prompts are embedded, custom prompts need `.nia/prompts/`
-3. Check logs: Look in `.nia/work/job_<job_id>/traces/` for detailed output
+1. Check context: Ensure `FORGE_ISSUE_ID` is set (if required)
+2. Verify prompts exist: Built-in prompts are embedded, custom prompts need `.forge/prompts/`
+3. Check logs: Look in `.forge/work/job_<job_id>/traces/` for detailed output
 
 See [Troubleshooting](../troubleshooting/common-issues.md) for more help.

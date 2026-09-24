@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nia supports monorepo (multi-service) projects where multiple services within a single repository can each have their own metadata for AI context injection. This enables AI coding agents to receive both project-wide and service-specific context when working with individual services.
+Progress Forge supports monorepo (multi-service) projects where multiple services within a single repository can each have their own metadata for AI context injection. This enables AI coding agents to receive both project-wide and service-specific context when working with individual services.
 
 **Key Concepts:**
 - **Monorepo** - A single repository containing multiple services/applications
@@ -112,10 +112,10 @@ Service fields match the project metadata fields from `[project]` section, plus 
 Select which service you're working on:
 
 ```bash
-nia config set-service api
+frg config set-service api
 ```
 
-This updates `.nia/context.toml` to store the service selection:
+This updates `.forge/context.toml` to store the service selection:
 
 ```toml
 [context]
@@ -127,7 +127,7 @@ service_name = "api"
 Check which service is currently selected:
 
 ```bash
-nia config show-context
+frg config show-context
 ```
 
 Output:
@@ -143,7 +143,7 @@ Context Configuration:
 Remove service selection and revert to project-wide context:
 
 ```bash
-nia config clear-service
+frg config clear-service
 ```
 
 ---
@@ -187,11 +187,11 @@ When no service is selected, agents see:
 
 ### Service-Specific Prompts
 
-Nia generates a separate `service.config.md` prompt file for service context:
+Progress Forge generates a separate `service.config.md` prompt file for service context:
 
 **Generated Files:**
-- `.nia/prompts/project.config.md` - Project-wide configuration
-- `.nia/prompts/service.config.md` - Service-specific configuration (when service selected)
+- `.forge/prompts/project.config.md` - Project-wide configuration
+- `.forge/prompts/service.config.md` - Service-specific configuration (when service selected)
 
 **Example service.config.md:**
 ```markdown
@@ -262,7 +262,7 @@ Placeholders are only replaced when a service is selected. If no service is sele
 Validate your monorepo configuration:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 **Checks Performed:**
@@ -274,7 +274,7 @@ nia config validate
 
 ### Service Selection Validation
 
-When setting a service, Nia validates:
+When setting a service, Progress Forge validates:
 - Service exists in monorepo configuration
 - Service name matches exactly (case-sensitive)
 
@@ -288,10 +288,10 @@ Available services:
   - worker
 
 To select a different service:
-  nia config set-service <service_name>
+  frg config set-service <service_name>
 
 To clear service selection:
-  nia config clear-service
+  frg config clear-service
 ```
 
 ---
@@ -307,7 +307,7 @@ my-monorepo/
 │   ├── api/           # Rust REST API
 │   ├── web/           # React frontend
 │   └── worker/        # Python background jobs
-├── .nia/
+├── .forge/
 │   └── config/
 │       ├── project.toml
 │       └── context.toml
@@ -358,16 +358,16 @@ package_manager = "pip"
 **Usage:**
 ```bash
 # Work on API service
-nia config set-service api
-nia code implement --issue 123
+frg config set-service api
+frg code implement --issue 123
 
 # Switch to web service
-nia config set-service web
-nia code implement --issue 124
+frg config set-service web
+frg code implement --issue 124
 
 # Clear service for repo-wide work
-nia config clear-service
-nia docs update
+frg config clear-service
+frg docs update
 ```
 
 ### Example 2: Multi-Platform Application
@@ -445,7 +445,7 @@ package_manager = "cargo"
 # No [monorepo] section needed
 ```
 
-Nia behaves identically to pre-monorepo versions:
+Progress Forge behaves identically to pre-monorepo versions:
 - No service selection needed
 - All workflows use project-wide metadata
 - No service-specific prompts generated
@@ -468,17 +468,17 @@ description = "Main application"
 
 2. **Validate configuration:**
 ```bash
-nia config validate
+frg config validate
 ```
 
 3. **Select service:**
 ```bash
-nia config set-service main
+frg config set-service main
 ```
 
 4. **Verify workflows still work:**
 ```bash
-nia config show-context
+frg config show-context
 ```
 
 ---
@@ -532,12 +532,12 @@ Select the service you're actively working on:
 
 ```bash
 # Starting work on the API
-nia config set-service api
-nia code implement --issue 123
+frg config set-service api
+frg code implement --issue 123
 
 # Switching to web work
-nia config set-service web
-nia code refactor
+frg config set-service web
+frg code refactor
 ```
 
 ### 5. Clear Service for Cross-Cutting Changes
@@ -545,9 +545,9 @@ nia code refactor
 For repository-wide changes, clear service selection:
 
 ```bash
-nia config clear-service
-nia docs update        # Updates root README
-nia code format        # Formats all services
+frg config clear-service
+frg docs update        # Updates root README
+frg code format        # Formats all services
 ```
 
 ---
@@ -563,18 +563,18 @@ Error: Service 'webapp' not found in monorepo configuration.
 
 **Solutions:**
 1. Check service name spelling (case-sensitive)
-2. Run `nia config validate` to see available services
+2. Run `frg config validate` to see available services
 3. Verify service is defined in `project.toml`
 
 ### Service Selection Not Persisting
 
 **Symptom:** Service selection resets after commands
 
-**Cause:** `.nia/context.toml` not writable
+**Cause:** `.forge/context.toml` not writable
 
 **Solutions:**
-1. Check file permissions: `ls -la .nia/context.toml`
-2. Ensure `.nia/` directory exists
+1. Check file permissions: `ls -la .forge/context.toml`
+2. Ensure `.forge/` directory exists
 3. Verify not in read-only filesystem
 
 ### Wrong Metadata Being Used
@@ -582,9 +582,9 @@ Error: Service 'webapp' not found in monorepo configuration.
 **Symptom:** Agent sees wrong language/framework
 
 **Solutions:**
-1. Verify service is selected: `nia config show-context`
+1. Verify service is selected: `frg config show-context`
 2. Check metadata precedence (service overrides project)
-3. Validate configuration: `nia config validate`
+3. Validate configuration: `frg config validate`
 
 ### Monorepo Validation Fails
 
@@ -594,7 +594,7 @@ Error: Monorepo validation failed
 ```
 
 **Solutions:**
-1. Run `nia config validate` for detailed errors
+1. Run `frg config validate` for detailed errors
 2. Check each service has unique name
 3. Verify all paths are relative and valid
 4. Ensure at least one service is defined when `enabled = true`
@@ -617,7 +617,7 @@ path = "services/api"  # Resolves to /repo/services/api
 - Must be relative (no leading `/`)
 - Cannot use `..` parent references
 - Must exist in repository
-- Validated during `nia config validate`
+- Validated during `frg config validate`
 
 ### Service Metadata Loading
 
@@ -631,7 +631,7 @@ Service metadata is:
 
 ### Lock File Integration
 
-Monorepo configuration is cached in `.nia/nia.lock`:
+Monorepo configuration is cached in `.forge/.config_lock`:
 
 ```toml
 [monorepo]
@@ -655,8 +655,8 @@ Changes to `project.toml` invalidate the lock file and trigger re-validation.
 
 1. Enable monorepo mode in `project.toml`
 2. Define your services with metadata
-3. Run `nia config validate` to verify configuration
-4. Select a service with `nia config set-service`
+3. Run `frg config validate` to verify configuration
+4. Select a service with `frg config set-service`
 5. Start using workflows with service-specific context
 
 ---
@@ -673,7 +673,7 @@ Changes to `project.toml` invalidate the lock file and trigger re-validation.
 
 ### Q: What happens if I forget to select a service?
 
-**A:** Nia uses project-wide metadata (fallback behavior). It's the same as working with a non-monorepo project.
+**A:** Progress Forge uses project-wide metadata (fallback behavior). It's the same as working with a non-monorepo project.
 
 ### Q: Can I select multiple services at once?
 
@@ -681,7 +681,7 @@ Changes to `project.toml` invalidate the lock file and trigger re-validation.
 
 ### Q: Do I need to select a service for every command?
 
-**A:** No. Service selection persists in `.nia/context.toml` until you change it or clear it.
+**A:** No. Service selection persists in `.forge/context.toml` until you change it or clear it.
 
 ### Q: Can services share configuration files?
 

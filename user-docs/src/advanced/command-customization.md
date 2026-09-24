@@ -1,24 +1,24 @@
 # Command Customization
 
-Nia allows you to customize workflow command behavior through configuration files in `.nia/config/commands.toml`.
+Progress Forge allows you to customize workflow command behavior through configuration files in `.forge/config/commands.toml`.
 
 ## Quick Start
 
 1. Export a template:
    ```bash
-   nia config export --commands
+   frg config export --commands
    ```
 
-2. Edit `.nia/config/commands.toml` to add your customizations
+2. Edit `.forge/config/commands.toml` to add your customizations
 
 3. Validate your changes:
    ```bash
-   nia config validate
+   frg config validate
    ```
 
 4. Lock configuration (optional but recommended):
    ```bash
-   nia config lock
+   frg config lock
    ```
 
 ## Customization Options
@@ -55,7 +55,7 @@ operation = "draft"
 role = "none"          # Reserved value - no role prompt is composed
 ```
 
-`none` is a reserved value, not a prompt file name. nia never looks for
+`none` is a reserved value, not a prompt file name. frg never looks for
 `none.role.xml` / `none.role.md`; the role section is omitted from the composed
 prompt entirely, including its separator, which reduces input and cached token cost.
 
@@ -63,7 +63,7 @@ prompt entirely, including its separator, which reduces input and cached token c
 - `target` must be a built-in target (issue, code, pr, etc.)
 - `operation` must exist under that target
 - At least one of `role` or `task` must be specified
-- Referenced prompts must exist in `.nia/prompts/` or be built-in
+- Referenced prompts must exist in `.forge/prompts/` or be built-in
 - `role` may be a custom role prompt name or the reserved value `"none"` to disable role prompting
 
 ## Disabling role prompting
@@ -75,12 +75,12 @@ There are three ways to disable role prompting:
 
 | Mechanism | Scope | Example |
 |-----------|-------|---------|
-| `--role none` | One invocation | `nia issue draft --role none` |
+| `--role none` | One invocation | `frg issue draft --role none` |
 | `role = "none"` in `[[prompt_overrides]]` | One target/operation | see above |
 | `roles = "disabled"` in `commands.toml` | Every operation | see below |
 
 ```toml
-# .nia/config/commands.toml
+# .forge/config/commands.toml
 roles = "disabled"
 ```
 
@@ -101,7 +101,7 @@ roles = "disabled"          # no role prompt anywhere ...
 [[prompt_overrides]]
 target = "code"
 operation = "review"
-role = "security_analyst"   # ... except for `nia code review`
+role = "security_analyst"   # ... except for `frg code review`
 ```
 
 ### Notes and limits
@@ -112,7 +112,7 @@ role = "security_analyst"   # ... except for `nia code review`
 - `--role` and `--custom-agent` remain mutually exclusive. `--role none` is not a
   way around that rule. Custom agents already skip the role prompt, so combining a
   custom agent with a disabled role produces exactly the same prompt.
-- `nia workflow run` does not accept `--role` at all, but configuration-level
+- `frg workflow run` does not accept `--role` at all, but configuration-level
   settings (`roles = "disabled"` and `role = "none"`) do apply to it.
 - Resumed (delta) sessions already omit the role prompt; disabling roles changes
   nothing for them.
@@ -135,7 +135,7 @@ task = "story_point_estimate"
 description = "Estimate issue using story points"
 ```
 
-Usage: `nia issue estimate`
+Usage: `frg issue estimate`
 
 **Example: Create new target**
 
@@ -148,7 +148,7 @@ task = "deployment_plan"
 description = "Plan a deployment"
 ```
 
-Usage: `nia deployment plan`
+Usage: `frg deployment plan`
 
 **Example: Custom command with modifiers**
 
@@ -165,7 +165,7 @@ task_override = "deployment_execute_dryrun"
 description = "Simulate deployment without changes"
 ```
 
-Usage: `nia deployment execute --dry_run`
+Usage: `frg deployment execute --dry_run`
 
 ### Option 3: Add Context to Existing Operations (Minimal Config)
 
@@ -257,12 +257,12 @@ task_override = "deployment_plan_dryrun"
 
 1. Export prompts as a starting point:
    ```bash
-   nia config export --prompts --target issue
+   frg config export --prompts --target issue
    ```
 
 2. Exported prompts are organized by format and target:
    ```
-   .nia/prompts/
+   .forge/prompts/
    ├── xml/
    │   ├── role/
    │   │   └── product_manager.role.xml
@@ -280,10 +280,10 @@ task_override = "deployment_plan_dryrun"
 3. **Delta Prompts**: Many task prompts have delta variants for iterative operations:
    - **Init prompt** (`issue_draft.task.xml`): Used for the initial operation
    - **Delta prompt** (`issue_draft_delta.task.xml`): Used when refining/continuing
-   - Delta prompts are automatically discovered by nia when available
+   - Delta prompts are automatically discovered by frg when available
    - You can customize either or both variants
 
-4. Create your custom prompt in `.nia/prompts/`:
+4. Create your custom prompt in `.forge/prompts/`:
    - Place in appropriate format directory (`xml/` or `markdown/`)
    - Use proper naming convention: `{name}.{type}.{ext}`
      - Role: `custom_role.role.xml`
@@ -299,20 +299,20 @@ task_override = "deployment_plan_dryrun"
    task = "custom_issue_draft"   # Looks for custom_issue_draft.task.xml or .md
    ```
 
-**Note**: Nia uses the format preferred by your configured model. Anthropic models (like Claude) use XML format, while other models may use Markdown. When customizing prompts, use the same format your model expects. If you export prompts with `nia config export --prompts`, both XML and Markdown versions are provided for flexibility.
+**Note**: Progress Forge uses the format preferred by your configured model. Anthropic models (like Claude) use XML format, while other models may use Markdown. When customizing prompts, use the same format your model expects. If you export prompts with `frg config export --prompts`, both XML and Markdown versions are provided for flexibility.
 
 ## Prompt Override Behavior
 
-Nia enforces **explicit declaration** for prompt overrides to ensure intentional customization and prevent accidental overrides.
+Progress Forge enforces **explicit declaration** for prompt overrides to ensure intentional customization and prevent accidental overrides.
 
 ### How It Works
 
-1. **Files Require Configuration**: Prompt files in `.nia/prompts/` are **only** loaded when a corresponding `[[prompt_overrides]]` entry exists in your configuration.
+1. **Files Require Configuration**: Prompt files in `.forge/prompts/` are **only** loaded when a corresponding `[[prompt_overrides]]` entry exists in your configuration.
 
-2. **Configuration Requires Files**: If you declare an override but the file is missing, Nia returns a clear error with instructions.
+2. **Configuration Requires Files**: If you declare an override but the file is missing, Progress Forge returns a clear error with instructions.
 
 This ensures that:
-- You cannot accidentally override built-in prompts by having stray files in `.nia/prompts/`
+- You cannot accidentally override built-in prompts by having stray files in `.forge/prompts/`
 - All customizations are explicitly documented in your configuration
 - Teams can audit and understand which prompts are customized
 
@@ -322,7 +322,7 @@ This ensures that:
 
 ```bash
 # File exists
-.nia/prompts/xml/role/scrum_master.role.xml
+.forge/prompts/xml/role/scrum_master.role.xml
 
 # No configuration - file is IGNORED, built-in used
 ```
@@ -351,7 +351,7 @@ role = "scrum_master"
 
 ```bash
 # File exists
-.nia/prompts/xml/role/scrum_master.role.xml
+.forge/prompts/xml/role/scrum_master.role.xml
 
 # Override is applied ✓
 ```
@@ -365,7 +365,7 @@ If you see a `MissingOverrideFile` error:
 2. **Option A - Create the missing file**:
    ```bash
    # Error will show exact command like:
-   mkdir -p .nia/prompts/xml/role
+   mkdir -p .forge/prompts/xml/role
    # Create your custom prompt at the path shown
    ```
 
@@ -379,8 +379,8 @@ If you see a `MissingOverrideFile` error:
    ```
 
 4. **Verify file naming**: Ensure your prompt file uses the correct naming convention:
-   - Role prompts: `{name}.role.{xml|md}` in `.nia/prompts/{format}/role/`
-   - Task prompts: `{name}.task.{xml|md}` in `.nia/prompts/{format}/{target}/`
+   - Role prompts: `{name}.role.{xml|md}` in `.forge/prompts/{format}/role/`
+   - Task prompts: `{name}.task.{xml|md}` in `.forge/prompts/{format}/{target}/`
 
 ### Security Benefits
 
@@ -398,7 +398,7 @@ For more examples and best practices, see `examples/workflows/README.md` in the 
 Always validate after making changes:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 Common validation errors:
@@ -407,16 +407,16 @@ Common validation errors:
 |-------|-------|----------|
 | Target not found | Typo in target name | Check spelling; use `--help` to see targets |
 | Operation not found | Typo in operation name | Check available operations for target |
-| Prompt not found | Missing prompt file | Create file in `.nia/prompts/` |
+| Prompt not found | Missing prompt file | Create file in `.forge/prompts/` |
 | Protected target | Using reserved name | Choose different target name |
 
 ## Best Practices
 
 1. **Start Simple**: Use `[[prompt_overrides]]` before creating custom commands
-2. **Export First**: Use `nia config export --commands` for a template
-3. **Validate Often**: Run `nia config validate` after each change
-4. **Lock in CI**: Use `nia config lock` for reproducible builds
-5. **Version Control**: Commit `.nia/config/` to your repository
+2. **Export First**: Use `frg config export --commands` for a template
+3. **Validate Often**: Run `frg config validate` after each change
+4. **Lock in CI**: Use `frg config lock` for reproducible builds
+5. **Version Control**: Commit `.forge/config/` to your repository
 
 ## Protected Targets
 
@@ -443,13 +443,13 @@ Check spelling of target name.
 
 ```
 Error: Role prompt 'my_role' not found
-  Suggestion: Create .nia/prompts/my_role.role.xml
+  Suggestion: Create .forge/prompts/my_role.role.xml
 ```
 
 Create the missing prompt file or check the path.
 
 ### Changes Not Taking Effect
 
-1. Run `nia config validate` to check for errors
-2. If using lockfile, run `nia config lock` to update it
-3. Check that file is in correct location (`.nia/config/commands.toml`)
+1. Run `frg config validate` to check for errors
+2. If using lockfile, run `frg config lock` to update it
+3. Check that file is in correct location (`.forge/config/commands.toml`)

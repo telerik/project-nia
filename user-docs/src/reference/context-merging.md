@@ -178,10 +178,10 @@ These appear in transaction logs but not as errors.
 
 ```bash
 # Print prompt without execution
-nia issue draft --print-prompt
+frg issue draft --print-prompt
 
 # Check transaction logs
-cat .nia/logs/transactions/latest.json | jq '.context_sources'
+cat .forge/logs/transactions/latest.json | jq '.context_sources'
 ```
 
 ### Context Source Tracking
@@ -222,7 +222,7 @@ path = "docs/patterns.md"
 
 **Command:**
 ```bash
-nia code create --context-file docs/example.md
+frg code create --context-file docs/example.md
 ```
 
 **Result:**
@@ -302,7 +302,7 @@ Canonical paths are computed using:
 
 The following directories are automatically excluded:
 - `.git`
-- `.nia`
+- `.forge`
 - `node_modules`
 - `.venv`
 - `__pycache__`

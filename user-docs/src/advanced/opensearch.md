@@ -1,12 +1,12 @@
 # OpenSearch Integration
 
-Nia can upload transaction logs and trace files to OpenSearch for centralized analytics, monitoring, and cost tracking across your organization.
+Progress Forge can upload transaction logs and trace files to OpenSearch for centralized analytics, monitoring, and cost tracking across your organization.
 
 ## Overview
 
-When configured, nia automatically uploads:
-- **Transaction events** → Daily indices (`nia-transactions-YYYY-MM-DD`)
-- **Trace files** → Document index (`nia-traces`)
+When configured, frg automatically uploads:
+- **Transaction events** → Daily indices (`forge-transactions-YYYY-MM-DD`)
+- **Trace files** → Document index (`forge-traces`)
 
 This enables enterprise teams to:
 - Aggregate metrics across repositories and developers
@@ -16,14 +16,14 @@ This enables enterprise teams to:
 
 ## Configuration
 
-OpenSearch integration is **completely optional**. When not configured, nia operates normally with only local logging.
+OpenSearch integration is **completely optional**. When not configured, frg operates normally with only local logging.
 
-Nia supports multiple configuration methods, checked in the following order of precedence (highest to lowest):
+Progress Forge supports multiple configuration methods, checked in the following order of precedence (highest to lowest):
 
 1. **Environment variables** - Per-session configuration
-2. **Project configuration** - Per-project `.nia/config/opensearch.toml`
-3. **User configuration** - Per-user `~/.config/nia/opensearch.toml`
-4. **Organization configuration** - System-wide `/etc/nia/opensearch.toml`
+2. **Project configuration** - Per-project `.forge/config/opensearch.toml`
+3. **User configuration** - Per-user `~/.config/forge/opensearch.toml`
+4. **Organization configuration** - System-wide `/etc/forge/opensearch.toml`
 
 The first valid configuration found is used. This allows organizations to provide defaults while letting individual developers override settings as needed.
 
@@ -35,20 +35,20 @@ The traditional method using shell environment variables:
 
 ```bash
 # Linux/macOS
-export NIA_OPENSEARCH_URI="https://opensearch.example.com:9200"
-export NIA_OPENSEARCH_API_TOKEN="your-api-token-here"
-export NIA_OPENSEARCH_ACCEPT_INVALID_CERTS="true"  # Optional
+export FORGE_OPENSEARCH_URI="https://opensearch.example.com:9200"
+export FORGE_OPENSEARCH_API_TOKEN="your-api-token-here"
+export FORGE_OPENSEARCH_ACCEPT_INVALID_CERTS="true"  # Optional
 
 # Windows PowerShell
-$env:NIA_OPENSEARCH_URI = "https://opensearch.example.com:9200"
-$env:NIA_OPENSEARCH_API_TOKEN = "your-api-token-here"
+$env:FORGE_OPENSEARCH_URI = "https://opensearch.example.com:9200"
+$env:FORGE_OPENSEARCH_API_TOKEN = "your-api-token-here"
 ```
 
 Environment variables always take precedence over file-based configuration.
 
 #### 2. Project Configuration
 
-Store credentials in your project's `.nia/config/opensearch.toml`:
+Store credentials in your project's `.forge/config/opensearch.toml`:
 
 ```toml
 [opensearch]
@@ -62,7 +62,7 @@ enforce = false
 
 ```gitignore
 # OpenSearch credentials (never commit)
-.nia/config/opensearch.toml
+.forge/config/opensearch.toml
 ```
 
 See [Version Control Setup](../configuration/version-control.md) for complete `.gitignore` patterns and security best practices.
@@ -73,9 +73,9 @@ Store credentials in your user profile for use across all projects:
 
 | Platform | Path |
 |----------|------|
-| Linux | `~/.config/nia/opensearch.toml` or `$XDG_CONFIG_HOME/nia/opensearch.toml` |
-| macOS | `~/.config/nia/opensearch.toml` |
-| Windows | `%APPDATA%\nia\opensearch.toml` |
+| Linux | `~/.config/forge/opensearch.toml` or `$XDG_CONFIG_HOME/forge/opensearch.toml` |
+| macOS | `~/.config/forge/opensearch.toml` |
+| Windows | `%APPDATA%\forge\opensearch.toml` |
 
 This is the recommended method for individual developers.
 
@@ -85,8 +85,8 @@ System administrators can provide organization-wide defaults:
 
 | Platform | Path |
 |----------|------|
-| Linux/macOS | `/etc/nia/opensearch.toml` |
-| Windows | `%PROGRAMDATA%\nia\opensearch.toml` |
+| Linux/macOS | `/etc/forge/opensearch.toml` |
+| Windows | `%PROGRAMDATA%\forge\opensearch.toml` |
 
 Organization configuration is typically managed by IT and requires administrator access to modify.
 
@@ -107,14 +107,14 @@ api_token = "your-token-here"
 # WARNING: Only enable for trusted internal deployments
 accept_invalid_certs = false
 
-# Require OpenSearch for nia to run (optional, default: false)
-# When true, nia exits with error if OpenSearch is not configured
+# Require OpenSearch for frg to run (optional, default: false)
+# When true, frg exits with error if OpenSearch is not configured
 enforce = false
 ```
 
 ### Authentication Token Formats
 
-The `api_token` (or `NIA_OPENSEARCH_API_TOKEN` environment variable) supports two formats:
+The `api_token` (or `FORGE_OPENSEARCH_API_TOKEN` environment variable) supports two formats:
 
 1. **Bearer Token** (recommended): Raw token string
    ```toml
@@ -127,18 +127,18 @@ The `api_token` (or `NIA_OPENSEARCH_API_TOKEN` environment variable) supports tw
    api_token = "dXNlcjpwYXNz"
    ```
 
-Nia automatically detects the format and uses the appropriate authentication method.
+Progress Forge automatically detects the format and uses the appropriate authentication method.
 
 ### Enforcement Mode
 
 Enterprise environments can require OpenSearch analytics by setting `enforce = true` in any configuration file.
 
 When enforcement is enabled:
-- Nia checks all configuration sources for valid credentials
-- If no valid configuration is found, nia exits with an error
+- Progress Forge checks all configuration sources for valid credentials
+- If no valid configuration is found, frg exits with an error
 - The error message includes setup instructions
 
-Example organization policy (`/etc/nia/opensearch.toml`):
+Example organization policy (`/etc/forge/opensearch.toml`):
 ```toml
 [opensearch]
 uri = "https://company-opensearch.internal:9200"
@@ -153,10 +153,10 @@ In this setup, the organization provides the URI, but users must supply their ow
 The integration is disabled if configuration is missing or invalid:
 
 - **Silently disabled**: When no valid configuration is found in any source
-- **Disabled with warning**: When URI is invalid, token is empty, or HTTP is used without explicit opt-in (warnings logged to `.nia/work/<job>/logs/system.log`)
+- **Disabled with warning**: When URI is invalid, token is empty, or HTTP is used without explicit opt-in (warnings logged to `.forge/work/<job>/logs/system.log`)
 - **Error exit (enforce mode)**: When `enforce = true` and no valid configuration exists
 
-> **Note:** Previous versions of nia supported `NIA_OPENSEARCH_BATCH_SIZE` and `NIA_OPENSEARCH_FLUSH_INTERVAL_SECS` environment variables for performance tuning. These are now deprecated and ignored. Uploads are performed synchronously without batching.
+> **Note:** Previous versions of frg supported `FORGE_OPENSEARCH_BATCH_SIZE` and `FORGE_OPENSEARCH_FLUSH_INTERVAL_SECS` environment variables for performance tuning. These are now deprecated and ignored. Uploads are performed synchronously without batching.
 
 ## How It Works
 
@@ -172,7 +172,7 @@ Uploads happen immediately after local logging, with minimal impact on workflow 
 
 **Performance Note:** Each event blocks on its own OpenSearch request (typically
 <1 second when OpenSearch is healthy) before workflow execution continues. This
-per-event cost is small, but it is not free: a full `nia workflow run` emits on
+per-event cost is small, but it is not free: a full `frg workflow run` emits on
 the order of 100 events, so the cumulative added latency can reach tens of
 seconds even when every request succeeds. The circuit breaker bounds the
 worst case when OpenSearch is unhealthy, but does not remove the per-event cost
@@ -186,7 +186,7 @@ A global circuit breaker protects against cascading failures:
 - **60 seconds** → Circuit tries half-open (tests one request)
 - **Success** → Circuit closes (resumes normal operation)
 
-This prevents nia from hammering a broken OpenSearch cluster while allowing automatic recovery.
+This prevents frg from hammering a broken OpenSearch cluster while allowing automatic recovery.
 
 ### Graceful Degradation
 
@@ -248,7 +248,7 @@ Transaction events capture workflow execution metadata:
 > no explicit mapping in the index template.
 
 > **An ancestor id does not guarantee an ancestor document.** Commands that only
-> orchestrate — `nia workflow run`, `nia app <target> <op>`, `nia learn run` —
+> orchestrate — `frg workflow run`, `frg app <target> <op>`, `frg learn run` —
 > appear in `callers` but emit no transaction document of their own, so
 > `callers[0]` is often an id with no matching `instance_id`. Treat `callers` as
 > the authoritative chain and do not assume a lookup will resolve. In OTEL the
@@ -264,7 +264,7 @@ Transaction events capture workflow execution metadata:
 | `validation` | Input validation | Context file counts |
 | `output_tracking` | Output validation | Expected vs. produced files |
 | `auto_retry` | Auto-retry trigger | Missing output count |
-| `workflow_started` | Workflow engine | One per `nia workflow run` execution |
+| `workflow_started` | Workflow engine | One per `frg workflow run` execution |
 | `workflow_state_transition` | Workflow engine | One per state change, including approval outcomes |
 | `branch_evaluated` | Workflow engine | Condition result and target state |
 | `step_execution` | Workflow engine and command hooks | Shell, builtin and agent steps |
@@ -272,7 +272,7 @@ Transaction events capture workflow execution metadata:
 | `approval` | Workflow engine | Carries `approver_email` and `approval_code` |
 
 > **Volume:** the six workflow engine event types are uploaded in full, without
-> sampling. A typical `nia workflow run issue-to-pr` produces roughly 86 documents
+> sampling. A typical `frg workflow run issue-to-pr` produces roughly 86 documents
 > (~30 KB) instead of the ~26 produced by command-level events alone.
 
 > **PII:** `approval` documents carry `approver_email` and `approval_code`. These
@@ -294,14 +294,14 @@ Transaction events capture workflow execution metadata:
 The `workflow_type`, `role_prompt_type`, and `task_prompt_type` fields enable analysis of how workflow customizations affect performance and outcomes.
 
 **Field Values:**
-- `builtin` - Uses nia's built-in configuration
+- `builtin` - Uses forge's built-in configuration
 - `custom` - Uses user-defined customization
 
 **Use Cases:**
 
 1. **Track customization adoption across organization:**
    ```json
-   GET nia-transactions-*/_search
+   GET forge-transactions-*/_search
    {
      "aggs": {
        "by_workflow_type": {
@@ -313,7 +313,7 @@ The `workflow_type`, `role_prompt_type`, and `task_prompt_type` fields enable an
 
 2. **Compare performance of custom vs. built-in prompts:**
    ```json
-   GET nia-transactions-*/_search
+   GET forge-transactions-*/_search
    {
      "aggs": {
        "by_prompt_type": {
@@ -330,7 +330,7 @@ The `workflow_type`, `role_prompt_type`, and `task_prompt_type` fields enable an
 
 3. **Identify workflows using custom configurations:**
    ```json
-   GET nia-transactions-*/_search
+   GET forge-transactions-*/_search
    {
      "query": {
        "bool": {
@@ -375,14 +375,14 @@ Transaction events include a `trace_file` field that matches the `trace_file_pat
 
 ```json
 // Find workflow event
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "query": { "term": { "job_id": "job_233" } }
 }
 // Returns: "trace_file": "traces/20260421_102030_workflow.trace.md"
 
 // Find corresponding trace
-GET nia-traces/_search
+GET forge-traces/_search
 {
   "query": { "term": { "trace_file_path": "traces/20260421_102030_workflow.trace.md" } }
 }
@@ -392,14 +392,14 @@ GET nia-traces/_search
 
 ### 1. Initialize OpenSearch with Helper Scripts
 
-Nia provides helper scripts to configure OpenSearch with the correct index templates, users, and roles.
+Progress Forge provides helper scripts to configure OpenSearch with the correct index templates, users, and roles.
 
 **Option A: Use the initialization script (recommended)**
 
 ```bash
-# Clone nia repository (if not already)
+# Clone frg repository (if not already)
 git clone https://github.com/telerik/project-nia.git
-cd nia/opensearch
+cd forge/opensearch
 
 # Set environment variables
 export OPENSEARCH_HOST="opensearch.example.com"
@@ -413,8 +413,8 @@ export OPENSEARCH_ADMIN_TOKEN=$(echo -n "admin:your-password" | base64)
 ```
 
 The script will:
-- Create the `nia_writer` role with index permissions
-- Create the `nia-save` user (displays credentials for nia configuration)
+- Create the `forge_writer` role with index permissions
+- Create the `forge-save` user (displays credentials for frg configuration)
 - Apply all index templates (transactions, traces, system-logs)
 - Create required indices
 - Import dashboards (if NDJSON files exist)
@@ -425,22 +425,22 @@ If you prefer manual setup, apply the template files directly:
 
 ```bash
 # Apply transaction template
-curl -X PUT "${OPENSEARCH_URL}/_index_template/nia-transactions" \
+curl -X PUT "${OPENSEARCH_URL}/_index_template/forge-transactions" \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic $OPENSEARCH_ADMIN_TOKEN" \
-  -d @opensearch/templates/nia-transactions.json
+  -d @opensearch/templates/forge-transactions.json
 
 # Apply trace template  
-curl -X PUT "${OPENSEARCH_URL}/_index_template/nia-traces" \
+curl -X PUT "${OPENSEARCH_URL}/_index_template/forge-traces" \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic $OPENSEARCH_ADMIN_TOKEN" \
-  -d @opensearch/templates/nia-traces.json
+  -d @opensearch/templates/forge-traces.json
 
 # Apply system logs template
-curl -X PUT "${OPENSEARCH_URL}/_index_template/nia-system-logs" \
+curl -X PUT "${OPENSEARCH_URL}/_index_template/forge-system-logs" \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic $OPENSEARCH_ADMIN_TOKEN" \
-  -d @opensearch/templates/nia-system-logs.json
+  -d @opensearch/templates/forge-system-logs.json
 ```
 
 See the [template files on GitHub](https://github.com/telerik/project-nia/tree/main/opensearch/templates) for the complete schema definitions.
@@ -450,25 +450,25 @@ See the [template files on GitHub](https://github.com/telerik/project-nia/tree/m
 Add to your shell profile (`~/.bashrc`, `~/.zshrc`) or CI/CD configuration:
 
 ```bash
-export NIA_OPENSEARCH_URI="https://opensearch.example.com:9200"
-export NIA_OPENSEARCH_API_TOKEN="your-api-token-here"
+export FORGE_OPENSEARCH_URI="https://opensearch.example.com:9200"
+export FORGE_OPENSEARCH_API_TOKEN="your-api-token-here"
 ```
 
 For CI/CD, consider using secrets management (e.g., GitHub Secrets, HashiCorp Vault).
 
 ## Helper Scripts
 
-Nia provides automation scripts in the `opensearch/` directory for managing OpenSearch configuration:
+Progress Forge provides automation scripts in the `opensearch/` directory for managing OpenSearch configuration:
 
 | Script | Purpose | Use Case |
 |--------|---------|----------|
 | `opensearch-init.sh` | Initialize OpenSearch with users, roles, templates, indices | Initial setup |
-| `opensearch-clear.sh` | Clear all nia data, preserve configuration | Reset between tests |
-| `opensearch-destroy.sh` | Remove all nia configuration and data | Complete teardown |
+| `opensearch-clear.sh` | Clear all frg data, preserve configuration | Reset between tests |
+| `opensearch-destroy.sh` | Remove all frg configuration and data | Complete teardown |
 
 ### opensearch-init.sh
 
-Creates necessary users, roles, and index templates for nia integration:
+Creates necessary users, roles, and index templates for frg integration:
 
 ```bash
 # Option 1: Use environment variables for custom hosts/ports
@@ -497,13 +497,13 @@ The script uses these environment variables (all optional with defaults):
 - `OPENSEARCH_ADMIN_TOKEN` - Base64-encoded admin credentials (required)
 
 **Output includes:**
-- `nia-save` user credentials (save these for `NIA_OPENSEARCH_API_TOKEN`)
+- `forge-save` user credentials (save these for `FORGE_OPENSEARCH_API_TOKEN`)
 - Confirmation of applied templates
 - Dashboard import status (imported to global tenant for all users)
 
 ### opensearch-clear.sh
 
-Removes all nia data while preserving configuration:
+Removes all frg data while preserving configuration:
 
 ```bash
 # Use same environment variables as init script
@@ -525,7 +525,7 @@ export OPENSEARCH_ADMIN_TOKEN=$(echo -n "admin:password" | base64)
 
 ### opensearch-destroy.sh
 
-Completely removes all nia configuration and data:
+Completely removes all frg configuration and data:
 
 ```bash
 # Use same environment variables as init script
@@ -553,26 +553,26 @@ export OPENSEARCH_ADMIN_TOKEN=$(echo -n "admin:password" | base64)
 - Prepare for re-initialization
 - Clean up before decommissioning
 
-> **Note:** After running `opensearch-destroy.sh`, you must run `opensearch-init.sh` again to restore nia configuration.
+> **Note:** After running `opensearch-destroy.sh`, you must run `opensearch-init.sh` again to restore frg configuration.
 
 ### 3. Verify Connection
 
-Run any nia workflow and check logs:
+Run any frg workflow and check logs:
 
 ```bash
-nia issue draft "Add feature X"
+frg issue draft "Add feature X"
 ```
 
 If OpenSearch is configured correctly, you'll see no warnings. Check for upload warnings if misconfigured:
 
 ```bash
 # Look for OpenSearch warnings in job logs
-tail .nia/work/job_*/logs/transaction.jsonl
+tail .forge/work/job_*/logs/transaction.jsonl
 ```
 
 ## Pre-Configured Dashboards
 
-Nia includes pre-configured OpenSearch Dashboards for analytics and monitoring. These dashboards are automatically imported when you run `opensearch-init.sh` (if NDJSON files exist in `opensearch/dashboards/`).
+Progress Forge includes pre-configured OpenSearch Dashboards for analytics and monitoring. These dashboards are automatically imported when you run `opensearch-init.sh` (if NDJSON files exist in `opensearch/dashboards/`).
 
 ### Accessing Dashboards
 
@@ -580,7 +580,7 @@ Nia includes pre-configured OpenSearch Dashboards for analytics and monitoring. 
 2. **Log in**: Use admin credentials or a user with `kibana_user` role
 3. **Switch to Global Tenant**: Click your username → **Switch tenants** → Select **Global**
 4. **Navigate**: Click **Dashboards** in the left sidebar
-5. **Select dashboard**: Choose from the available nia dashboards
+5. **Select dashboard**: Choose from the available frg dashboards
 
 > **Important:** Dashboards are imported to the **global tenant** so all users can access them. Make sure to switch to the global tenant after logging in.
 
@@ -588,13 +588,13 @@ Nia includes pre-configured OpenSearch Dashboards for analytics and monitoring. 
 
 | Dashboard | Purpose | Key Metrics |
 |-----------|---------|-------------|
-| **nia-overview** | High-level activity metrics | Active repos, users, jobs; adoption trends |
-| **nia-usage** | Command usage patterns | Command frequency, success rates, edit/fix usage |
-| **nia-tokens** | Token consumption analytics | Token usage by command/user/repo, cache hit rates |
+| **forge-overview** | High-level activity metrics | Active repos, users, jobs; adoption trends |
+| **forge-usage** | Command usage patterns | Command frequency, success rates, edit/fix usage |
+| **forge-tokens** | Token consumption analytics | Token usage by command/user/repo, cache hit rates |
 
 ### Dashboard Details
 
-#### nia-overview
+#### forge-overview
 
 Designed for product managers and leadership:
 - Active repositories/users/jobs (1/7/30 day views)
@@ -602,7 +602,7 @@ Designed for product managers and leadership:
 - Top 10 most active users
 - Agent adoption pie chart (Copilot vs OpenCode vs others)
 
-#### nia-usage
+#### forge-usage
 
 Designed for product managers:
 - Command usage bar chart (top 20 commands)
@@ -610,7 +610,7 @@ Designed for product managers:
 - Edit/fix modifier usage
 - Events per job/ticket distribution
 
-#### nia-tokens
+#### forge-tokens
 
 Designed for finance and engineering leads:
 - Total input/cached/output tokens
@@ -625,12 +625,12 @@ To create custom dashboards:
 
 1. Log into OpenSearch Dashboards
 2. Navigate to **Dashboards** → **Create new dashboard**
-3. Add visualizations using the nia index patterns:
-   - `nia-transactions-*` - Transaction events
-   - `nia-traces` - Trace files
-   - `nia-system-logs-*` - System logs
+3. Add visualizations using the frg index patterns:
+   - `forge-transactions-*` - Transaction events
+   - `forge-traces` - Trace files
+   - `forge-system-logs-*` - System logs
 
-See `opensearch/dashboards/README.md` in the nia repository for detailed visualization specifications.
+See `opensearch/dashboards/README.md` in the frg repository for detailed visualization specifications.
 
 ### Exporting Dashboard Changes
 
@@ -649,7 +649,7 @@ The dashboards will be imported automatically on subsequent `opensearch-init.sh`
 ### Total Token Usage by User
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "size": 0,
   "query": { "term": { "event_type": "workflow" } },
@@ -668,7 +668,7 @@ GET nia-transactions-*/_search
 ### Failed Workflows Last 7 Days
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "query": {
     "bool": {
@@ -685,7 +685,7 @@ GET nia-transactions-*/_search
 ### Workflows by Repository
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "size": 0,
   "aggs": {
@@ -706,7 +706,7 @@ GET nia-transactions-*/_search
 Track token consumption per AI model (excluding sentinel values):
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "size": 0,
   "query": {
@@ -737,7 +737,7 @@ GET nia-transactions-*/_search
 Compare workflow success rates across different AI models:
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "size": 0,
   "query": {
@@ -769,7 +769,7 @@ GET nia-transactions-*/_search
 Identify which custom agents are most frequently used:
 
 ```json
-GET nia-transactions-*/_search
+GET forge-transactions-*/_search
 {
   "size": 0,
   "query": {
@@ -806,12 +806,12 @@ GET nia-transactions-*/_search
 - **File Permissions:** Configuration files should have restricted permissions (0600 on Unix)
   ```bash
   # Linux/macOS - set owner-only access
-  chmod 600 ~/.config/nia/opensearch.toml
+  chmod 600 ~/.config/forge/opensearch.toml
   ```
 - **Gitignore:** Never commit OpenSearch credentials
   ```gitignore
-  # Nia sensitive configuration
-  .nia/config/opensearch.toml
+  # Progress Forge sensitive configuration
+  .forge/config/opensearch.toml
   ```
 - **Windows:** Use NTFS permissions to restrict access to current user
 
@@ -832,7 +832,7 @@ GET nia-transactions-*/_search
 For CI/CD pipelines where analytics are not needed, disable OpenSearch:
 
 ```bash
-export NIA_OPENSEARCH_DISABLE_IN_TESTS=true
+export FORGE_OPENSEARCH_DISABLE_IN_TESTS=true
 ```
 
 Or simply don't configure any OpenSearch credentials.
@@ -845,12 +845,12 @@ If OpenSearch isn't connecting, check:
 
 1. **File exists and is readable**
    ```bash
-   ls -la ~/.config/nia/opensearch.toml
+   ls -la ~/.config/forge/opensearch.toml
    ```
 
 2. **TOML syntax is valid**
    ```bash
-   cat ~/.config/nia/opensearch.toml
+   cat ~/.config/forge/opensearch.toml
    ```
 
 3. **Required fields are present**
@@ -858,12 +858,12 @@ If OpenSearch isn't connecting, check:
    - `api_token` must not be empty
 
 4. **Not disabled in tests**
-   - Check `NIA_OPENSEARCH_DISABLE_IN_TESTS` is not set
+   - Check `FORGE_OPENSEARCH_DISABLE_IN_TESTS` is not set
 
 5. **Check environment variables (if you expect them to take precedence):**
    ```bash
-   echo $NIA_OPENSEARCH_URI
-   echo $NIA_OPENSEARCH_API_TOKEN
+   echo $FORGE_OPENSEARCH_URI
+   echo $FORGE_OPENSEARCH_API_TOKEN
    ```
 
 ### Enforcement Errors
@@ -881,14 +881,14 @@ If you see "OpenSearch configuration required but not found":
 
 2. **Verify index templates exist:**
    ```bash
-   curl -X GET "https://opensearch.example.com:9200/_index_template/nia-transactions" \
-     -H "Authorization: Bearer $NIA_OPENSEARCH_API_TOKEN"
+   curl -X GET "https://opensearch.example.com:9200/_index_template/forge-transactions" \
+     -H "Authorization: Bearer $FORGE_OPENSEARCH_API_TOKEN"
    ```
 
 3. **Check for warnings in transaction logs:**
    ```bash
    # Look for OpenSearch-related warnings
-   grep -i opensearch .nia/work/job_*/logs/*.log
+   grep -i opensearch .forge/work/job_*/logs/*.log
    ```
 
 ### Circuit Breaker Open
@@ -908,7 +908,7 @@ If you see "OpenSearch circuit breaker is open" warnings:
 If you see certificate validation errors:
 
 - **Trusted certificate:** Fix your certificate chain
-- **Self-signed (internal):** Set `accept_invalid_certs = true` in config file or `NIA_OPENSEARCH_ACCEPT_INVALID_CERTS="true"` environment variable
+- **Self-signed (internal):** Set `accept_invalid_certs = true` in config file or `FORGE_OPENSEARCH_ACCEPT_INVALID_CERTS="true"` environment variable
 
 ### Invalid Certificate Errors
 
@@ -938,54 +938,54 @@ accept_invalid_certs = true
 
 > ⚠️ **Privacy Notice**
 >
-> Nia collects user identity (name, email, hostname in fallback cases) for enterprise
-> analytics. This data is sent to OpenSearch if configured. Contact your nia administrator
+> Progress Forge collects user identity (name, email, hostname in fallback cases) for enterprise
+> analytics. This data is sent to OpenSearch if configured. Contact your frg administrator
 > for data retention and handling policies specific to your organization.
 
-Nia captures developer identity for enterprise analytics and reporting. By default, it uses your git config (`user.name` and `user.email`). When git config is unavailable, nia provides multiple fallback options.
+Progress Forge captures developer identity for enterprise analytics and reporting. By default, it uses your git config (`user.name` and `user.email`). When git config is unavailable, frg provides multiple fallback options.
 
 ### Resolution Priority
 
 User identity is resolved in this order (highest to lowest priority):
 
-1. **Environment variables** - `NIA_USER_NAME` and `NIA_USER_EMAIL`
-2. **Context configuration** - `.nia/context.toml` user fields
+1. **Environment variables** - `FORGE_USER_NAME` and `FORGE_USER_EMAIL`
+2. **Context configuration** - `.forge/context.toml` user fields
 3. **Git config** - `git config user.name` and `git config user.email`
 4. **System user** - OS username and hostname-based email
 5. **Descriptive fallback** - `unresolved@hostname`
 
 ### Setting User Identity Explicitly
 
-Use the `nia config user` command to set your identity:
+Use the `frg config user` command to set your identity:
 
 ```bash
-nia config user --name "John Doe" --email "john@company.com"
+frg config user --name "John Doe" --email "john@company.com"
 ```
 
-This stores your identity in `.nia/context.toml` and is used when git config is unavailable (common in CI/CD environments and containers).
+This stores your identity in `.forge/context.toml` and is used when git config is unavailable (common in CI/CD environments and containers).
 
-**Note:** User identity persists across `nia config clear-context` calls.
+**Note:** User identity persists across `frg config clear-context` calls.
 
 ### Using Environment Variables
 
 For CI/CD pipelines or containerized environments, set environment variables:
 
 ```bash
-export NIA_USER_NAME="CI Bot"
-export NIA_USER_EMAIL="ci@company.com"
+export FORGE_USER_NAME="CI Bot"
+export FORGE_USER_EMAIL="ci@company.com"
 
 # Or inline
-NIA_USER_NAME="John Doe" NIA_USER_EMAIL="john@company.com" nia issue draft
+FORGE_USER_NAME="John Doe" FORGE_USER_EMAIL="john@company.com" frg issue draft
 ```
 
 Environment variables take highest precedence and override all other sources.
 
 ### Viewing Current Identity
 
-Use `nia config show-context` to see your current resolved identity:
+Use `frg config show-context` to see your current resolved identity:
 
 ```bash
-nia config show-context
+frg config show-context
 ```
 
 ### CI/CD Integration Examples
@@ -994,26 +994,26 @@ nia config show-context
 
 ```yaml
 jobs:
-  nia-workflow:
+  forge-workflow:
     runs-on: ubuntu-latest
     env:
-      NIA_USER_NAME: ${{ github.actor }}
-      NIA_USER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+      FORGE_USER_NAME: ${{ github.actor }}
+      FORGE_USER_EMAIL: ${{ github.actor }}@users.noreply.github.com
     steps:
       - uses: actions/checkout@v4
-      - run: nia issue draft
+      - run: frg issue draft
 ```
 
 #### GitLab CI
 
 ```yaml
 variables:
-  NIA_USER_NAME: $GITLAB_USER_NAME
-  NIA_USER_EMAIL: $GITLAB_USER_EMAIL
+  FORGE_USER_NAME: $GITLAB_USER_NAME
+  FORGE_USER_EMAIL: $GITLAB_USER_EMAIL
 
-nia_draft:
+forge_draft:
   script:
-    - nia issue draft
+    - frg issue draft
 ```
 
 #### Jenkins
@@ -1021,13 +1021,13 @@ nia_draft:
 ```groovy
 pipeline {
     environment {
-        NIA_USER_NAME = "${env.GIT_COMMITTER_NAME}"
-        NIA_USER_EMAIL = "${env.GIT_COMMITTER_EMAIL}"
+        FORGE_USER_NAME = "${env.GIT_COMMITTER_NAME}"
+        FORGE_USER_EMAIL = "${env.GIT_COMMITTER_EMAIL}"
     }
     stages {
         stage('Plan') {
             steps {
-                sh 'nia issue plan'
+                sh 'frg issue plan'
             }
         }
     }
@@ -1038,12 +1038,12 @@ pipeline {
 
 ```yaml
 variables:
-  NIA_USER_NAME: $(Build.RequestedFor)
-  NIA_USER_EMAIL: $(Build.RequestedForEmail)
+  FORGE_USER_NAME: $(Build.RequestedFor)
+  FORGE_USER_EMAIL: $(Build.RequestedForEmail)
 
 steps:
-- script: nia issue draft
-  displayName: 'Run Nia Draft'
+- script: frg issue draft
+  displayName: 'Run Progress Forge Draft'
 ```
 
 ### Troubleshooting User Identity
@@ -1056,18 +1056,18 @@ If you see `unresolved` as your user identity:
    git config user.email
    ```
 
-2. **Set explicitly**: Configure nia-specific identity:
+2. **Set explicitly**: Configure forge-specific identity:
    ```bash
-   nia config user --name "Your Name" --email "email@example.com"
+   frg config user --name "Your Name" --email "email@example.com"
    ```
 
 3. **Use environment variables**: For ephemeral environments (CI/CD, containers):
    ```bash
-   export NIA_USER_NAME="Your Name"
-   export NIA_USER_EMAIL="email@example.com"
+   export FORGE_USER_NAME="Your Name"
+   export FORGE_USER_EMAIL="email@example.com"
    ```
 
-4. **Check permissions**: Ensure nia can read git config files:
+4. **Check permissions**: Ensure frg can read git config files:
    ```bash
    ls -la ~/.gitconfig
    ls -la .git/config
@@ -1075,21 +1075,21 @@ If you see `unresolved` as your user identity:
 
 ### Privacy and Data Collection
 
-Nia collects user identity for enterprise reporting and analytics:
+Progress Forge collects user identity for enterprise reporting and analytics:
 
 - **What is collected**: Name, email address (as configured), hostname (in fallback cases only)
 - **Where it's sent**: OpenSearch analytics backend (if configured)
 - **Purpose**: Work attribution, team metrics, enterprise reporting
 - **Retention**: Subject to your organization's data retention policies
 
-Contact your nia administrator for data handling policies specific to your organization.
+Contact your frg administrator for data handling policies specific to your organization.
 
 ### Debugging Identity Resolution
 
 Enable debug logging to see how identity is resolved:
 
 ```bash
-RUST_LOG=debug nia config show-context 2>&1 | grep "Resolved user"
+RUST_LOG=debug frg config show-context 2>&1 | grep "Resolved user"
 ```
 
 This shows which resolution tier was used:
@@ -1103,16 +1103,16 @@ This shows which resolution tier was used:
 
 #### Setting Different Identities per Project
 
-Each project's `.nia/context.toml` can have different user identities:
+Each project's `.forge/context.toml` can have different user identities:
 
 ```bash
 # In project A
 cd /path/to/projectA
-nia config user --name "Team A Developer" --email "teamA@company.com"
+frg config user --name "Team A Developer" --email "teamA@company.com"
 
 # In project B
 cd /path/to/projectB
-nia config user --name "Team B Developer" --email "teamB@company.com"
+frg config user --name "Team B Developer" --email "teamB@company.com"
 ```
 
 #### Clearing Stored Identity
@@ -1120,10 +1120,10 @@ nia config user --name "Team B Developer" --email "teamB@company.com"
 To remove stored identity from context.toml:
 
 ```bash
-# Edit .nia/context.toml and remove user_name/user_email fields
+# Edit .forge/context.toml and remove user_name/user_email fields
 # Or delete the entire config and reinitialize
-rm .nia/context.toml
-nia config init
+rm .forge/context.toml
+frg config init
 ```
 
 #### Container-Friendly Defaults
@@ -1133,13 +1133,13 @@ For container environments without git config:
 ```dockerfile
 FROM ubuntu:latest
 
-# Install nia
-RUN curl -LO https://github.com/owner/nia/releases/latest/download/nia
-RUN chmod +x nia && mv nia /usr/local/bin/
+# Install forge
+RUN curl -LO https://github.com/owner/forge/releases/latest/download/frg
+RUN chmod +x frg && mv frg /usr/local/bin/
 
-# Set default identity for all nia invocations
-ENV NIA_USER_NAME="Container Build Bot"
-ENV NIA_USER_EMAIL="buildbot@company.com"
+# Set default identity for all frg invocations
+ENV FORGE_USER_NAME="Container Build Bot"
+ENV FORGE_USER_EMAIL="buildbot@company.com"
 ```
 
 ## See Also
@@ -1156,5 +1156,5 @@ These resources are available in the [`opensearch/`](https://github.com/telerik/
 | [`opensearch/templates/`](https://github.com/telerik/project-nia/tree/main/opensearch/templates) | Index template JSON files |
 | [`opensearch/dashboards/`](https://github.com/telerik/project-nia/tree/main/opensearch/dashboards) | Dashboard NDJSON export files |
 | [`opensearch-init.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-init.sh) | Initialize OpenSearch |
-| [`opensearch-clear.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-clear.sh) | Clear nia data |
-| [`opensearch-destroy.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-destroy.sh) | Remove all nia configuration |
+| [`opensearch-clear.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-clear.sh) | Clear frg data |
+| [`opensearch-destroy.sh`](https://github.com/telerik/project-nia/blob/main/opensearch/opensearch-destroy.sh) | Remove all frg configuration |

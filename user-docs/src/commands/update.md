@@ -1,6 +1,6 @@
 # Update Command
 
-`nia update` upgrades your `nia` installation to the latest published
+`frg update` upgrades your `frg` installation to the latest published
 release (or a specific version you request) in place, using the same
 verified, atomic path that automatic updates use. It never leaves your
 existing installation in a broken state, and it never asks you to delete
@@ -9,15 +9,15 @@ anything by hand.
 ## Usage
 
 ```bash
-nia update                    # install the latest stable release
-nia update --check            # report current vs. latest, change nothing
-nia update --version 4.5.0    # install a specific published version
-nia update --force             # reinstall even if already current
+frg update                    # install the latest stable release
+frg update --check            # report current vs. latest, change nothing
+frg update --version 4.5.0    # install a specific published version
+frg update --force             # reinstall even if already current
 ```
 
 ## How It Works
 
-1. **Detect install method** — determines whether `nia` was installed as a
+1. **Detect install method** — determines whether `frg` was installed as a
    standalone binary, via the install script, or through a package manager
    (Homebrew, apt, dnf, winget, Scoop, Chocolatey).
 2. **Resolve the release** — looks up the latest (or requested) release and
@@ -35,25 +35,25 @@ nia update --force             # reinstall even if already current
    starts correctly before it replaces anything.
 6. **Atomic swap** — renames the verified, smoke-tested binary into place.
 
-If any step fails, your existing `nia` installation is left completely
+If any step fails, your existing `frg` installation is left completely
 unchanged.
 
 ## Package Manager Installations
 
-If `nia` was installed by a package manager, `nia update` does not attempt to
+If `frg` was installed by a package manager, `frg update` does not attempt to
 replace the binary itself — it tells you the exact command to run instead:
 
 | Installed via | Update with |
 |---|---|
-| Install script / standalone binary | `nia update` |
-| `.deb` (apt) | `sudo apt update && sudo apt install --only-upgrade nia` |
-| `.rpm` (dnf) | `sudo dnf upgrade nia` |
-| Homebrew | `brew upgrade nia` |
+| Install script / standalone binary | `frg update` |
+| `.deb` (apt) | `sudo apt update && sudo apt install --only-upgrade progress-forge` |
+| `.rpm` (dnf) | `sudo dnf upgrade progress-forge` |
+| Homebrew | `brew upgrade progress-forge` |
 
 ## Permissions
 
 If the install directory (commonly `/usr/local/bin`) is not writable by your
-user, run `sudo nia update`. Alternatively, reinstall to a directory you own,
+user, run `sudo frg update`. Alternatively, reinstall to a directory you own,
 for example with `--install-dir "$HOME/.local/bin"` on the install script.
 
 ## Exit Codes
@@ -68,14 +68,14 @@ for example with `--install-dir "$HOME/.local/bin"` on the install script.
 ### Integrity check failed
 
 The downloaded asset's checksum did not match the published value. Re-run
-`nia update`. If the problem persists, download the release manually from
+`frg update`. If the problem persists, download the release manually from
 the [GitHub Releases page](https://github.com/telerik/project-nia/releases)
 and verify the checksum yourself before installing.
 
 ### Permission denied
 
 The install directory is not writable by the current user. Re-run with
-`sudo nia update`, or reinstall to a user-writable directory (see
+`sudo frg update`, or reinstall to a user-writable directory (see
 [Permissions](#permissions) above).
 
 ### Rate limited

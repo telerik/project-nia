@@ -434,7 +434,7 @@ This gives you:
 
 ## Loop Detection and Recovery
 
-Nia includes automatic loop detection to prevent infinite workflows. When a state is visited too many times or the total transition count exceeds the limit, loop detection triggers.
+Progress Forge includes automatic loop detection to prevent infinite workflows. When a state is visited too many times or the total transition count exceeds the limit, loop detection triggers.
 
 ### Configuring Loop Detection
 
@@ -481,13 +481,13 @@ Options:
 **Responding:**
 ```bash
 # List pending approvals
-nia workflow status
+frg workflow status
 
 # Approve to continue
-nia workflow approve <CODE>
+frg workflow approve <CODE>
 
 # Reject to terminate
-nia workflow reject <CODE>
+frg workflow reject <CODE>
 ```
 
 ### Per-State Limits
@@ -557,7 +557,7 @@ max_visits = 30           # Per-state override
 Run with detailed logging to trace visit counts:
 
 ```bash
-RUST_LOG=loop_detection=trace nia workflow run my-workflow
+RUST_LOG=loop_detection=trace frg workflow run my-workflow
 ```
 
 Look for log entries like:
@@ -592,7 +592,7 @@ limits from your workflow config weren't loaded. This can happen if:
 
 Check your escape conditions:
 ```bash
-nia workflow status <workflow-name>
+frg workflow status <workflow-name>
 ```
 
 Look for counter values in the state dump.

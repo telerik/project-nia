@@ -27,14 +27,14 @@ Typical choices include:
 Before configuring branch behavior, make sure that:
 
 - NIA is initialized in the project.
-- You can edit `.nia/config/project.toml` and, when needed, `.nia/config/agents.toml`.
+- You can edit `.forge/config/project.toml` and, when needed, `.forge/config/agents.toml`.
 - Git is available, since the agent executes the actual branch-creation commands.
 - You run NIA in a sandbox or development environment when an agent can modify files, create branches, or create commits.
 
 Run configuration validation after editing either file:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 ## How Branch Behavior Works
@@ -51,7 +51,7 @@ NIA always supplies one of these branch configurations. Once a branch has been c
 
 ## Configure Project Defaults
 
-Set the project-wide behavior in `.nia/config/project.toml`:
+Set the project-wide behavior in `.forge/config/project.toml`:
 
 ```toml
 [branch]
@@ -88,7 +88,7 @@ base = "develop"
 You can also set this with the dedicated command, which performs a comment-preserving edit of `project.toml`:
 
 ```bash
-nia config set-base-branch develop
+frg config set-base-branch develop
 ```
 
 Expected result: create-branch instructions include a guideline to base the new branch on `develop`, fetching/updating it first if needed. When `base` is unset, no base guideline is emitted — the agent forks from whatever branch is currently checked out; NIA never queries git or GitHub for the repository's default branch on its own.
@@ -99,7 +99,7 @@ Set `naming` to control the generated branch name template:
 
 ```toml
 [branch]
-naming = "nia/issue-{issue}-{slug}"
+naming = "forge/issue-{issue}-{slug}"
 ```
 
 Supported tokens: `{target}`, `{action}`, `{slug}`, `{issue}`, `{date}`. This is the default template; override it when your team uses a different branch-naming convention.
@@ -141,7 +141,7 @@ on_collision = "suffix"
 
 ## Configure Target and Operation Overrides
 
-Agent-level overrides belong to the settings for the selected agent in `.nia/config/agents.toml`, mirroring the commit-behavior overrides:
+Agent-level overrides belong to the settings for the selected agent in `.forge/config/agents.toml`, mirroring the commit-behavior overrides:
 
 ```toml
 schema_version = "1.0.0"
@@ -180,18 +180,18 @@ For example, a project with `behavior = "off"` still sends no-branch instruction
 
 Use this workflow after changing branch settings:
 
-1. Edit `.nia/config/project.toml` or `.nia/config/agents.toml`.
+1. Edit `.forge/config/project.toml` or `.forge/config/agents.toml`.
 2. Run configuration validation:
 
    ```bash
-   nia config validate
+   frg config validate
    ```
 
 3. Review any validation errors or warnings.
 4. Use the workflow command's prompt-printing diagnostic when available to inspect the generated prompt:
 
    ```bash
-   nia code create --print-prompt
+   frg code create --print-prompt
    ```
 
 5. Confirm that the prompt contains create-branch instructions, continue-on-branch instructions, or explicit no-branch instructions according to the resolved settings.
@@ -256,7 +256,7 @@ Follow these practices when you configure branch behavior:
 
 **Cause:** The project-level setting is `behavior = "off"`, which has global priority.
 
-**Resolution:** Change the project behavior to `auto` when the project permits branch creation. Then run `nia config validate` and inspect the effective prompt.
+**Resolution:** Change the project behavior to `auto` when the project permits branch creation. Then run `frg config validate` and inspect the effective prompt.
 
 ### A Later Command Does Not Create a New Branch
 
@@ -268,15 +268,15 @@ Follow these practices when you configure branch behavior:
 
 ### NIA Rejects the Configuration
 
-**Symptom:** `nia config validate` reports an error in the branch settings.
+**Symptom:** `frg config validate` reports an error in the branch settings.
 
 **Cause:** The setting uses an unsupported value, an incorrect table path, or invalid TOML syntax.
 
-**Resolution:** Use `auto` or `off` for project behavior, `carry`/`stash`/`error` for `on_dirty`, `checkout`/`suffix`/`error` for `on_collision`, and `on`/`off` for agent target and operation toggles. Confirm that the settings are under `.nia/config/project.toml` or the selected agent in `.nia/config/agents.toml`, then validate again.
+**Resolution:** Use `auto` or `off` for project behavior, `carry`/`stash`/`error` for `on_dirty`, `checkout`/`suffix`/`error` for `on_collision`, and `on`/`off` for agent target and operation toggles. Confirm that the settings are under `.forge/config/project.toml` or the selected agent in `.forge/config/agents.toml`, then validate again.
 
 ## Related Information
 
 - [Commit Behavior Configuration](./commit-behavior.md) — the trigger table that the `auto` branch behavior reuses.
-- [Set up project metadata](./project-setup.md) to initialize and validate `.nia/config/project.toml`.
+- [Set up project metadata](./project-setup.md) to initialize and validate `.forge/config/project.toml`.
 - [Configure AI coding agents](../agents/setup.md) to select the agent whose target and operation settings NIA uses.
 - [Review the command reference](../reference/commands.md) for workflow operations and modifiers.

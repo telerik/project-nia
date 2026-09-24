@@ -1,6 +1,6 @@
 # Prompt Safety Validation
 
-Nia automatically scans user input for potential prompt injection attacks before
+Progress Forge automatically scans user input for potential prompt injection attacks before
 sending content to AI agents. This protects against malicious instructions
 hidden in GitHub issues, modifier files, or custom prompts.
 
@@ -14,9 +14,9 @@ user-controlled content to manipulate AI behavior. Examples include:
 - System markers that trick the AI into role changes
 - Destructive commands disguised as legitimate requests
 
-## How Nia Protects You
+## How Progress Forge Protects You
 
-When you run any workflow command, Nia:
+When you run any workflow command, Progress Forge:
 
 1. **Validates all user input** before composing prompts
 2. **Detects known attack patterns** using configurable rules
@@ -29,7 +29,7 @@ When you run any workflow command, Nia:
 Error: Prompt injection attempt detected
 
 Source: GitHub issue #42
-Command: nia issue draft
+Command: frg issue draft
 
 Detected patterns:
   1. Invisible Unicode Characters (invisible-unicode)
@@ -40,7 +40,7 @@ This content was blocked because it contains patterns commonly
 used in prompt injection attacks.
 
 To proceed anyway (not recommended):
-  nia issue draft --bypass-safety-checks
+  frg issue draft --bypass-safety-checks
 ```
 
 ## Handling False Positives
@@ -54,14 +54,14 @@ Sometimes legitimate content triggers detection. Common scenarios:
 ### Option 1: Bypass for a Single Command
 
 ```bash
-nia issue draft --bypass-safety-checks
+frg issue draft --bypass-safety-checks
 ```
 
 This allows the command to proceed while logging the detection for audit.
 
 ### Option 2: Configure an Allowlist
 
-Create `.nia/config/.prompt-safety.toml`:
+Create `.forge/config/.prompt-safety.toml`:
 
 ```toml
 [allowlist]
@@ -136,7 +136,7 @@ Patterns use Rust regex syntax:
 All detections are logged to trace files:
 
 ```
-.nia/work/job_42/traces/issue_draft.trace.md
+.forge/work/job_42/traces/issue_draft.trace.md
 ```
 
 Trace entries include:
@@ -150,7 +150,7 @@ Trace entries include:
 
 ```bash
 # Find all bypass events in recent traces
-grep -r "bypassed.*true" .nia/work/*/traces/
+grep -r "bypassed.*true" .forge/work/*/traces/
 ```
 
 Consider creating organizational policies around bypass usage.
@@ -191,6 +191,6 @@ Detects potentially dangerous operations (warnings only):
 
 ## See Also
 
-- [Security Reference](../reference/security.md) - Overview of nia security features
+- [Security Reference](../reference/security.md) - Overview of Progress Forge security features
 - [Secret Masking](./secret-masking.md) - Protecting sensitive data in output
 - [Command Hooks](./command-hooks.md) - Safe patterns for shell hooks

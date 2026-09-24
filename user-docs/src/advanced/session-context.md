@@ -2,7 +2,7 @@
 
 ## Overview
 
-Nia optimizes token usage by reusing agent sessions across related commands. When you run multiple commands in the same workflow (e.g., `nia issue draft` followed by `nia issue plan`), nia can reuse the existing session context instead of re-sending all the background information.
+Progress Forge optimizes token usage by reusing agent sessions across related commands. When you run multiple commands in the same workflow (e.g., `frg issue draft` followed by `frg issue plan`), frg can reuse the existing session context instead of re-sending all the background information.
 
 ## Using Session Features
 
@@ -12,9 +12,9 @@ Session reuse happens automatically within workflow groups. No special flags nee
 
 ```bash
 # These commands share a session automatically
-nia issue draft
-nia issue plan
-nia issue ask "Should we add authentication tests?"
+frg issue draft
+frg issue plan
+frg issue ask "Should we add authentication tests?"
 ```
 
 ### Starting Fresh
@@ -23,19 +23,19 @@ Use the `--clear` flag to start a new session for the current command's session 
 
 ```bash
 # Start fresh, ignore previous session
-nia issue plan --clear
+frg issue plan --clear
 ```
 
-When you run `nia config clear-context` your session state will also be cleared to allow you to switch to a new job cleanly.
+When you run `frg config clear-context` your session state will also be cleared to allow you to switch to a new job cleanly.
 
 ### Viewing Current Session State
 
-Sessions are stored in the job-scoped `.nia/work/job_<id>/sessions.toml` file, keyed by agent
+Sessions are stored in the job-scoped `.forge/work/job_<id>/sessions.toml` file, keyed by agent
 and command. Commands belonging to the same shared session group are assigned the same
 session ID, so resuming any of them reuses the existing context.
 
 ```toml
-# .nia/work/job_542/sessions.toml - Session Storage Example
+# .forge/work/job_542/sessions.toml - Session Storage Example
 [copilot]
 issue-draft = { session_id = "unknown", session_name = "issue-542" }
 
@@ -51,7 +51,7 @@ Commands are organized into session groups based on their workflow context. Each
 
 | Session Group | Key | Commands | Session Type | Role |
 |---------------|-----|----------|--------------|------|
-| Ask | `ask` | `nia ask` | Isolated | software_engineer |
+| Ask | `ask` | `frg ask` | Isolated | software_engineer |
 | Backlog | `backlog` | `backlog create`, `review`, `rank`, `ask` | Shared | product_manager |
 | Issue | `issue` | `issue draft`, `publish`, `review`, `triage`, `split`, `ask` | Shared | product_manager |
 | IssuePlan | `issue_plan` | `issue plan` | Isolated | software_architect |
@@ -73,7 +73,7 @@ Commands are organized into session groups based on their workflow context. Each
 
 ### Delta Prompts
 
-When you re-run the **same command**, nia uses optimized "delta" prompts that:
+When you re-run the **same command**, frg uses optimized "delta" prompts that:
 - Skip context the agent already has (role, project config)
 - Focus on the new instructions you provide
 - Maintain the same output quality
@@ -84,10 +84,10 @@ session group.
 
 **Example:**
 ```bash
-nia code create    # Full context (first time for this command)
-nia code test      # Full context (first time for this command)
-nia code create    # Delta prompt (already ran before)
-nia code test      # Delta prompt (already ran before)
+frg code create    # Full context (first time for this command)
+frg code test      # Full context (first time for this command)
+frg code create    # Delta prompt (already ran before)
+frg code test      # Delta prompt (already ran before)
 ```
 
 This typically results in **fewer input tokens** for multi-command workflows while ensuring each
@@ -95,14 +95,14 @@ command has the necessary context on first execution.
 
 **Customizing Delta Prompts:**
 - Most task prompts have a delta variant (e.g., `issue_draft_delta.task.xml`)
-- Export prompts with `nia config export --prompts` to see both init and delta variants
-- Delta prompts are located in `.nia/prompts/{xml,markdown}/{target}/`
+- Export prompts with `frg config export --prompts` to see both init and delta variants
+- Delta prompts are located in `.forge/prompts/{xml,markdown}/{target}/`
 - You can customize delta prompts separately from init prompts for fine-grained control
 - See [Command Customization](./command-customization.md#creating-custom-prompts) for more details
 
 ### Role and Context Optimization
 
-Nia automatically optimizes token usage by sending role and project context based on **per-command execution history**:
+Progress Forge automatically optimizes token usage by sending role and project context based on **per-command execution history**:
 
 | Scenario | What Agent Receives |
 |---------|-------------------|
@@ -112,11 +112,11 @@ Nia automatically optimizes token usage by sending role and project context base
 
 **Example workflow:**
 ```bash
-nia code create         # Init prompt: role + config + task
-nia code test          # Init prompt: role + config + task (first time for code test)
-nia code create        # Delta prompt: task only (code create already ran)
-nia code test          # Delta prompt: task only (code test already ran)
-nia code create --fix  # Init prompt: role + config + task (different modifier = different command)
+frg code create         # Init prompt: role + config + task
+frg code test          # Init prompt: role + config + task (first time for code test)
+frg code create        # Delta prompt: task only (code create already ran)
+frg code test          # Delta prompt: task only (code test already ran)
+frg code create --fix  # Init prompt: role + config + task (different modifier = different command)
 ```
 
 This optimization:
@@ -128,10 +128,10 @@ This optimization:
 
 ## Session Storage
 
-Nia persists session information in the job-scoped `.nia/work/job_<id>/sessions.toml` file to
+Progress Forge persists session information in the job-scoped `.forge/work/job_<id>/sessions.toml` file to
 track which commands have been executed and their associated session IDs. This enables
 automatic session reuse across commands. Storage is scoped to the job directory (rather than
-the top-level `.nia/context.toml`) so history survives across separate `nia` invocations
+the top-level `.forge/context.toml`) so history survives across separate `frg` invocations
 without being erased by context migration.
 
 ### Sessions File Structure
@@ -139,7 +139,7 @@ without being erased by context migration.
 Each agent (Copilot, OpenCode, etc.) has its own top-level table storing session tracking:
 
 ```toml
-# .nia/work/job_542/sessions.toml - Session Storage Example
+# .forge/work/job_542/sessions.toml - Session Storage Example
 [copilot]
 issue-draft = { session_id = "unknown", session_name = "issue-542" }
 issue-ask = { session_id = "unknown", session_name = "issue-542" }
@@ -155,21 +155,21 @@ code-test = { session_id = "550e8400-e29b-41d4-a716-446655440000", session_name 
 Each command is tracked using a key format: `{group}-{operation}`
 
 **Examples:**
-- `issue-draft` → `nia issue draft`
-- `code-create` → `nia code create`
-- `code-review` → `nia code review`
-- `backlog-rank` → `nia backlog rank`
+- `issue-draft` → `frg issue draft`
+- `code-create` → `frg code create`
+- `code-review` → `frg code review`
+- `backlog-rank` → `frg backlog rank`
 
 ### Agent-Specific Sessions
 
-Each agent maintains its own session namespace to prevent cross-agent context pollution. When you switch between agents using the `--agent` flag, nia creates and tracks separate sessions:
+Each agent maintains its own session namespace to prevent cross-agent context pollution. When you switch between agents using the `--agent` flag, frg creates and tracks separate sessions:
 
 ```bash
 # Creates copilot session
-nia code create
+frg code create
 
 # Creates separate opencode session
-nia code test --agent opencode
+frg code test --agent opencode
 ```
 
 The job-scoped `sessions.toml` will contain:
@@ -197,8 +197,8 @@ The `sessions.toml` file uses two distinct key formats:
 - `issue_plan` → IssuePlan session group
 
 **Command Keys** track which specific commands have been executed within a session. These use hyphenated format:
-- `issue-draft` → `nia issue draft` command
-- `code-create-fix` → `nia code create --fix` command
+- `issue-draft` → `frg issue draft` command
+- `code-create-fix` → `frg code create --fix` command
 
 Both key types may appear in the same agent's table:
 
@@ -212,13 +212,13 @@ code-create = { session_id = "uuid", session_name = "code-563" }
 code-create-fix = { session_id = "uuid", session_name = "code-563" }
 ```
 
-> **Note:** For delta prompt selection, nia uses the **session group key** to determine if a session exists. All commands within the same session group share the session context.
+> **Note:** For delta prompt selection, frg uses the **session group key** to determine if a session exists. All commands within the same session group share the session context.
 
 ## Troubleshooting
 
 ### GitHub Copilot: Duplicate Named Sessions
 
-GitHub Copilot uses **named sessions** due to token discovery limitations when using JSON outputs. Nia generates deterministic session names using the format:
+GitHub Copilot uses **named sessions** due to token discovery limitations when using JSON outputs. Progress Forge generates deterministic session names using the format:
 
 ```
 {group}-{job_id}
@@ -229,7 +229,7 @@ GitHub Copilot uses **named sessions** due to token discovery limitations when u
 - `code-481` → Code workflow for job 481
 - `backlog-123` → Backlog workflow for job 123
 
-GitHub Copilot may create duplicate session IDs mapped to the same name label if a nia command is interrupted before the session is recorded. When this happens, nia will display an error with the duplicate session IDs.
+GitHub Copilot may create duplicate session IDs mapped to the same name label if a frg command is interrupted before the session is recorded. When this happens, frg will display an error with the duplicate session IDs.
 
 #### Resolving Duplicate Sessions (Single Project)
 
@@ -239,7 +239,7 @@ For the common case where a single project has duplicate Copilot sessions:
 2. Navigate the session picker to find one of the duplicate sessions
 3. Press `x` to delete the selected session
 4. Exit Copilot (Ctrl+C or complete the interaction)
-5. Resume your NIA operation
+5. Resume your Progress Forge operation
 
 > **Important**: Delete only ONE duplicate session, not all sessions with that name. You only need to remove the extra copy.
 
@@ -249,7 +249,7 @@ If you have multiple projects with the same job ID numbers, you may encounter du
 
 1. Run `copilot --resume` and press `x` to delete one duplicate session
 2. Exit Copilot
-3. In the project where you deleted the session, run `nia <target> <operation> --clear` to create a session with a unique suffix
+3. In the project where you deleted the session, run `frg <target> <operation> --clear` to create a session with a unique suffix
 4. Resume work in that project
 
 > **Note**: This is a temporary workaround. Running `--clear` in other projects will cause clashes again. See [Issue #670](https://github.com/telerik/project-nia/issues/670) for the permanent fix tracking this scenario.

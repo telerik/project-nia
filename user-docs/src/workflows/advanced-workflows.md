@@ -678,7 +678,7 @@ on_failure = "continue_work"      # Still have [ ] markers
 operation = {
     id = "tasks-done",
     type = "tasks_complete",
-    path = ".nia/work/job_392/code/tasks.md",
+    path = ".forge/work/job_392/code/tasks.md",
     on_false = "fail"
 }
 ```
@@ -697,20 +697,20 @@ Loop counters are exposed as environment variables:
 [[workflow.states]]
 name = "generate_code"
 loop_enabled = true
-loop_counter = "code_iterations"  # Creates NIA_LOOP_COUNTER_CODE_ITERATIONS
+loop_counter = "code_iterations"  # Creates FORGE_LOOP_COUNTER_CODE_ITERATIONS
 command = { target = "code", operation = "create" }
 ```
 
 Access in shell steps:
 ```bash
-echo "Iteration: $NIA_LOOP_COUNTER_CODE_ITERATIONS"
+echo "Iteration: $FORGE_LOOP_COUNTER_CODE_ITERATIONS"
 ```
 
-Format: `NIA_LOOP_COUNTER_{COUNTER_NAME}` (uppercase)
+Format: `FORGE_LOOP_COUNTER_{COUNTER_NAME}` (uppercase)
 
 ### Production Example: issue-to-pr Workflow
 
-See `.nia/config/workflows/issue-to-pr.toml` for a complete real-world example that uses:
+See `.forge/config/workflows/issue-to-pr.toml` for a complete real-world example that uses:
 - Loop detection configuration with higher thresholds
 - Per-state `max_visits` overrides
 - Automated `tasks_complete` checking
@@ -719,7 +719,7 @@ See `.nia/config/workflows/issue-to-pr.toml` for a complete real-world example t
 
 ```bash
 # View the full example
-cat .nia/config/workflows/issue-to-pr.toml
+cat .forge/config/workflows/issue-to-pr.toml
 ```
 
 ## Best Practices
@@ -814,12 +814,12 @@ depends_on = ["db-migration"]  # Clear cache AFTER migration
 
 Check workflow status:
 ```bash
-nia workflow status <workflow-name>
+frg workflow status <workflow-name>
 ```
 
 Approve manually:
 ```bash
-nia workflow approve <gate-id>
+frg workflow approve <gate-id>
 ```
 
 ### Step Dependencies Not Working

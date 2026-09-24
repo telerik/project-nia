@@ -1,13 +1,13 @@
 ---
 title: Commit Behavior Configuration
-meta_title: NIA Commit Behavior - Control Agent Commit Instructions
-description: Configure project and command-level commit instructions for NIA workflows, including attribution, overrides, defaults, and troubleshooting.
+meta_title: Progress Forge Commit Behavior - Control Agent Commit Instructions
+description: Configure project and command-level commit instructions for Progress Forge workflows, including attribution, overrides, defaults, and troubleshooting.
 slug: commit-behavior
 ---
 
 # Commit Behavior Configuration
 
-NIA adds commit instructions to workflow prompts so an AI coding agent receives explicit guidance about whether it may create Git commits. Configure commit behavior at the project level, override it for a target or operation, and verify the result before running autonomous workflows.
+Progress Forge adds commit instructions to workflow prompts so an AI coding agent receives explicit guidance about whether it may create Git commits. Configure commit behavior at the project level, override it for a target or operation, and verify the result before running autonomous workflows.
 
 This setting controls the instructions sent to the agent. It does not itself create, amend, or push a commit.
 
@@ -17,8 +17,8 @@ Use project-level commit behavior when one policy should apply across the reposi
 
 Typical choices include:
 
-- Use `enabled` when NIA should provide basic commit instructions for workflows that modify project files.
-- Use `tagged` when commits should use NIA attribution in the commit instructions.
+- Use `enabled` when Progress Forge should provide basic commit instructions for workflows that modify project files.
+- Use `tagged` when commits should use Progress Forge attribution in the commit instructions.
 - Use `disabled` when a person or another automation system manages all commits.
 - Use `commits = "on"` or `commits = "off"` for a specific target or operation.
 
@@ -26,32 +26,32 @@ Typical choices include:
 
 Before configuring commit behavior, make sure that:
 
-- NIA is initialized in the project.
-- You can edit `.nia/config/project.toml` and, when needed, `.nia/config/agents.toml`.
+- Progress Forge is initialized in the project.
+- You can edit `.forge/config/project.toml` and, when needed, `.forge/config/agents.toml`.
 - Git is available when the selected workflow needs to inspect or modify a Git repository.
-- You run NIA in a sandbox or development environment when an agent can modify files or create commits.
+- You run Progress Forge in a sandbox or development environment when an agent can modify files or create commits.
 
 Run configuration validation after editing either file:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 ## How Commit Behavior Works
 
-NIA resolves one of three prompt configurations for each workflow operation:
+Progress Forge resolves one of three prompt configurations for each workflow operation:
 
 | Result | Effect |
 | --- | --- |
-| Basic commit instructions | The agent receives standard commit guidance without NIA attribution. |
-| NIA-attributed commit instructions | The agent receives commit guidance that includes NIA attribution. |
+| Basic commit instructions | The agent receives standard commit guidance without Progress Forge attribution. |
+| Progress Forge-attributed commit instructions | The agent receives commit guidance that includes Progress Forge attribution. |
 | Explicit no-commit instructions | The agent receives instructions not to create commits. |
 
-NIA always supplies one of these commit configurations. Commands that do not commit by default receive explicit no-commit instructions so the agent does not decide commit behavior on its own.
+Progress Forge always supplies one of these commit configurations. Commands that do not commit by default receive explicit no-commit instructions so the agent does not decide commit behavior on its own.
 
 ## Configure Project Defaults
 
-Set the project-wide behavior in `.nia/config/project.toml`:
+Set the project-wide behavior in `.forge/config/project.toml`:
 
 ```toml
 [commit]
@@ -63,7 +63,7 @@ The `behavior` setting accepts these values:
 | Value | Required or optional | Effect |
 | --- | --- | --- |
 | `enabled` | Optional; default | Selects basic commit instructions when the resolved operation allows commits. |
-| `tagged` | Optional | Selects commit instructions with NIA attribution when the resolved operation allows commits. |
+| `tagged` | Optional | Selects commit instructions with Progress Forge attribution when the resolved operation allows commits. |
 | `disabled` | Optional | Forces explicit no-commit instructions for every operation, including operations that normally commit. |
 
 The project setting affects the commit instruction variant only when the operation resolves to commits enabled. It does not turn commits on for an operation that has no commit default.
@@ -79,20 +79,20 @@ behavior = "disabled"
 
 Expected result: every workflow receives explicit no-commit instructions, including `code create`, which normally has commit instructions enabled.
 
-### Use NIA Attribution
+### Use Progress Forge Attribution
 
-Set the project behavior to `tagged` when the project policy requires NIA attribution in commit instructions:
+Set the project behavior to `tagged` when the project policy requires Progress Forge attribution in commit instructions:
 
 ```toml
 [commit]
 behavior = "tagged"
 ```
 
-Expected result: an operation that normally commits receives the NIA-attributed commit configuration. An operation that normally does not commit still receives no-commit instructions unless an agent-level override enables commits.
+Expected result: an operation that normally commits receives the Progress Forge-attributed commit configuration. An operation that normally does not commit still receives no-commit instructions unless an agent-level override enables commits.
 
 ## Configure Target and Operation Overrides
 
-Agent-level overrides belong to the settings for the selected agent in `.nia/config/agents.toml`. The file uses an `agent` table with a `default` agent name and one table for each configured agent.
+Agent-level overrides belong to the settings for the selected agent in `.forge/config/agents.toml`. The file uses an `agent` table with a `default` agent name and one table for each configured agent.
 
 For example:
 
@@ -116,7 +116,7 @@ The extended target and operation forms support `commits` values of `on` and `of
 | `targets.<target>.commits` | All operations for one target | `on`, `off` | Enables or disables commit instructions unless an operation-specific setting overrides it. |
 | `operations."<target>.<operation>".commits` | One operation | `on`, `off` | Takes precedence over the target setting. |
 
-The selected agent matters. Configure the target and operation settings under the agent that NIA uses for the workflow.
+The selected agent matters. Configure the target and operation settings under the agent that Progress Forge uses for the workflow.
 
 ### Enable Commits for One Operation
 
@@ -127,7 +127,7 @@ The following configuration enables commit instructions for `code review`, which
 "code.review" = { commits = "on" }
 ```
 
-Expected result: NIA selects the project behavior, such as basic or NIA-attributed instructions, for `code review`.
+Expected result: Progress Forge selects the project behavior, such as basic or Progress Forge-attributed instructions, for `code review`.
 
 ### Disable Commits for One Target
 
@@ -156,10 +156,10 @@ Expected result: `code create` receives commit instructions, while other code op
 
 ## Understand Resolution Precedence
 
-NIA resolves commit behavior in this order:
+Progress Forge resolves commit behavior in this order:
 
 1. Project `behavior = "disabled"` acts as a global override and forces no-commit instructions.
-2. An operation-specific `commits` setting takes precedence. For modifier operations, NIA first checks the modifier operation and then its base operation.
+2. An operation-specific `commits` setting takes precedence. For modifier operations, Progress Forge first checks the modifier operation and then its base operation.
 3. A target-specific `commits` setting applies when no operation-specific setting exists.
 4. The built-in default determines whether the operation normally receives commit instructions.
 5. Project `behavior = "enabled"` or `behavior = "tagged"` selects the commit instruction variant when commits are enabled.
@@ -168,7 +168,7 @@ For example, a project with `behavior = "disabled"` still sends no-commit instru
 
 ## Review Built-In Defaults
 
-NIA enables commit instructions by default for operations that create or modify code, documentation, or security changes:
+Progress Forge enables commit instructions by default for operations that create or modify code, documentation, or security changes:
 
 | Target and operation | Default result |
 | --- | --- |
@@ -191,21 +191,21 @@ The internal operation names for modifier variants use names such as `create_fix
 
 Use this workflow after changing commit settings:
 
-1. Edit `.nia/config/project.toml` or `.nia/config/agents.toml`.
+1. Edit `.forge/config/project.toml` or `.forge/config/agents.toml`.
 2. Run configuration validation:
 
    ```bash
-   nia config validate
+   frg config validate
    ```
 
 3. Review any validation errors or warnings.
 4. Use the workflow command's prompt-printing diagnostic when available to inspect the generated prompt:
 
    ```bash
-   nia code create --print-prompt
+   frg code create --print-prompt
    ```
 
-5. Confirm that the prompt contains basic commit instructions, NIA-attributed instructions, or explicit no-commit instructions according to the resolved settings.
+5. Confirm that the prompt contains basic commit instructions, Progress Forge-attributed instructions, or explicit no-commit instructions according to the resolved settings.
 
 The `--print-prompt` option is a diagnostic feature. Review its output before sharing it because prompts can contain project paths and other workflow context.
 
@@ -242,7 +242,7 @@ Use an operation override when an operation has an edit mode that your team want
 "code.review" = { commits = "on" }
 ```
 
-The project `behavior` value determines whether those instructions are basic or NIA-attributed.
+The project `behavior` value determines whether those instructions are basic or Progress Forge-attributed.
 
 ### Apply One Policy to a Target
 
@@ -283,7 +283,7 @@ Follow these practices when you configure commit behavior:
 
 **Cause:** The project-level setting is `behavior = "disabled"`, which has global priority.
 
-**Resolution:** Change the project behavior to `enabled` or `tagged` when the project permits commit instructions. Then run `nia config validate` and inspect the effective prompt.
+**Resolution:** Change the project behavior to `enabled` or `tagged` when the project permits commit instructions. Then run `frg config validate` and inspect the effective prompt.
 
 ### A Target Setting Does Not Apply
 
@@ -297,21 +297,21 @@ Follow these practices when you configure commit behavior:
 
 **Symptom:** A command with a modifier, such as a fix or edit variant, does not follow the base operation's setting.
 
-**Cause:** NIA checks the modifier operation first. If it has no setting, NIA inherits the base operation setting before checking the target setting.
+**Cause:** Progress Forge checks the modifier operation first. If it has no setting, Progress Forge inherits the base operation setting before checking the target setting.
 
 **Resolution:** Configure the modifier operation explicitly when it needs a different policy. Use the operation key that matches the target and modifier operation shown by the command configuration.
 
-### NIA Rejects the Configuration
+### Progress Forge Rejects the Configuration
 
-**Symptom:** `nia config validate` reports an error in the commit settings.
+**Symptom:** `frg config validate` reports an error in the commit settings.
 
 **Cause:** The setting uses an unsupported value, an incorrect table path, or invalid TOML syntax.
 
-**Resolution:** Use `enabled`, `tagged`, or `disabled` for project behavior. Use `on` or `off` for agent target and operation toggles. Confirm that the settings are under `.nia/config/project.toml` or the selected agent in `.nia/config/agents.toml`, then validate again.
+**Resolution:** Use `enabled`, `tagged`, or `disabled` for project behavior. Use `on` or `off` for agent target and operation toggles. Confirm that the settings are under `.forge/config/project.toml` or the selected agent in `.forge/config/agents.toml`, then validate again.
 
 ## Related Information
 
-- [Set up project metadata](./project-setup.md) to initialize and validate `.nia/config/project.toml`.
-- [Configure AI coding agents](../agents/setup.md) to select the agent whose target and operation settings NIA uses.
+- [Set up project metadata](./project-setup.md) to initialize and validate `.forge/config/project.toml`.
+- [Configure AI coding agents](../agents/setup.md) to select the agent whose target and operation settings Progress Forge uses.
 - [Review the command reference](../reference/commands.md) for workflow operations and modifiers.
 - [Start with the Quick Start workflow](../quick-start.md) for an end-to-end project setup.

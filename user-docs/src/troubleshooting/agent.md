@@ -51,9 +51,9 @@ Agent not found in PATH
    source ~/.bashrc
    ```
 
-6. **Verify nia can find it**:
+6. **Verify frg can find it**:
    ```bash
-   nia status --verbose
+   frg status --verbose
    ```
 
 **Prevention**:
@@ -66,9 +66,9 @@ Agent not found in PATH
 
 ### Windows: npm-Installed Copilot Auto-Discovery
 
-**Status**: ✅ **Fully Supported** (nia v4.1.0+)
+**Status**: ✅ **Fully Supported** (frg v4.1.0+)
 
-**How It Works**: Nia automatically detects npm installations by:
+**How It Works**: Progress Forge automatically detects npm installations by:
 1. Finding `copilot.cmd` in your PATH
 2. Parsing the wrapper script to extract the Node.js entry point
 3. Invoking `node <script>` directly, bypassing `cmd.exe` limitations
@@ -81,7 +81,7 @@ Agent not found in PATH
 npm install -g @github/copilot
 
 # Verify auto-discovery works
-nia status --verbose
+frg status --verbose
 ```
 
 Look for this line in the output:
@@ -96,11 +96,11 @@ If you see:
 Wrapper parsing failed, falling back to direct invocation
 ```
 
-This means nia couldn't parse the wrapper format. To resolve:
+This means frg couldn't parse the wrapper format. To resolve:
 1. Install via WinGet for native .exe: `winget install GitHub.CopilotCLI`
-2. Or set explicit path in `.nia/config/agents.toml`
+2. Or set explicit path in `.forge/config/agents.toml`
 
-**Technical Details**: npm creates `.cmd` wrapper scripts on Windows. These wrappers have historically caused issues with long command lines and special characters. Nia now parses these wrappers at startup to find the underlying Node.js script, then invokes `node` directly, eliminating all wrapper-related limitations.
+**Technical Details**: npm creates `.cmd` wrapper scripts on Windows. These wrappers have historically caused issues with long command lines and special characters. Progress Forge now parses these wrappers at startup to find the underlying Node.js script, then invokes `node` directly, eliminating all wrapper-related limitations.
 
 **Related**: [Installation Guide](../getting-started/installation.md)
 
@@ -108,14 +108,14 @@ This means nia couldn't parse the wrapper format. To resolve:
 
 ### ⚠️ Not Supported: GitHub CLI Extension
 
-**Problem**: The `gh extension install github/gh-copilot` method is not supported by nia on Windows.
+**Problem**: The `gh extension install github/gh-copilot` method is not supported by frg on Windows.
 
 **Error Message**:
 ```
 Configuration error: 'command = "gh"' is not supported.
 ```
 
-**Why Not Supported**: The `gh copilot` command uses Windows Command Shell (`cmd.exe`) internally, which has an ~8191 character command-line limit. Nia's prompts frequently exceed this limit when including:
+**Why Not Supported**: The `gh copilot` command uses Windows Command Shell (`cmd.exe`) internally, which has an ~8191 character command-line limit. Progress Forge's prompts frequently exceed this limit when including:
 - Multi-file context
 - Detailed instructions
 - XML-formatted prompts
@@ -136,7 +136,7 @@ Configuration error: 'command = "gh"' is not supported.
 winget install GitHub.CopilotCLI
 
 # Verify
-nia status
+frg status
 ```
 
 #### Option 2: Use npm with Auto-Discovery
@@ -145,14 +145,14 @@ nia status
 # Install via npm
 npm install -g @github/copilot
 
-# Nia will automatically parse the wrapper
-nia status --verbose
+# Progress Forge will automatically parse the wrapper
+frg status --verbose
 ```
 
 #### If You Have gh Extension Installed:
 
 1. **Remove gh configuration**:
-   - Edit `.nia/config/agents.toml`
+   - Edit `.forge/config/agents.toml`
    - Delete any `command = "gh"` lines
    - Save the file
 
@@ -160,10 +160,10 @@ nia status --verbose
 
 3. **Verify the fix**:
    ```powershell
-   nia status
+   frg status
    ```
 
-**Note**: The gh CLI itself works fine for other purposes (managing repos, PRs, etc.). Only the Copilot extension integration with nia is affected by command-line limitations.
+**Note**: The gh CLI itself works fine for other purposes (managing repos, PRs, etc.). Only the Copilot extension integration with frg is affected by command-line limitations.
 
 **Related**: [Installation Guide](../getting-started/installation.md), [Configuration Reference](../reference/config-fields.md)
 
@@ -172,7 +172,7 @@ Example path:
 <prefix>\node_modules\@github\copilot\bin\copilot.exe
 ```
 
-Configure this path in `.nia/config/agents.toml`:
+Configure this path in `.forge/config/agents.toml`:
 
 ```toml
 schema_version = "2.1.0"
@@ -203,7 +203,7 @@ When Windows executes a `.cmd` file, it passes arguments through `cmd.exe`, whic
 | `&` | Command chaining |
 | `&#124;` | Pipe |
 
-Nia's prompts contain XML tags (`<task>`, `</task>`) and other special characters, which get corrupted by `cmd.exe` before reaching the Copilot CLI.
+Progress Forge's prompts contain XML tags (`<task>`, `</task>`) and other special characters, which get corrupted by `cmd.exe` before reaching the Copilot CLI.
 
 **Prevention**:
 
@@ -275,9 +275,9 @@ Error: This operation requires SSO authentication
    gh auth login
    ```
 
-8. **Verify nia sees authenticated agent**:
+8. **Verify frg sees authenticated agent**:
    ```bash
-   nia status --verbose
+   frg status --verbose
    ```
 
 **Prevention**:
@@ -326,7 +326,7 @@ Error: This operation requires SSO authentication
    - GitHub Status: https://www.githubstatus.com/
    - Check for service incidents
 
-4. **Test agent directly** (without nia):
+4. **Test agent directly** (without forge):
    ```bash
    echo "Simple question?" | time copilot -p
    ```
@@ -343,8 +343,8 @@ Error: This operation requires SSO authentication
 
 7. **Review trace for actual timeout point**:
    ```bash
-   nia trace list
-   nia trace view <latest-trace>
+   frg trace list
+   frg trace view <latest-trace>
    ```
 
 **Prevention**:
@@ -427,7 +427,7 @@ Error: This operation requires SSO authentication
 7. **Try with VPN** (if required):
    ```bash
    # Connect to corporate VPN
-   # Then retry nia command
+   # Then retry frg command
    ```
 
 8. **Test specific endpoints**:
@@ -451,7 +451,7 @@ Error: This operation requires SSO authentication
 
 ### Duplicate Session Conflict
 
-**Problem**: NIA reports multiple sessions exist with the same name.
+**Problem**: Progress Forge reports multiple sessions exist with the same name.
 
 **Error Message**:
 ```
@@ -463,7 +463,7 @@ Matching sessions:
 This can happen when a command is cancelled before completion.
 ```
 
-**Cause**: A previous NIA command was interrupted (e.g., Ctrl+C) before it could complete, leaving an orphaned session in GitHub Copilot. When NIA attempts to create a new session with the same name, Copilot reports the conflict.
+**Cause**: A previous Progress Forge command was interrupted (e.g., Ctrl+C) before it could complete, leaving an orphaned session in GitHub Copilot. When Progress Forge attempts to create a new session with the same name, Copilot reports the conflict.
 
 **Solution**:
 
@@ -478,14 +478,14 @@ This can happen when a command is cancelled before completion.
 
 4. **Exit Copilot** by pressing Ctrl+C or completing the interaction
 
-5. **Resume your NIA operation**
+5. **Resume your Progress Forge operation**
 
 > **Important**: Delete only ONE duplicate session, not all sessions with that name. You only need to remove the extra copy to resolve the conflict.
 
 **Prevention**:
-- Avoid interrupting NIA commands mid-execution when possible
+- Avoid interrupting Progress Forge commands mid-execution when possible
 - If you must cancel, wait for the "Session created" message before pressing Ctrl+C
-- Use `nia config clear-context` to reset session state if you encounter persistent issues
+- Use `frg config clear-context` to reset session state if you encounter persistent issues
 
 **Edge Case - Multiple Projects with Same Job IDs**:
 
@@ -493,7 +493,7 @@ If you work with multiple projects that share the same job ID numbers, you may s
 
 Temporary workaround:
 1. Delete the duplicate session using `copilot --resume` + `x`
-2. In the affected project, run: `nia <target> <operation> --clear`
+2. In the affected project, run: `frg <target> <operation> --clear`
 3. This creates a session with a unique suffix to avoid the conflict
 
 > **Note**: This workaround is temporary.
@@ -504,7 +504,7 @@ Temporary workaround:
 
 ### Model Quality Issues (Inconsistent Agent Behavior)
 
-**Problem**: Agent produces inconsistent results, ignores instructions, or fails to follow nia's conventions.
+**Problem**: Agent produces inconsistent results, ignores instructions, or fails to follow forge's conventions.
 
 **Symptoms**:
 - Agent makes code changes without creating incremental commits
@@ -512,37 +512,37 @@ Temporary workaround:
 - Responses vary significantly for identical prompts
 - Agent doesn't follow role-specific guidelines
 
-**Common Cause**: Using latest-generation models (Claude 4.6, GPT-5.x) that may have behavioral inconsistencies with nia's instruction set.
+**Common Cause**: Using latest-generation models (Claude 4.6, GPT-5.x) that may have behavioral inconsistencies with forge's instruction set.
 
 **Solution**:
 
 1. **Check your current model configuration**:
    ```bash
-   cat .nia/config/agents.toml | grep -A 5 '\[agent.github_copilot\]'
+   cat .forge/config/agents.toml | grep -A 5 '\[agent.github_copilot\]'
    ```
 
 2. **Switch to the stable profile**:
    ```bash
    # Back up existing configuration
-   cp .nia/config/agents.toml .nia/config/agents.toml.backup
+   cp .forge/config/agents.toml .forge/config/agents.toml.backup
 
    # Delete existing configuration
-   rm .nia/config/agents.toml
+   rm .forge/config/agents.toml
 
    # Reinitialize with stable profile (default)
-   nia config init --agent github_copilot
+   frg config init --agent github_copilot
    ```
 
 3. **Verify the change**:
    ```bash
-   cat .nia/config/agents.toml | grep 'model'
+   cat .forge/config/agents.toml | grep 'model'
    # Should show: model = "claude-sonnet-5"
    ```
 
-**Why This Works**: The `stable` profile uses pinned Claude models (`claude-sonnet-5`, `claude-opus-5`) which have been validated for consistent behavior with nia's prompting conventions.
+**Why This Works**: The `stable` profile uses pinned Claude models (`claude-sonnet-5`, `claude-opus-5`) which have been validated for consistent behavior with forge's prompting conventions.
 
 **When to Switch Back to Balanced**:
-- When newer models are confirmed to work reliably with nia
+- When newer models are confirmed to work reliably with forge
 - If you're testing compatibility with latest-generation models
 - If your specific use case benefits from newer model capabilities
 

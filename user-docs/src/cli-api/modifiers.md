@@ -6,18 +6,18 @@ Modifiers are optional flags that customize workflow operation behavior. They ch
 
 A modifier transforms an operation by:
 1. **Overriding the task prompt**: Uses a different task prompt variant
-2. **Loading user input files**: Reads job-specific context from `.nia/work/<job_id>/<target>/<modifier>.md`
+2. **Loading user input files**: Reads job-specific context from `.forge/work/<job_id>/<target>/<modifier>.md`
 
 **Example:**
 
 ```bash
-nia issue draft              # Standard issue draft
-nia issue draft --edit       # Issue draft with editing instructions
+frg issue draft              # Standard issue draft
+frg issue draft --edit       # Issue draft with editing instructions
 ```
 
 The `--edit` modifier:
 - Changes task prompt: `issue_draft` → `issue_draft_edit`
-- Checks for input file: `.nia/work/<job_id>/issue/edit.md`
+- Checks for input file: `.forge/work/<job_id>/issue/edit.md`
 
 ## Common Modifiers
 
@@ -32,19 +32,19 @@ Editing mode. Customize output with your instructions provided inline or via edi
 
 **Behavior:**
 - Task prompt changes to edit variant
-- Looks for input file: `.nia/work/<job_id>/<target>/edit.md`
+- Looks for input file: `.forge/work/<job_id>/<target>/edit.md`
 - Output is designed for iteration
 
 **Example:**
 ```bash
 # Inline mode: provide instructions directly
-nia issue draft --edit "Focus on security implications"
+frg issue draft --edit "Focus on security implications"
 
-# File mode: auto-resolves to .nia/work/job_{id}/issue/edit.md
-nia issue draft --edit
+# File mode: auto-resolves to .forge/work/job_{id}/issue/edit.md
+frg issue draft --edit
 
 # Output includes prompts for user refinement
-# File: .nia/work/job_<job_id>/issue/draft.md
+# File: .forge/work/job_<job_id>/issue/draft.md
 ```
 
 ### --fix
@@ -58,16 +58,16 @@ Fix mode. Applies fix instructions that **you provide** during generation (inlin
 
 **Behavior:**
 - Task prompt changes to fix variant
-- Looks for input file: `.nia/work/<job_id>/<target>/fix.md`
+- Looks for input file: `.forge/work/<job_id>/<target>/fix.md`
 - Applies your fix instructions during generation
 
 **Example:**
 ```bash
 # Inline mode: specific fix instructions
-nia code create --fix "Focus on the type mismatch errors"
+frg code create --fix "Focus on the type mismatch errors"
 
-# File mode: auto-resolves to .nia/work/job_{id}/code/fix.md
-nia code create --fix
+# File mode: auto-resolves to .forge/work/job_{id}/code/fix.md
+frg code create --fix
 
 # Agent will:
 # 1. Read fix instructions from fix.md
@@ -92,10 +92,10 @@ Simplified workflow mode for simple changes. Produces minimal documentation with
 **Example:**
 ```bash
 # Create lightweight issue draft for bug fix
-nia issue draft --lite
+frg issue draft --lite
 
 # Create single-phase plan without diagrams
-nia issue plan --lite
+frg issue plan --lite
 
 # Output is concise:
 # - Draft: Problem statement + acceptance criteria (~50 lines)
@@ -129,10 +129,10 @@ Combined modifier that provides both lightweight processing and custom instructi
 **Example:**
 ```bash
 # Lightweight draft with specific focus
-nia issue draft --lite-edit "Focus on API security concerns"
+frg issue draft --lite-edit "Focus on API security concerns"
 
 # Lightweight plan with custom requirements
-nia issue plan --lite-edit "Prioritize backward compatibility"
+frg issue plan --lite-edit "Prioritize backward compatibility"
 
 # Output is concise but customized:
 # - Draft: Problem statement + criteria + your guidance applied
@@ -165,14 +165,14 @@ Continue a previous session with a prompt to complete missing outputs.
 **Example:**
 ```bash
 # Default retry prompt (lists missing files)
-nia code create --retry
+frg code create --retry
 
 # With custom instructions
-nia code create --retry "Focus on test coverage in the missing files"
+frg code create --retry "Focus on test coverage in the missing files"
 
 # Can also use file mode
-nia issue plan --retry
-# Reads from: .nia/work/job_{id}/code/retry.md (if it exists)
+frg issue plan --retry
+# Reads from: .forge/work/job_{id}/code/retry.md (if it exists)
 ```
 
 **When to use:**
@@ -210,10 +210,10 @@ Automatically retry once if output validation fails.
 **Example:**
 ```bash
 # Automatic single retry on failure
-nia code create --auto-retry
+frg code create --auto-retry
 
 # In CI/CD pipelines
-nia issue plan --auto-retry
+frg issue plan --auto-retry
 ```
 
 **When to use:**
@@ -244,37 +244,37 @@ Provide instructions directly on the command line:
 
 ```bash
 # Fix with specific instructions
-nia code create --fix "Focus on error handling in the auth module"
+frg code create --fix "Focus on error handling in the auth module"
 
 # Edit with custom focus
-nia issue draft --edit "Emphasize security requirements"
+frg issue draft --edit "Emphasize security requirements"
 
 # Plan with constraints
-nia issue plan --lite-edit "Prioritize backward compatibility"
+frg issue plan --lite-edit "Prioritize backward compatibility"
 ```
 
 **When to use:** Quick, one-off instructions that don't need to be reused.
 
 ### 2. File Mode (Auto-Resolution)
 
-When no inline string is provided, nia automatically resolves the input file path:
+When no inline string is provided, frg automatically resolves the input file path:
 
 ```bash
-# Uses auto-resolved path: .nia/work/job_42/code/fix.md
-export NIA_ISSUE_ID=42
-nia code create --fix
+# Uses auto-resolved path: .forge/work/job_42/code/fix.md
+export FORGE_ISSUE_ID=42
+frg code create --fix
 
-# Uses auto-resolved path: .nia/work/job_42/issue/edit.md
-nia issue draft --edit
+# Uses auto-resolved path: .forge/work/job_42/issue/edit.md
+frg issue draft --edit
 ```
 
 **Path auto-resolution pattern:**
 ```
-.nia/work/job_{id}/{target}/{modifier}.md
+.forge/work/job_{id}/{target}/{modifier}.md
 ```
 
 Where:
-- `{id}` - Current job ID (from `NIA_ISSUE_ID` or `NIA_JOB_ID`)
+- `{id}` - Current job ID (from `FORGE_ISSUE_ID` or `FORGE_JOB_ID`)
 - `{target}` - Command target (e.g., `code`, `issue`, `pr`)
 - `{modifier}` - Modifier name (e.g., `fix`, `edit`)
 
@@ -286,10 +286,10 @@ Use the modifier flag without any instructions:
 
 ```bash
 # Uses default behavior, no instructions file required
-nia issue draft --edit
+frg issue draft --edit
 
 # Modifier applies task prompt override without additional context
-nia code review --fix
+frg code review --fix
 ```
 
 **When to use:** When the modifier's default behavior is sufficient.
@@ -300,13 +300,13 @@ If you want to use file mode, create the input file at the auto-resolved path:
 
 ```bash
 # Set job context
-export NIA_ISSUE_ID=42
+export FORGE_ISSUE_ID=42
 
 # Create input file directory
-mkdir -p .nia/work/job_42/issue
+mkdir -p .forge/work/job_42/issue
 
 # Create input file with instructions
-cat > .nia/work/job_42/issue/edit.md << 'EOF'
+cat > .forge/work/job_42/issue/edit.md << 'EOF'
 # Additional Context
 
 Please focus on:
@@ -320,7 +320,7 @@ Please focus on:
 EOF
 
 # Run command (reads edit.md automatically)
-nia issue draft --edit
+frg issue draft --edit
 ```
 
 **Important:** Input files are always optional. If the file doesn't exist:
@@ -329,18 +329,18 @@ nia issue draft --edit
 
 ## Path Auto-Resolution
 
-When you use a modifier without inline instructions, nia automatically determines the input file path using the following resolution process:
+When you use a modifier without inline instructions, frg automatically determines the input file path using the following resolution process:
 
 ### Resolution Process
 
 1. **Determine Job ID**
-   - Primary: `NIA_ISSUE_ID` environment variable
-   - Fallback: `NIA_JOB_ID` environment variable
-   - Config: Value from `.nia/context.toml` if set via `nia config set-issue`
+   - Primary: `FORGE_ISSUE_ID` environment variable
+   - Fallback: `FORGE_JOB_ID` environment variable
+   - Config: Value from `.forge/context.toml` if set via `frg config set-issue`
 
 2. **Build Path**
    ```
-   .nia/work/job_{job_id}/{target}/{modifier}.md
+   .forge/work/job_{job_id}/{target}/{modifier}.md
    ```
 
 3. **Check File Existence**
@@ -351,22 +351,22 @@ When you use a modifier without inline instructions, nia automatically determine
 
 | Command | Auto-Resolved Path |
 |---------|-------------------|
-| `nia code create --fix` | `.nia/work/job_{id}/code/fix.md` |
-| `nia issue draft --edit` | `.nia/work/job_{id}/issue/edit.md` |
-| `nia pr review --fix` | `.nia/work/job_{id}/pr/fix.md` |
-| `nia code review --edit` | `.nia/work/job_{id}/code/edit.md` |
+| `frg code create --fix` | `.forge/work/job_{id}/code/fix.md` |
+| `frg issue draft --edit` | `.forge/work/job_{id}/issue/edit.md` |
+| `frg pr review --fix` | `.forge/work/job_{id}/pr/fix.md` |
+| `frg code review --edit` | `.forge/work/job_{id}/code/edit.md` |
 
 ### Setting Job Context
 
 ```bash
 # Option 1: Environment variable
-export NIA_ISSUE_ID=42
+export FORGE_ISSUE_ID=42
 
 # Option 2: Config command
-nia config set-issue 42
+frg config set-issue 42
 
 # Verify current context
-nia config show-context
+frg config show-context
 ```
 
 ## Modifier Design Guidelines
@@ -396,25 +396,25 @@ When creating custom modifiers:
 
 If a modifier isn't recognized:
 
-1. Check operation supports it: `nia <target> <operation> --help`
-2. Verify TOML syntax: `nia config validate`
+1. Check operation supports it: `frg <target> <operation> --help`
+2. Verify TOML syntax: `frg config validate`
 3. Check spelling: `--fix` not `--fixes`
 
 ### Input File Not Loaded
 
 If your input file isn't being used:
 
-1. Check file path: `.nia/work/<job_id>/<target>/<modifier>.md`
-2. Verify job ID: `echo $NIA_JOB_ID`
-3. Check file exists: `ls -la .nia/work/*/issue/edit.md`
+1. Check file path: `.forge/work/<job_id>/<target>/<modifier>.md`
+2. Verify job ID: `echo $FORGE_JOB_ID`
+3. Check file exists: `ls -la .forge/work/*/issue/edit.md`
 
 ### Modifier Has No Effect
 
 If the modifier doesn't change behavior:
 
 1. Verify task prompt override exists: Check TOML definition
-2. Ensure prompt file exists: `.nia/prompts/<task_name>.task.md` (for custom modifiers)
-3. Validate configuration: `nia config validate`
+2. Ensure prompt file exists: `.forge/prompts/<task_name>.task.md` (for custom modifiers)
+3. Validate configuration: `frg config validate`
 
 ## Best Practices
 

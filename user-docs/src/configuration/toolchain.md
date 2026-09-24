@@ -1,6 +1,6 @@
 # Toolchain Configuration
 
-Configure NIA with the issue tracker, ticket tracker, code platform, and security scanner used by your project. NIA resolves these definitions into context for AI agents so they can understand where project work is tracked and how each tool is accessed.
+Configure Progress Forge with the issue tracker, ticket tracker, code platform, and security scanner used by your project. Progress Forge resolves these definitions into context for AI agents so they can understand where project work is tracked and how each tool is accessed.
 
 ## When to Configure the Toolchain
 
@@ -10,14 +10,14 @@ Configure the toolchain when your project uses an external development platform,
 
 Before you configure the toolchain, complete the following tasks:
 
-- Initialize an NIA project so the `.nia` directory exists.
+- Initialize an Progress Forge project so the `.forge` directory exists.
 - Install and authenticate any CLI, MCP server, or API client referenced by a tool definition.
 - Identify the repository URL when a tool uses a repository different from the current repository.
 - Obtain the environment variables or other credentials required by the selected tool.
 
 ## Configuration Fundamentals
 
-NIA reads the project toolchain from `.nia/config/toolchain.toml`. The file uses TOML tables for tool categories and fields for each tool definition.
+Progress Forge reads the project toolchain from `.forge/config/toolchain.toml`. The file uses TOML tables for tool categories and fields for each tool definition.
 
 The configuration has these category rules:
 
@@ -26,9 +26,9 @@ The configuration has these category rules:
 - `issue_tracker`, `ticket_tracker`, and `security_scanner` each allow at most one definition.
 - `security_scanner` is optional.
 
-NIA supports two tool types:
+Progress Forge supports two tool types:
 
-- `built-in` uses a tool name from NIA's built-in catalog. NIA supplies a description unless you provide one.
+- `built-in` uses a tool name from Progress Forge's built-in catalog. Progress Forge supplies a description unless you provide one.
 - `custom` describes a tool that is not represented by a built-in definition. Custom tools require a description and cannot reuse a built-in tool name.
 
 ## Configuration File Structure
@@ -81,11 +81,11 @@ Each tool definition supports these fields:
 - `description` field allows CLI command syntax and special characters
 - `description` must be under 2000 characters
 
-NIA validates descriptions before using them in prompt context. A description cannot exceed 2,000 characters and cannot contain a shell substitution pattern such as `${VALUE}`.
+Progress Forge validates descriptions before using them in prompt context. A description cannot exceed 2,000 characters and cannot contain a shell substitution pattern such as `${VALUE}`.
 
 ## Use Built-In Tools
 
-NIA includes definitions for common platforms:
+Progress Forge includes definitions for common platforms:
 
 ### Issue Trackers
 
@@ -105,7 +105,7 @@ NIA includes definitions for common platforms:
 
 ### Ticket Trackers
 
-Ticket trackers represent customer-facing support or RFA work, while issue trackers represent development tasks. NIA includes these ticket tracker definitions:
+Ticket trackers represent customer-facing support or RFA work, while issue trackers represent development tasks. Progress Forge includes these ticket tracker definitions:
 
 - `github_issues`&mdash;GitHub Issues for RFA ticket tracking.
 - `jira`&mdash;JIRA for RFA ticket tracking.
@@ -115,7 +115,7 @@ Ticket trackers represent customer-facing support or RFA work, while issue track
 
 ### Built-in Method Support
 
-Nia validates the selected access method against the built-in tool definition. The exact
+Progress Forge validates the selected access method against the built-in tool definition. The exact
 support matrix is:
 
 | Tool Type | Tool Names | Supported Methods |
@@ -132,7 +132,7 @@ An explicit `description` override can define instructions for another valid acc
 
 ### Access Methods
 
-The `method` field specifies how nia instructs agents to interact with your tools.
+The `method` field specifies how frg instructs agents to interact with your tools.
 
 | Method | Description | When to Use |
 |--------|-------------|-------------|
@@ -153,7 +153,7 @@ The `skill` method is the default and recommended choice for new projects. It pr
 
 **How Skills Work:**
 
-1. When you configure `method = "skill"`, nia injects a short reference telling the agent which skill to use
+1. When you configure `method = "skill"`, frg injects a short reference telling the agent which skill to use
 2. The agent discovers and loads the skill from `.agents/skills/<skill-name>/`
 3. Skills are loaded progressively: metadata first, then full instructions when needed
 
@@ -198,14 +198,14 @@ The recommended setup command creates `toolchain.toml` and automatically install
 the skills required by the selected tools:
 
 ```bash
-nia config init --issues github_issues --code github
+frg config init --issues github_issues --code github
 ```
 
 This installs `issue-read-github` and `pr-read-github` under `.agents/skills/` without
 overwriting existing customizations. To export every embedded built-in skill, use:
 
 ```bash
-nia config export --skills
+frg config export --skills
 ```
 
 Explicit `--skills` export is not filtered by `toolchain.toml`; it exports all embedded
@@ -246,11 +246,11 @@ Security scanners do not support the `local` method.
 
 Set both the issue tracker and code platform to the built-in `local` tool with the `local` method for a local workflow. The local issue tracker reads issue content from the project's local work area, and the local code platform uses local Git branches.
 
-The `NIA_ISSUE_ID` environment variable identifies the current issue for local issue processing. Set it before running a workflow that requires an issue identifier.
+The `FORGE_ISSUE_ID` environment variable identifies the current issue for local issue processing. Set it before running a workflow that requires an issue identifier.
 
 ## Configure Repository Targets
 
-Set `repository` when a tool must target a repository other than the current repository. NIA validates the repository URL and uses the current repository when the field is omitted where repository detection applies.
+Set `repository` when a tool must target a repository other than the current repository. Progress Forge validates the repository URL and uses the current repository when the field is omitted where repository detection applies.
 
 The following examples show separate issue and code repositories, including upstream and fork-based workflows. Verify that the configured credentials can access every repository named in the file.
 
@@ -273,10 +273,10 @@ type = "built-in"
 method = "skill"
 ```
 
-When this configuration is created with `nia config init`, the matching skills are
+When this configuration is created with `frg config init`, the matching skills are
 installed automatically. If you wrote the file manually, export the embedded skills:
 ```bash
-nia config export --skills
+frg config export --skills
 ```
 
 ### Example 2: Mixed Methods
@@ -316,8 +316,8 @@ description = "Use the {{skill_name}} skill to read ACME issues."
 ```
 
 Then create `.agents/skills/acme-issue-read/SKILL.md` with your custom instructions.
-Nia replaces `{{skill_name}}` with `acme-issue-read` when composing the prompt. Custom
-skills are user-authored and are not created by `nia config export --skills`.
+Progress Forge replaces `{{skill_name}}` with `acme-issue-read` when composing the prompt. Custom
+skills are user-authored and are not created by `frg config export --skills`.
 
 ### Example 4: GitHub with CLI
 
@@ -428,10 +428,10 @@ method = "local"
 
 With this configuration:
 
-- Issue descriptions are read from `.nia/work/job_<issue_id>/issue/issue.md`.
+- Issue descriptions are read from `.forge/work/job_<issue_id>/issue/issue.md`.
 - No external API calls are made by the local tool definitions.
 - Pull request operations use local Git branches only.
-- Set the issue ID with the `NIA_ISSUE_ID` environment variable.
+- Set the issue ID with the `FORGE_ISSUE_ID` environment variable.
 
 ### Example 7: Mixed Mode (Local Issues + GitHub Code)
 
@@ -547,14 +547,14 @@ This configuration supports:
 
 ## Initialize the Configuration
 
-Use `nia config init` to generate a toolchain configuration from built-in tool names. Supply at least one tracker flag and the `--code` flag:
+Use `frg config init` to generate a toolchain configuration from built-in tool names. Supply at least one tracker flag and the `--code` flag:
 
 ```bash
-nia config init --issues github_issues --code github --agent github_copilot
-nia config init --issues github_issues --code github --agent opencode --models stable
+frg config init --issues github_issues --code github --agent github_copilot
+frg config init --issues github_issues --code github --agent opencode --models stable
 ```
 
-The command requires `--agent` only when you also want NIA to generate agent configuration. The `--models` option requires `--agent`. Supported initialization flags include:
+The command requires `--agent` only when you also want Progress Forge to generate agent configuration. The `--models` option requires `--agent`. Supported initialization flags include:
 
 - `--issues` for an issue tracker.
 - `--tickets` for a ticket tracker.
@@ -563,7 +563,7 @@ The command requires `--agent` only when you also want NIA to generate agent con
 - `--agent` for an agent profile.
 - `--models` for the selected agent model profile.
 
-When the command generates toolchain configuration, it writes `.nia/config/toolchain.toml` with built-in definitions and the `cli` method. When `--agent` is supplied, it also writes `.nia/config/agents.toml`.
+When the command generates toolchain configuration, it writes `.forge/config/toolchain.toml` with built-in definitions and the `cli` method. When `--agent` is supplied, it also writes `.forge/config/agents.toml`.
 
 The available agent profiles include `github_copilot`, `opencode`, and `claude_code`. The available model profiles are:
 
@@ -574,13 +574,13 @@ The available agent profiles include `github_copilot`, `opencode`, and `claude_c
 
 ## Understand Toolchain Context
 
-NIA resolves each tool definition and makes the result available as Markdown context headed `# Development Toolchain`. A built-in tool uses this description order:
+Progress Forge resolves each tool definition and makes the result available as Markdown context headed `# Development Toolchain`. A built-in tool uses this description order:
 
 1. A description set in `toolchain.toml`.
 2. A method-specific built-in description.
 3. A generic built-in description.
 
-Custom descriptions provide context such as authentication requirements, commands, API endpoints, and service-specific behavior. NIA treats descriptions as prompt context; they do not execute commands or authenticate with a service.
+Custom descriptions provide context such as authentication requirements, commands, API endpoints, and service-specific behavior. Progress Forge treats descriptions as prompt context; they do not execute commands or authenticate with a service.
 
 ### Use Prompt Placeholders
 
@@ -605,21 +605,21 @@ The placeholder map does not include the tool `type` field.
 
 ## Apply Configuration Precedence
 
-NIA can discover configuration from multiple sources. The precedence order from lowest to highest is:
+Progress Forge can discover configuration from multiple sources. The precedence order from lowest to highest is:
 
 1. System configuration.
 2. User configuration.
 3. Application configuration when an application is connected.
 4. Repository configuration.
 
-External sources are disabled by default. Enable the external-source master switch and the individual configuration source in the project configuration before NIA reads those files. Higher-precedence values overlay lower-precedence values; toolchain fields merge at the category level.
+External sources are disabled by default. Enable the external-source master switch and the individual configuration source in the project configuration before Progress Forge reads those files. Higher-precedence values overlay lower-precedence values; toolchain fields merge at the category level.
 
 ## Validate and Lock the Configuration
 
 Run the direct configuration validation command after editing the file:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 The command validates the project configuration without writing a lock file. It reports errors for missing required categories, invalid tool types or methods, unknown built-in tools, duplicate definitions, invalid repository URLs, missing custom descriptions, name conflicts, and unsafe or oversized descriptions.
@@ -627,10 +627,10 @@ The command validates the project configuration without writing a lock file. It 
 After validation succeeds, create or update the configuration lock:
 
 ```bash
-nia config lock
+frg config lock
 ```
 
-NIA stores the lock at `.nia/.config_lock` and uses SHA-256 hashes to track configuration state. Run `nia config lock` again after changing configuration so the lock reflects the current files.
+Progress Forge stores the lock at `.forge/.config_lock` and uses SHA-256 hashes to track configuration state. Run `frg config lock` again after changing configuration so the lock reflects the current files.
 
 ## Troubleshoot Configuration Errors
 
@@ -657,7 +657,7 @@ Use the error message to identify the invalid field or table, then apply the cor
   Unknown built-in issue_tracker: 'unknown_tracker'. Available: [...]
   ```
 
-  NIA replaces `[...]` with the available names for that category.
+  Progress Forge replaces `[...]` with the available names for that category.
 - **Invalid method:** Use `cli`, `mcp`, `api`, or `local`, subject to the category restrictions for security scanners.
 - **Invalid repository:** Set `repository` to a valid repository URL and verify that the configured tool can access it.
 - **Invalid description:** Shorten descriptions to 2,000 characters or fewer and remove `${...}` shell substitution syntax.
@@ -668,7 +668,7 @@ Use the error message to identify the invalid field or table, then apply the cor
   ```
 
   The tool name in each message identifies the definition that needs correction.
-- **Stale lock state:** Run `nia config validate`, then run `nia config lock` to write a lock for the current configuration.
+- **Stale lock state:** Run `frg config validate`, then run `frg config lock` to write a lock for the current configuration.
 
 ## Follow Configuration Practices
 
@@ -679,7 +679,7 @@ Apply these practices to keep toolchain context accurate and useful:
 - Keep descriptions factual and focused on information an agent needs to choose or use the tool.
 - Store credentials in the supported credential mechanism, not in `toolchain.toml` descriptions.
 - Set `repository` explicitly when issue, ticket, code, or scanner data belongs to a different repository.
-- Validate the file before committing it and update `.nia/.config_lock` after configuration changes.
+- Validate the file before committing it and update `.forge/.config_lock` after configuration changes.
 ## Related Documentation
 
 - [Agent Setup Guide](./setup.md) - Installing and authenticating AI agents

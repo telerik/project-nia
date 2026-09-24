@@ -19,17 +19,17 @@
 /* =========================================================================
    Tabbed content
    Authored in markdown as:
-     <div class="nia-tabs" data-group="os">
-     <div class="nia-tab" data-title="Windows">
+     <div class="forge-tabs" data-group="os">
+     <div class="forge-tab" data-title="Windows">
      ...markdown (blank line above and below)...
      </div>
-     <div class="nia-tab" data-title="Linux / macOS">
+     <div class="forge-tab" data-title="Linux / macOS">
      ...
      </div>
      </div>
    The tab bar and switching behaviour are built by custom.js at runtime.
    ========================================================================= */
-.nia-tabs {
+.forge-tabs {
     margin: 1rem 0 1.5rem;
     border: 1px solid var(--table-border-color, rgba(128, 128, 128, 0.3));
     border-radius: 6px;
@@ -38,11 +38,11 @@
 
 /* Before JS enhances the block, show panels stacked (progressive enhancement)
    but hide the raw data-title so nothing looks broken without scripts. */
-.nia-tab {
+.forge-tab {
     padding: 0 1rem;
 }
 
-.nia-tablist {
+.forge-tablist {
     display: flex;
     flex-wrap: wrap;
     margin: 0;
@@ -51,7 +51,7 @@
     border-bottom: 1px solid var(--table-border-color, rgba(128, 128, 128, 0.3));
 }
 
-.nia-tab-button {
+.forge-tab-button {
     appearance: none;
     border: none;
     background: transparent;
@@ -66,34 +66,34 @@
     transition: opacity 0.15s ease, color 0.15s ease;
 }
 
-.nia-tab-button:hover {
+.forge-tab-button:hover {
     opacity: 1;
     background: rgba(128, 128, 128, 0.1);
 }
 
-.nia-tab-button.is-active {
+.forge-tab-button.is-active {
     opacity: 1;
     color: var(--sidebar-active, var(--links));
     border-bottom-color: var(--sidebar-active, var(--links));
 }
 
-.nia-tab-button:focus-visible {
+.forge-tab-button:focus-visible {
     outline: 2px solid var(--sidebar-active, var(--links));
     outline-offset: -2px;
 }
 
-.nia-tabs.nia-ready .nia-tab-panel {
+.forge-tabs.forge-ready .forge-tab-panel {
     padding: 0.25rem 1rem 0.5rem;
 }
 
-.nia-tab-panel[hidden] {
+.forge-tab-panel[hidden] {
     display: none;
 }
 
-.nia-tab-panel > :first-child {
+.forge-tab-panel > :first-child {
     margin-top: 0.6rem;
 }
 
-.nia-tab-panel > :last-child {
+.forge-tab-panel > :last-child {
     margin-bottom: 0.6rem;
 }

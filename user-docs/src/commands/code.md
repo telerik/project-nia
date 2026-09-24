@@ -1,7 +1,7 @@
 ---
-title: Use Code Operations with NIA
-meta_title: NIA Code Operations for Implementation, Review, Builds, and Tests
-description: Use NIA Code Operations to implement, review, refactor, document, build, test, and ask questions about issue-linked code changes.
+title: Use Code Operations with Progress Forge
+meta_title: Progress Forge Code Operations for Implementation, Review, Builds, and Tests
+description: Use Progress Forge Code Operations to implement, review, refactor, document, build, test, and ask questions about issue-linked code changes.
 slug: code-workflow
 ---
 
@@ -27,35 +27,35 @@ Choose an operation based on the task:
 
 Before running a Code Operation:
 
-1. Set the Issue ID with `NIA_ISSUE_ID` or `nia config set-issue`.
+1. Set the Issue ID with `FORGE_ISSUE_ID` or `frg config set-issue`.
 2. Create an implementation plan with the Issue Planning workflow.
-3. Confirm that the plan files exist under `.nia/work/job_<issue_id>/code/`.
+3. Confirm that the plan files exist under `.forge/work/job_<issue_id>/code/`.
 4. Configure a supported coding agent and valid toolchain settings.
 5. Make sure the project is available to the selected agent for the requested operation.
 
-All Code Operations require an Issue ID. If the context is missing, NIA reports:
+All Code Operations require an Issue ID. If the context is missing, Progress Forge reports:
 
 ```text
 Issue ID required for 'code' operations
 
 Set the Issue ID using one of these methods:
-  1. Environment variable: export NIA_ISSUE_ID=<number>
-  2. Config file: nia config set-issue <number>
+  1. Environment variable: export FORGE_ISSUE_ID=<number>
+  2. Config file: frg config set-issue <number>
 
-Current context: nia config show-context
+Current context: frg config show-context
 ```
 
 Set and inspect the context with these commands:
 
 ```bash
-export NIA_ISSUE_ID=123
-nia config set-issue 123
-nia config show-context
+export FORGE_ISSUE_ID=123
+frg config set-issue 123
+frg config show-context
 ```
 
 ## How Code Operations Work
 
-NIA executes Code Operations as configured workflows:
+Progress Forge executes Code Operations as configured workflows:
 
 1. Resolve the Issue ID, selected coding agent, model, role, and optional custom agent.
 2. Resolve the operation prompt and any modifier such as `--fix`, `--edit`, or `--lite`.
@@ -64,18 +64,18 @@ NIA executes Code Operations as configured workflows:
 5. Run the selected coding agent with the issue-linked plan and project context.
 6. Validate and display the expected outputs, reports, or execution results.
 
-A full plan contains `README.md`, `research.md`, `tasks.md`, and one or more phase files. A lite plan contains `README.md`, `tasks.md`, and `phase_1.md`. For operations that consume plans, NIA detects the lite shape and does not require `research.md` for the lite plan. If no plan exists at all under `.nia/work/job_<issue_id>/code/`, every Code Operation falls back to deriving the requirements directly from the issue (retrieving it from the configured issue tracker if `issue/issue.md` is not present locally) and proceeds without a plan; the output states that the run was performed without one.
+A full plan contains `README.md`, `research.md`, `tasks.md`, and one or more phase files. A lite plan contains `README.md`, `tasks.md`, and `phase_1.md`. For operations that consume plans, Progress Forge detects the lite shape and does not require `research.md` for the lite plan. If no plan exists at all under `.forge/work/job_<issue_id>/code/`, every Code Operation falls back to deriving the requirements directly from the issue (retrieving it from the configured issue tracker if `issue/issue.md` is not present locally) and proceeds without a plan; the output states that the run was performed without one.
 
-The operation determines whether the agent changes source files or produces an analysis report. Reports and plan-related artifacts stay under `.nia/work/job_<issue_id>/code/`; implementation, refactoring, and documentation changes are applied to the project files selected by the agent.
+The operation determines whether the agent changes source files or produces an analysis report. Reports and plan-related artifacts stay under `.forge/work/job_<issue_id>/code/`; implementation, refactoring, and documentation changes are applied to the project files selected by the agent.
 
 ## Create an Implementation
 
 Use `create` to implement the issue plan. The default role is `software_engineer`.
 
 ```bash
-nia code create
-nia code create --fix                      # Fix using instructions from fix.md
-nia code create --fix "Fix the auth bug"   # Fix with inline instructions
+frg code create
+frg code create --fix                      # Fix using instructions from fix.md
+frg code create --fix "Fix the auth bug"   # Fix with inline instructions
 ```
 
 The standard operation consumes the implementation plan. The `--fix` modifier selects the fix prompt and accepts fix instructions from the `fix` input. Use it when the implementation needs a targeted correction or when the workflow provides fix instructions.
@@ -87,13 +87,13 @@ The create prompt requires the plan context and writes task progress to `tasks.m
 Use `review` to analyze the implementation against the issue plan. The default role is `software_architect`.
 
 ```bash
-nia code review
-nia code review --edit                             # Refine review with your instructions
-nia code review --edit "Focus on security issues"  # Refine review with focus
-nia code review --auto-fix issues                  # Auto-fix all issues
+frg code review
+frg code review --edit                             # Refine review with your instructions
+frg code review --edit "Focus on security issues"  # Refine review with focus
+frg code review --auto-fix issues                  # Auto-fix all issues
 ```
 
-The standard review writes `review.md` to `.nia/work/job_<issue_id>/code/`. It examines requirements, implementation, tests, and risks, then records findings and recommendations.
+The standard review writes `review.md` to `.forge/work/job_<issue_id>/code/`. It examines requirements, implementation, tests, and risks, then records findings and recommendations.
 
 ### Review Severity Levels
 
@@ -108,20 +108,20 @@ The `--auto-fix` option accepts a severity scope. The configured values are:
 | `suggestions` | Suggestions only. | Suggestions |
 | `all` | Issues and suggestions. | Critical, Major, Minor, Suggestions |
 
-The auto-fix path requires the implementation plan, `review.md`, and `fix.md` in `.nia/work/job_<issue_id>/code/`. NIA uses `review.md` for the findings and `fix.md` for the selected severity scope, then writes task progress to `tasks.md`.
+The auto-fix path requires the implementation plan, `review.md`, and `fix.md` in `.forge/work/job_<issue_id>/code/`. Progress Forge uses `review.md` for the findings and `fix.md` for the selected severity scope, then writes task progress to `tasks.md`.
 
 Run the review before auto-fix so the required findings file exists:
 
 ```bash
 # Standard review workflow
-nia code review
+frg code review
 
 # Automatic fix workflow
-nia code review                        # Generate review.md
-nia code review --auto-fix issues      # Fix all Critical, Major, Minor issues
+frg code review                        # Generate review.md
+frg code review --auto-fix issues      # Fix all Critical, Major, Minor issues
 
 # Fix only critical issues first
-nia code review --auto-fix critical
+frg code review --auto-fix critical
 ```
 
 Use `--lite` for a focused review that reports only bugs, security vulnerabilities, and breaking changes. Use `--lite-edit` when that focused review also needs custom instructions. These modifiers are available only on `review`.
@@ -131,19 +131,19 @@ Use `--lite` for a focused review that reports only bugs, security vulnerabiliti
 Use `refactor` to improve structure, maintainability, or performance while preserving external behavior. The default role is `software_engineer`.
 
 ```bash
-nia code refactor
-nia code refactor --fix      # Apply refactoring changes using your instructions
+frg code refactor
+frg code refactor --fix      # Apply refactoring changes using your instructions
 ```
 
-The `--fix` modifier selects the refactoring fix prompt. The workflow writes a refactoring report to `.nia/work/job_<issue_id>/code/` and the agent applies the refactoring to the project files.
+The `--fix` modifier selects the refactoring fix prompt. The workflow writes a refactoring report to `.forge/work/job_<issue_id>/code/` and the agent applies the refactoring to the project files.
 
 ## Generate Code Documentation
 
 Use `document` to create or update documentation for code, APIs, or technical components. The default role is `technical_writer`.
 
 ```bash
-nia code document
-nia code document --edit     # Refine documentation with your instructions
+frg code document
+frg code document --edit     # Refine documentation with your instructions
 ```
 
 The `--edit` modifier selects the documentation refinement prompt. The operation consumes the implementation plan and can apply documentation changes to the project according to the selected agent's analysis.
@@ -153,19 +153,19 @@ The `--edit` modifier selects the documentation refinement prompt. The operation
 Use `build` to compile the project and create a diagnostic report. The default role is `software_architect`.
 
 ```bash
-nia code build
+frg code build
 ```
 
 The built-in `code build` operation runs the build and writes `build_report.md`.
 
-The build prompt is diagnostic: it records compilation errors, warnings, dependency problems, configuration issues, and recommendations in `.nia/work/job_<issue_id>/code/build_report.md`. It does not define automatic source fixes as part of the standard build operation.
+The build prompt is diagnostic: it records compilation errors, warnings, dependency problems, configuration issues, and recommendations in `.forge/work/job_<issue_id>/code/build_report.md`. It does not define automatic source fixes as part of the standard build operation.
 
 ## Run Tests
 
 Use `test` to execute the project test suites and analyze the results. The default role is `software_engineer`.
 
 ```bash
-nia code test
+frg code test
 ```
 
 The test prompt consumes the implementation plan and writes a test-results analysis to the Code job directory. The command configuration does not define `--fix` for `test`; run `test` without that modifier and use a separate implementation or fix workflow when changes are needed.
@@ -175,11 +175,11 @@ The test prompt consumes the implementation plan and writes a test-results analy
 Use `ask` for a question about the codebase or the planned implementation. The default role is `software_engineer`.
 
 ```bash
-nia code ask "How does the caching layer work?"
-nia code ask "Where should I add logging?"
+frg code ask "How does the caching layer work?"
+frg code ask "Where should I add logging?"
 ```
 
-The operation uses the implementation plan as context and writes `answer.md` to `.nia/work/job_<issue_id>/code/`. It is a Q&A workflow and does not modify the backlog or implementation plan.
+The operation uses the implementation plan as context and writes `answer.md` to `.forge/work/job_<issue_id>/code/`. It is a Q&A workflow and does not modify the backlog or implementation plan.
 
 ## Configuration
 
@@ -202,8 +202,8 @@ Use `--agent` to select the coding-agent implementation. Use `--model` to overri
 For example:
 
 ```bash
-nia code create --role software_engineer
-nia code review --agent github_copilot
+frg code create --role software_engineer
+frg code review --agent github_copilot
 ```
 
 ## Workflow Examples
@@ -213,29 +213,29 @@ nia code review --agent github_copilot
 Run these operations after setting the Issue ID and preparing the implementation plan:
 
 ```bash
-export NIA_ISSUE_ID=123
+export FORGE_ISSUE_ID=123
 
 # Create implementation
-nia code create
+frg code create
 
 # Build and report errors
-nia code build
+frg code build
 
 # Run tests
-nia code test
+frg code test
 
 # Review quality
-nia code review
+frg code review
 ```
 
 Use a separate fix-enabled operation after a report identifies changes to make:
 
 ```bash
 # Apply implementation fixes from fix instructions
-nia code create --fix
+frg code create --fix
 
 # Apply refactoring fixes from fix instructions
-nia code refactor --fix
+frg code refactor --fix
 ```
 
 ### Code Quality Workflow
@@ -243,16 +243,16 @@ nia code refactor --fix
 Use this sequence when you need to restructure code, document it, and then review the result:
 
 ```bash
-export NIA_ISSUE_ID=456
+export FORGE_ISSUE_ID=456
 
 # Refactor problematic code
-nia code refactor --fix
+frg code refactor --fix
 
 # Add documentation
-nia code document --edit
+frg code document --edit
 
 # Verify quality
-nia code review
+frg code review
 ```
 
 ### Automated Review and Fix Workflow
@@ -260,19 +260,19 @@ nia code review
 Run the review first, then apply a selected severity scope:
 
 ```bash
-export NIA_ISSUE_ID=789
+export FORGE_ISSUE_ID=789
 
 # Generate code review
-nia code review
+frg code review
 
 # Auto-fix all issues (Critical, Major, Minor)
-nia code review --auto-fix issues
+frg code review --auto-fix issues
 
 # Or fix only critical issues first
-nia code review --auto-fix critical
+frg code review --auto-fix critical
 
 # Then fix remaining issues
-nia code review --auto-fix major
+frg code review --auto-fix major
 ```
 
 ## Expected Results and Limitations
@@ -302,13 +302,13 @@ Plan validation distinguishes full and lite plans. Lite plans omit `research.md`
 Set the Issue ID and verify the context:
 
 ```bash
-export NIA_ISSUE_ID=123
-nia config show-context
+export FORGE_ISSUE_ID=123
+frg config show-context
 ```
 
 ### The workflow reports missing plan files
 
-Check `.nia/work/job_<issue_id>/code/` and confirm that the plan matches one of these supported shapes:
+Check `.forge/work/job_<issue_id>/code/` and confirm that the plan matches one of these supported shapes:
 
 - Full plan: `README.md`, `research.md`, `tasks.md`, and phase files.
 - Lite plan: `README.md`, `tasks.md`, and exactly `phase_1.md`.
@@ -317,7 +317,7 @@ An incomplete plan (some but not all of the files above) still stops the operati
 
 ### Auto-fix cannot start
 
-Run `nia code review` first. Then check that `.nia/work/job_<issue_id>/code/review.md` and `.nia/work/job_<issue_id>/code/fix.md` exist before running `nia code review --auto-fix <level>`.
+Run `frg code review` first. Then check that `.forge/work/job_<issue_id>/code/review.md` and `.forge/work/job_<issue_id>/code/fix.md` exist before running `frg code review --auto-fix <level>`.
 
 ### A command rejects a modifier
 

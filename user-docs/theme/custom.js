@@ -23,11 +23,11 @@
 // Progressive-enhancement tabs.
 //
 // Markdown authors write:
-//   <div class="nia-tabs" data-group="os">
-//   <div class="nia-tab" data-title="Windows">
+//   <div class="forge-tabs" data-group="os">
+//   <div class="forge-tab" data-title="Windows">
 //   ...markdown...
 //   </div>
-//   <div class="nia-tab" data-title="Linux / macOS">
+//   <div class="forge-tab" data-title="Linux / macOS">
 //   ...markdown...
 //   </div>
 //   </div>
@@ -36,7 +36,7 @@
 // and keeps tabs that share a `data-group` in sync (persisted in localStorage)
 // so choosing e.g. "Windows" once applies everywhere on the page.
 (function () {
-    var STORAGE_PREFIX = 'nia-tabs:';
+    var STORAGE_PREFIX = 'forge-tabs:';
 
     function slug(value) {
         return (value || '')
@@ -63,23 +63,23 @@
     }
 
     function initTabs(root) {
-        var blocks = Array.prototype.slice.call(root.querySelectorAll('.nia-tabs'));
+        var blocks = Array.prototype.slice.call(root.querySelectorAll('.forge-tabs'));
         var groups = {};
 
         function hasTitle(block, title) {
-            return block._niaPanels.some(function (panel) {
+            return block._forgePanels.some(function (panel) {
                 return panel.dataset.title === title;
             });
         }
 
         function select(block, title) {
             if (!hasTitle(block, title)) {
-                title = block._niaPanels[0].dataset.title;
+                title = block._forgePanels[0].dataset.title;
             }
-            block._niaPanels.forEach(function (panel) {
+            block._forgePanels.forEach(function (panel) {
                 panel.hidden = panel.dataset.title !== title;
             });
-            block._niaButtons.forEach(function (button) {
+            block._forgeButtons.forEach(function (button) {
                 var active = button.dataset.title === title;
                 button.classList.toggle('is-active', active);
                 button.setAttribute('aria-selected', active ? 'true' : 'false');
@@ -97,7 +97,7 @@
 
         blocks.forEach(function (block, blockIndex) {
             var panels = Array.prototype.slice.call(block.children).filter(function (el) {
-                return el.classList && el.classList.contains('nia-tab');
+                return el.classList && el.classList.contains('forge-tab');
             });
             if (panels.length === 0) {
                 return;
@@ -105,16 +105,16 @@
 
             var group = block.getAttribute('data-group');
             var tablist = document.createElement('div');
-            tablist.className = 'nia-tablist';
+            tablist.className = 'forge-tablist';
             tablist.setAttribute('role', 'tablist');
 
             var buttons = [];
 
             panels.forEach(function (panel, index) {
                 var title = panel.getAttribute('data-title') || 'Tab ' + (index + 1);
-                var baseId = 'niatab-' + blockIndex + '-' + index + '-' + slug(title);
+                var baseId = 'forgetab-' + blockIndex + '-' + index + '-' + slug(title);
 
-                panel.classList.add('nia-tab-panel');
+                panel.classList.add('forge-tab-panel');
                 panel.setAttribute('role', 'tabpanel');
                 panel.id = baseId + '-panel';
                 panel.setAttribute('aria-labelledby', baseId + '-tab');
@@ -122,7 +122,7 @@
 
                 var button = document.createElement('button');
                 button.type = 'button';
-                button.className = 'nia-tab-button';
+                button.className = 'forge-tab-button';
                 button.textContent = title;
                 button.setAttribute('role', 'tab');
                 button.id = baseId + '-tab';
@@ -141,10 +141,10 @@
                 tablist.appendChild(button);
             });
 
-            block._niaPanels = panels;
-            block._niaButtons = buttons;
+            block._forgePanels = panels;
+            block._forgeButtons = buttons;
             block.insertBefore(tablist, panels[0]);
-            block.classList.add('nia-ready');
+            block.classList.add('forge-ready');
 
             tablist.addEventListener('keydown', function (event) {
                 var current = buttons.indexOf(document.activeElement);

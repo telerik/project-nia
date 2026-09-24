@@ -6,9 +6,9 @@ Lite mode (`--lite`) provides focused, reduced-output variants of high-token com
 
 | Command | Standard Output | Lite Output | Token Reduction |
 |---------|-----------------|-------------|-----------------|
-| `nia code review` | Comprehensive review | Critical issues only | ~30-50% |
-| `nia pr draft` | Full PR description | Essential info only | ~30-50% |
-| `nia pr review` | 5 review files | Single summary file | ~40-60% |
+| `frg code review` | Comprehensive review | Critical issues only | ~30-50% |
+| `frg pr draft` | Full PR description | Essential info only | ~30-50% |
+| `frg pr review` | 5 review files | Single summary file | ~40-60% |
 
 ## When to Use Lite Mode
 
@@ -30,7 +30,7 @@ Lite mode (`--lite`) provides focused, reduced-output variants of high-token com
 ### Code Review Lite
 
 ```bash
-nia code review --lite
+frg code review --lite
 ```
 
 Focuses on:
@@ -46,7 +46,7 @@ Excludes:
 ### PR Draft Lite
 
 ```bash
-nia pr draft --lite
+frg pr draft --lite
 ```
 
 Produces:
@@ -62,7 +62,7 @@ Excludes:
 ### PR Review Lite
 
 ```bash
-nia pr review --lite
+frg pr review --lite
 ```
 
 Outputs single `pr_review.md` with:
@@ -81,16 +81,16 @@ Excludes:
 Lite mode can be combined with edit instructions:
 
 ```bash
-nia code review --lite-edit "Focus on performance-critical code paths"
+frg code review --lite-edit "Focus on performance-critical code paths"
 ```
 
 This provides focused output with custom refinements.
 
 ## Downstream Commands
 
-`nia pr merge` requires `pr_review.md`; the other 4 review files (`status_check_fixes.md`, `code_quality_improvements.md`, `minor_merge_conflicts.md`, `high_risk_merge_conflicts.md`) are each individually optional. Any subset of them can be missing — not only the all-or-nothing lite/standard shape — and the operation proceeds from `pr_review.md` alone for whichever ones are absent:
+`frg pr merge` requires `pr_review.md`; the other 4 review files (`status_check_fixes.md`, `code_quality_improvements.md`, `minor_merge_conflicts.md`, `high_risk_merge_conflicts.md`) are each individually optional. Any subset of them can be missing — not only the all-or-nothing lite/standard shape — and the operation proceeds from `pr_review.md` alone for whichever ones are absent:
 
-- If `nia pr review --lite` was used, only `pr_review.md` exists and the operation proceeds from it alone.
+- If `frg pr review --lite` was used, only `pr_review.md` exists and the operation proceeds from it alone.
 - Standard mode normally produces all 5 files, but a partial set (e.g. only `status_check_fixes.md` missing) is also accepted.
 
 ## Token Usage
@@ -118,7 +118,7 @@ A: Lite mode is designed to capture bugs, security vulnerabilities, and breaking
 
 **Q: Can I switch between lite and standard mode?**
 
-A: Yes. Each command execution is independent. Run `nia pr review` after `nia pr review --lite` to get comprehensive output.
+A: Yes. Each command execution is independent. Run `frg pr review` after `frg pr review --lite` to get comprehensive output.
 
 **Q: How does lite detection work for pr merge?**
 

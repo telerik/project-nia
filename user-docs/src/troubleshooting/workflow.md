@@ -11,14 +11,14 @@
 ```
 ❌ Error: Issue ID required for 'issue' operations
        Set via:
-       1. Environment variable: export NIA_ISSUE_ID=<number>
-       2. Context file: .nia/context.toml
+       1. Environment variable: export FORGE_ISSUE_ID=<number>
+       2. Context file: .forge/context.toml
 ```
 ```
 ❌ Error: Pull Request ID required for 'pr' operations
        Set via:
-       1. Environment variable: export NIA_PR_ID=<number>
-       2. Context file: .nia/context.toml
+       1. Environment variable: export FORGE_PR_ID=<number>
+       2. Context file: .forge/context.toml
 ```
 
 **Cause**: Workflow operations on issues/PRs require context IDs, which can be set via environment variables or context file.
@@ -28,24 +28,24 @@
 1. **Set environment variable** (temporary):
    ```bash
    # For issue workflows
-   export NIA_ISSUE_ID=123
-   nia backlog task create
+   export FORGE_ISSUE_ID=123
+   frg backlog task create
 
    # For PR workflows
-   export NIA_PR_ID=456
-   nia pr review
+   export FORGE_PR_ID=456
+   frg pr review
 
    # For workflows requiring both
-   export NIA_ISSUE_ID=123
-   export NIA_PR_ID=456
-   nia pr implement
+   export FORGE_ISSUE_ID=123
+   export FORGE_PR_ID=456
+   frg pr implement
    ```
 
 2. **Set in context file** (persistent):
    ```bash
    # Create context file
-   mkdir -p .nia
-   cat > .nia/context.toml << 'EOF'
+   mkdir -p .forge
+   cat > .forge/context.toml << 'EOF'
    issue_id = 123
    pr_id = 456
    EOF
@@ -54,29 +54,29 @@
 3. **Verify context is set**:
    ```bash
    # Environment variables take precedence
-   echo $NIA_ISSUE_ID
-   echo $NIA_PR_ID
+   echo $FORGE_ISSUE_ID
+   echo $FORGE_PR_ID
 
    # Check context file
-   cat .nia/context.toml
+   cat .forge/context.toml
    ```
 
 4. **Add to shell profile** (for frequently used issue):
    ```bash
    # Add to ~/.bashrc or ~/.zshrc
-   echo 'export NIA_ISSUE_ID=123' >> ~/.bashrc
+   echo 'export FORGE_ISSUE_ID=123' >> ~/.bashrc
    source ~/.bashrc
    ```
 
 5. **Use command-line flags** (if supported in future versions):
    ```bash
    # Future syntax (not yet implemented)
-   nia backlog task create --issue 123
+   frg backlog task create --issue 123
    ```
 
 **Prevention**:
-- Set `NIA_ISSUE_ID` when starting work on an issue
-- Create `.nia/context.toml` for long-running work
+- Set `FORGE_ISSUE_ID` when starting work on an issue
+- Create `.forge/context.toml` for long-running work
 - Add context to shell profile for active sprints
 - Document context requirements in team workflows
 
@@ -90,10 +90,10 @@
 
 **Error Message**:
 ```
-❌ Error: NIA_ISSUE_ID must be greater than 0
+❌ Error: FORGE_ISSUE_ID must be greater than 0
 ```
 ```
-❌ Error: Invalid context: NIA_PR_ID must be a positive number
+❌ Error: Invalid context: FORGE_PR_ID must be a positive number
 ```
 
 **Cause**: Context environment variables contain invalid values.
@@ -102,42 +102,42 @@
 
 1. **Check current values**:
    ```bash
-   echo "Issue ID: $NIA_ISSUE_ID"
-   echo "PR ID: $NIA_PR_ID"
+   echo "Issue ID: $FORGE_ISSUE_ID"
+   echo "PR ID: $FORGE_PR_ID"
    ```
 
 2. **Fix invalid values**:
    ```bash
    # ❌ Wrong - non-numeric
-   export NIA_ISSUE_ID=abc
+   export FORGE_ISSUE_ID=abc
 
    # ❌ Wrong - zero
-   export NIA_ISSUE_ID=0
+   export FORGE_ISSUE_ID=0
 
    # ❌ Wrong - negative
-   export NIA_ISSUE_ID=-1
+   export FORGE_ISSUE_ID=-1
 
    # ✅ Correct - positive integer
-   export NIA_ISSUE_ID=123
+   export FORGE_ISSUE_ID=123
    ```
 
 3. **Clear invalid environment variables**:
    ```bash
-   unset NIA_ISSUE_ID
-   unset NIA_PR_ID
+   unset FORGE_ISSUE_ID
+   unset FORGE_PR_ID
    ```
 
 4. **Fix context file** (if using):
    ```toml
-   # .nia/context.toml
+   # .forge/context.toml
    issue_id = 123  # Must be positive integer
    pr_id = 456     # Must be positive integer
    ```
 
 5. **Validate and retry**:
    ```bash
-   export NIA_ISSUE_ID=123
-   nia backlog task create
+   export FORGE_ISSUE_ID=123
+   frg backlog task create
    ```
 
 **Prevention**:
@@ -154,13 +154,13 @@
 Before running a workflow, validate its definition to catch errors early:
 
 ```bash
-nia workflow validate <workflow-name>
+frg workflow validate <workflow-name>
 ```
 
 ### Why Validate?
 
 - **Catch errors before execution** - Find configuration issues without running the workflow
-- **No execution context required** - Validate without setting `NIA_ISSUE_ID` or `NIA_PR_ID`
+- **No execution context required** - Validate without setting `FORGE_ISSUE_ID` or `FORGE_PR_ID`
 - **Detailed feedback** - Get specific error messages for each validation issue
 - **Development tool** - Perfect for testing workflow definitions during development
 
@@ -245,7 +245,7 @@ on_success = "unused_state"  # Now reachable
 
 ### Validation vs. Execution Errors
 
-- **Validation errors** are structural issues caught by `nia workflow validate`
+- **Validation errors** are structural issues caught by `frg workflow validate`
   - TOML syntax errors
   - Missing required fields
   - Unreachable states
@@ -258,17 +258,17 @@ on_success = "unused_state"  # Now reachable
   - Network issues
   - Permission problems
 
-Always validate your workflow definitions before testing with `nia workflow run`.
+Always validate your workflow definitions before testing with `frg workflow run`.
 
 ### Quick Validation Workflow
 
 1. Edit your workflow file
-2. Validate: `nia workflow validate my-workflow`
+2. Validate: `frg workflow validate my-workflow`
 3. If errors, fix and repeat step 2
-4. Visualize: `nia workflow graph my-workflow`
-5. Test: `nia workflow run my-workflow --dry-run`
+4. Visualize: `frg workflow graph my-workflow`
+5. Test: `frg workflow run my-workflow --dry-run`
 
-**Related**: [Workflow Introduction](../workflows/introduction.md#validating-workflows), [Workflow Commands Reference](../reference/commands.md#nia-workflow-validate)
+**Related**: [Workflow Introduction](../workflows/introduction.md#validating-workflows), [Workflow Commands Reference](../reference/commands.md#forge-workflow-validate)
 
 ---
 
@@ -293,30 +293,30 @@ Always validate your workflow definitions before testing with `nia workflow run`
 
 1. **List available commands**:
    ```bash
-   nia --help
-   nia issue --help
-   nia backlog --help
+   frg --help
+   frg issue --help
+   frg backlog --help
    ```
 
 2. **Check command spelling**:
    ```bash
    # ❌ Wrong
-   nia issues draft     # "issues" is plural
+   frg issues draft     # "issues" is plural
 
    # ✅ Correct
-   nia issue draft      # "issue" is singular
+   frg issue draft      # "issue" is singular
    ```
 
 3. **List all workflows**:
    ```bash
-   nia status --verbose
+   frg status --verbose
    # Shows registered workflows
    ```
 
 4. **Check for custom workflows**:
    ```bash
-   cat .nia/config/commands.toml
-   ls .nia/config/workflows.d/
+   cat .forge/config/commands.toml
+   ls .forge/config/workflows.d/
    ```
 
 5. **Verify command exists in documentation**:
@@ -327,14 +327,14 @@ Always validate your workflow definitions before testing with `nia workflow run`
 
 6. **Use correct namespace hierarchy**:
    ```bash
-   # Commands follow: nia <target> <object> <action>
-   nia issue plan    # Correct hierarchy
-   nia issue draft         # Correct hierarchy
-   nia pr review           # Correct hierarchy
+   # Commands follow: frg <target> <object> <action>
+   frg issue plan    # Correct hierarchy
+   frg issue draft         # Correct hierarchy
+   frg pr review           # Correct hierarchy
    ```
 
 **Prevention**:
-- Use tab completion (install with `nia completions install`)
+- Use tab completion (install with `frg completions install`)
 - Reference documentation for exact command names
 - Test custom workflows after creation
 
@@ -367,16 +367,16 @@ Agent returned invalid response: {...}
 1. **Check execution logs**:
    ```bash
    # Find latest job
-   ls -lt .nia/work/ | head -5
+   ls -lt .forge/work/ | head -5
 
    # View logs
-   cat .nia/work/job_<job_id>/logs/*.log
+   cat .forge/work/job_<job_id>/logs/*.log
    ```
 
 2. **Review agent trace**:
    ```bash
-   nia trace list
-   nia trace view <trace-file>
+   frg trace list
+   frg trace view <trace-file>
    ```
 
 3. **Look for specific errors**:
@@ -393,32 +393,32 @@ Agent returned invalid response: {...}
 
 5. **Verify prompt templates exist**:
    ```bash
-   ls .nia/prompts/
+   ls .forge/prompts/
 
    # Export default prompts if missing
-   nia config export --target plan
+   frg config export --target plan
    ```
 
 6. **Check workflow configuration**:
    ```bash
-   cat .nia/config/commands.toml
+   cat .forge/config/commands.toml
    # Verify task_prompt paths are correct
    ```
 
 7. **Enable debug logging**:
    ```bash
    # Linux/macOS
-   RUST_LOG=debug nia issue plan
+   RUST_LOG=debug frg issue plan
 
    # Windows PowerShell
-   $env:RUST_LOG="debug"; nia issue plan
+   $env:RUST_LOG="debug"; frg issue plan
    ```
 
 8. **Retry with simplified context**:
    ```bash
    # Try without environment context
-   unset NIA_ISSUE_ID
-   nia issue plan
+   unset FORGE_ISSUE_ID
+   frg issue plan
    ```
 
 **Prevention**:
@@ -449,28 +449,28 @@ Command completes without errors but produces no output or results
 1. **Enable debug logging**:
    ```bash
    # Linux/macOS
-   RUST_LOG=debug nia issue draft
+   RUST_LOG=debug frg issue draft
 
    # Windows PowerShell
-   $env:RUST_LOG="debug"; nia issue draft
+   $env:RUST_LOG="debug"; frg issue draft
    ```
 
 2. **Check work directory logs**:
    ```bash
    # Find latest job
-   ls -lt .nia/work/ | head -5
+   ls -lt .forge/work/ | head -5
 
    # Check system log
-   cat .nia/work/job_*/logs/system.log
+   cat .forge/work/job_*/logs/system.log
    ```
 
 3. **Inspect execution traces**:
    ```bash
    # List available traces
-   ls .nia/work/job_*/traces/
+   ls .forge/work/job_*/traces/
 
    # View trace file
-   cat .nia/work/job_*/traces/*.trace.md
+   cat .forge/work/job_*/traces/*.trace.md
    ```
 
 4. **Verify AI backend is accessible**:
@@ -482,12 +482,12 @@ Command completes without errors but produces no output or results
 5. **Check prompts are loading correctly**:
    ```bash
    # Use --print-prompt flag to see composed prompt
-   nia issue draft --print-prompt
+   frg issue draft --print-prompt
    ```
 
 6. **Verify workflow configuration**:
    ```bash
-   nia config validate
+   frg config validate
    ```
 
 **Prevention**:
@@ -506,7 +506,7 @@ Command completes without errors but produces no output or results
 
 **Error Message**:
 ```
-❌ Error: Prompt file not found: .nia/prompts/my_role.role.md
+❌ Error: Prompt file not found: .forge/prompts/my_role.role.md
 ```
 
 **Cause**:
@@ -518,13 +518,13 @@ Command completes without errors but produces no output or results
 
 1. **Check if file exists**:
    ```bash
-   ls .nia/prompts/my_role.role.md
+   ls .forge/prompts/my_role.role.md
    ```
 
 2. **Create the missing prompt file**:
    ```bash
-   mkdir -p .nia/prompts
-   cat > .nia/prompts/my_role.role.md << 'EOF'
+   mkdir -p .forge/prompts
+   cat > .forge/prompts/my_role.role.md << 'EOF'
    # Role Prompt
    You are an expert software engineer...
    EOF
@@ -532,7 +532,7 @@ Command completes without errors but produces no output or results
 
 3. **Fix typo in configuration**:
    ```toml
-   # In .nia/config/commands.toml
+   # In .forge/config/commands.toml
    [workflows.operations.prompts]
    role = "my_role"  # Check spelling matches filename
    ```
@@ -540,20 +540,20 @@ Command completes without errors but produces no output or results
 4. **Use built-in prompt instead**:
    ```bash
    # Export default prompts
-   nia config export --target issue
+   frg config export --target issue
    ```
 
 5. **Verify prompt file paths**:
    ```bash
    # List all prompt files
-   find .nia/prompts -name "*.md"
+   find .forge/prompts -name "*.md"
    ```
 
 **Prevention**:
 - Use consistent naming for prompt files
 - Test configuration after adding custom prompts
 - Keep prompt files in version control
-- Use `nia config export` to get default prompts
+- Use `frg config export` to get default prompts
 
 ---
 
@@ -577,37 +577,37 @@ Command completes without errors but produces no output or results
 1. **Use manual retry** with default prompt:
    ```bash
    # Retry with automatic missing files list
-   nia code create --retry
+   frg code create --retry
    ```
 
 2. **Retry with specific instructions**:
    ```bash
    # Provide guidance for what's missing
-   nia issue plan --retry "The phase_3.md file needs more detail on testing strategy"
+   frg issue plan --retry "The phase_3.md file needs more detail on testing strategy"
    ```
 
 3. **Use automatic retry** on initial execution:
    ```bash
    # Automatically retry once if outputs are missing
-   nia code create --auto-retry
+   frg code create --auto-retry
    ```
 
 4. **Check what's missing**:
    ```bash
    # View expected outputs from prompt
-   nia code create --print-prompt | grep -A 20 "output_requirements"
+   frg code create --print-prompt | grep -A 20 "output_requirements"
 
    # Compare with actual files created
-   ls -la .nia/work/job_*/code/
+   ls -la .forge/work/job_*/code/
    ```
 
 5. **Manually create missing files** then continue work:
    ```bash
    # Create placeholder
-   touch .nia/work/job_123/code/missing_file.md
+   touch .forge/work/job_123/code/missing_file.md
 
    # Continue with next operation
-   nia code review
+   frg code review
    ```
 
 **When to use each approach**:

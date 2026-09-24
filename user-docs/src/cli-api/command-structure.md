@@ -1,13 +1,13 @@
 # Command Structure
 
-Nia CLI v2.0.0 introduces a consistent command structure that separates utility and workflow commands.
+Progress Forge CLI v2.0.0 introduces a consistent command structure that separates utility and workflow commands.
 
 ## Command Pattern
 
 All commands follow this pattern:
 
 ```bash
-nia <target> <operation> [--modifier] [--options]
+frg <target> <operation> [--modifier] [--options]
 ```
 
 ### Components
@@ -19,31 +19,31 @@ nia <target> <operation> [--modifier] [--options]
 
 ## Global Flags
 
-Global flags apply to the entire nia invocation, not just specific commands.
+Global flags apply to the entire frg invocation, not just specific commands.
 
 ### --tail
 
 Stream trace file content in real-time during agent execution:
 
 ```bash
-export NIA_ISSUE_ID=42
-nia --tail
+export FORGE_ISSUE_ID=42
+frg --tail
 ```
 
-Requires an active job context (NIA_ISSUE_ID).
+Requires an active job context (FORGE_ISSUE_ID).
 
 ### --continue
 
 Used with `--tail` to enable persistent monitoring across commands:
 
 ```bash
-nia --tail --continue
+frg --tail --continue
 ```
 
 When active:
 - Automatically detects and switches to newer tracefiles
-- Monitors both job traces/ directory and global locations (e.g., `nia ask`)
-- Adapts when context changes (NIA_ISSUE_ID)
+- Monitors both job traces/ directory and global locations (e.g., `frg ask`)
+- Adapts when context changes (FORGE_ISSUE_ID)
 - Never exits due to inactivity (requires Ctrl+C)
 
 ### --quiet (-q)
@@ -51,7 +51,7 @@ When active:
 Suppress all output except errors. Available on all commands.
 
 ```bash
-nia issue draft --quiet
+frg issue draft --quiet
 ```
 
 ## Command Types
@@ -62,9 +62,9 @@ Utility commands execute static, deterministic operations. They run quickly and 
 
 Examples:
 ```bash
-nia config validate           # Validate configuration
-nia guide open                # Open Nia user guide
-nia shell install bash        # Install shell completions
+frg config validate           # Validate configuration
+frg guide open                # Open Progress Forge user guide
+frg shell install bash        # Install shell completions
 ```
 
 **Characteristics:**
@@ -79,9 +79,9 @@ Workflow commands are AI agent-driven operations that perform complex tasks.
 
 Examples:
 ```bash
-nia issue draft              # Create a task plan
-nia code review              # Review code quality
-nia code create --fix        # Create code with fix instructions
+frg issue draft              # Create a task plan
+frg code review              # Review code quality
+frg code create --fix        # Create code with fix instructions
 ```
 
 **Characteristics:**
@@ -94,25 +94,25 @@ nia code create --fix        # Create code with fix instructions
 
 ### Basic Workflow Command
 ```bash
-nia issue draft
+frg issue draft
 ```
 Creates a draft task plan.
 
 ### With Modifier
 ```bash
-nia issue draft --edit
+frg issue draft --edit
 ```
 Creates a draft task plan with editing instructions.
 
 ### With Options
 ```bash
-nia backlog create --major
+frg backlog create --major
 ```
 Plans a major release.
 
 ### Complex Command
 ```bash
-nia code create --fix
+frg code create --fix
 ```
 Creates code and applies your fix instructions.
 
@@ -120,9 +120,9 @@ Creates code and applies your fix instructions.
 
 Get help for any command:
 ```bash
-nia --help                   # List all commands
-nia issue --help             # List operations for issue target
-nia issue draft --help       # Help for specific operation
+frg --help                   # List all commands
+frg issue --help             # List operations for issue target
+frg issue draft --help       # Help for specific operation
 ```
 
 ## Command Context
@@ -135,11 +135,11 @@ Most workflow commands require context to execute properly:
 Set context via environment variables:
 
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
 
-nia issue draft              # Uses Issue #123
-nia pr review                # Uses PR #456 in Issue #123
+frg issue draft              # Uses Issue #123
+frg pr review                # Uses PR #456 in Issue #123
 ```
 
 If context is missing, commands abort with helpful error messages explaining how to set it.
@@ -149,16 +149,16 @@ If context is missing, commands abort with helpful error messages explaining how
 Use tab completion to discover available commands:
 
 ```bash
-nia <TAB>                    # Shows all targets
-nia issue <TAB>              # Shows operations for issue
-nia issue draft --<TAB>      # Shows available modifiers
+frg <TAB>                    # Shows all targets
+frg issue <TAB>              # Shows operations for issue
+frg issue draft --<TAB>      # Shows available modifiers
 ```
 
 See [Shell Completions](../getting-started/completions.md) for installation.
 
 ## Application Commands
 
-Application commands enable executing nia operations across multiple related repositories as a coordinated unit. This is useful for:
+Application commands enable executing frg operations across multiple related repositories as a coordinated unit. This is useful for:
 
 - Microservices architectures (separate repositories per service)
 - Multi-tier applications (API, frontend, backend in separate repos)
@@ -167,17 +167,17 @@ Application commands enable executing nia operations across multiple related rep
 ### Command Syntax
 
 ```bash
-nia app <target> <operation> [--modifiers] [--options]
+frg app <target> <operation> [--modifiers] [--options]
 ```
 
-The `app` prefix wraps any standard nia command to execute it at the application level.
+The `app` prefix wraps any standard frg command to execute it at the application level.
 
 Examples:
 ```bash
-nia app issue draft              # Draft issue across all repositories
-nia app issue plan               # Plan implementation in each repository
-nia app code create              # Create code in each repository
-nia app pr create                # Create PRs in each repository
+frg app issue draft              # Draft issue across all repositories
+frg app issue plan               # Plan implementation in each repository
+frg app code create              # Create code in each repository
+frg app pr create                # Create PRs in each repository
 ```
 
 ### Prerequisites
@@ -187,7 +187,7 @@ Before using application commands:
 1. **Create an application configuration** (see [Multi-Repository Applications](../configuration/hierarchical.md#multi-repository-applications)):
    ```bash
    cd /path/to/app-root
-   nia config init --app
+   frg config init --app
    ```
 
 2. **Opt-in child repositories** by adding `allow_app` UUID to each repository's `project.toml`:
@@ -199,8 +199,8 @@ Before using application commands:
 
 3. **Discover repositories**:
    ```bash
-   nia app discover
-   nia app status                # Show where each repository's output landed
+   frg app discover
+   frg app status                # Show where each repository's output landed
    ```
 
 ### Execution Modes
@@ -212,8 +212,8 @@ Application commands use two execution modes depending on the operation's `app_w
 Commands without `app_workflow` configuration execute once at the application level with full application context:
 
 ```bash
-nia app issue draft              # Executes once with all repo metadata
-nia app code review              # Reviews entire feature across repos
+frg app issue draft              # Executes once with all repo metadata
+frg app code review              # Reviews entire feature across repos
 ```
 
 **Behavior:**
@@ -233,16 +233,16 @@ nia app code review              # Reviews entire feature across repos
 Commands with `app_workflow` configuration execute a workflow in each child repository independently:
 
 ```bash
-nia app issue plan               # Runs workflow in each repo
-nia app code create              # Runs workflow in each repo
-nia app pr create                # Runs workflow in each repo
+frg app issue plan               # Runs workflow in each repo
+frg app code create              # Runs workflow in each repo
+frg app pr create                # Runs workflow in each repo
 ```
 
 **Behavior:**
 - Workflow runs in each child repository
 - Repositories execute in parallel (controlled by `--max-workers`)
 - Each repo has independent context and output
-- Context (issue_id, ticket_id) propagated via `.nia/context.toml`
+- Context (issue_id, ticket_id) propagated via `.forge/context.toml`
 
 **Use cases:**
 - Issue planning (create implementation plan per repo)
@@ -262,7 +262,7 @@ target = "issue"
 [[commands.operations]]
 name = "plan"
 description = "Create implementation plan"
-app_workflow = "issue-to-plan"    # Uses workflow execution via nia app
+app_workflow = "issue-to-plan"    # Uses workflow execution via frg app
 
 [[commands.operations]]
 name = "draft"
@@ -273,7 +273,7 @@ description = "Draft issue plan"
 **Key Points:**
 - **Default behavior**: Commands without `app_workflow` use direct execution
 - **Extensibility**: Any new command automatically works via direct execution
-- **User override**: Users can override via `.nia/config/commands.toml`
+- **User override**: Users can override via `.forge/config/commands.toml`
 
 #### Built-in Execution Method Mappings
 
@@ -294,15 +294,26 @@ description = "Draft issue plan"
 These flags work with direct execution commands:
 
 ```bash
-nia app issue draft --edit       # Interactive editing
-nia app code review --fix        # Include fix suggestions
-nia app issue draft --model claude-opus-4.8
-nia app issue draft --agent custom-agent
-nia app issue draft --role security_expert
-nia app issue draft --role none   # skip the persona prompt for this run
-nia app issue draft --context-file ./extra-context.txt
-nia app issue draft --clear      # Clear job directory first
-nia app issue draft --quiet      # Suppress output
+<<<<<<< HEAD
+frg app issue draft --edit       # Interactive editing
+frg app code review --fix        # Include fix suggestions
+frg app issue draft --model claude-opus-4.8
+frg app issue draft --agent custom-agent
+frg app issue draft --role security_expert
+frg app issue draft --role none   # skip the persona prompt for this run
+frg app issue draft --context-file ./extra-context.txt
+frg app issue draft --clear      # Clear job directory first
+frg app issue draft --quiet      # Suppress output
+=======
+frg app issue draft --edit       # Interactive editing
+frg app code review --fix        # Include fix suggestions
+frg app issue draft --model claude-opus-4.8
+frg app issue draft --agent custom-agent
+frg app issue draft --role security_expert
+frg app issue draft --context-file ./extra-context.txt
+frg app issue draft --clear      # Clear job directory first
+frg app issue draft --quiet      # Suppress output
+>>>>>>> 6b0144bb8 (chore: update nias)
 ```
 
 **Allowed flags:**
@@ -321,11 +332,11 @@ nia app issue draft --quiet      # Suppress output
 These flags work with workflow execution commands:
 
 ```bash
-nia app issue plan --quiet                    # Suppress output
-nia app issue plan --bypass-approvals         # Skip approval gates
-nia app issue plan --start-from review_code   # Resume from step
-nia app issue plan --dry-run                  # Validate without executing
-nia app issue plan --max-workers 5            # Parallel execution limit
+frg app issue plan --quiet                    # Suppress output
+frg app issue plan --bypass-approvals         # Skip approval gates
+frg app issue plan --start-from review_code   # Resume from step
+frg app issue plan --dry-run                  # Validate without executing
+frg app issue plan --max-workers 5            # Parallel execution limit
 ```
 
 **Allowed flags:**
@@ -336,8 +347,13 @@ nia app issue plan --max-workers 5            # Parallel execution limit
 - `--max-workers N`: Limit parallel repository execution (default: 3)
 
 **Rejected flags** (with helpful error messages):
+<<<<<<< HEAD
 - `--model`, `--agent`, `--role`: Model/agent selection is defined in workflow configuration. Role prompting can still be disabled for workflow runs via `roles = "disabled"` or `role = "none"` in `commands.toml`.
-- `--context-file`: Context is propagated via `.nia/context.toml`, not flags
+- `--context-file`: Context is propagated via `.forge/context.toml`, not flags
+=======
+- `--model`, `--agent`, `--role`: Model/agent selection is defined in workflow configuration
+- `--context-file`: Context is propagated via `.forge/context.toml`, not flags
+>>>>>>> 6b0144bb8 (chore: update nias)
 - `--edit`, `--fix`: Workflow run non-interactively across multiple repositories
 - `--clear`: Workflow context is managed per child repository
 - `--lite`: Never supported for app commands
@@ -352,10 +368,10 @@ Application commands share context across repositories:
 
 **Per-Repository Context:**
 - PR ID: Generated independently for each repository
-- Job outputs: Stored in each repository's `.nia/work/` directory
+- Job outputs: Stored in each repository's `.forge/work/` directory
 
 **Context File:**
-Context is written to `.nia/context.toml` in each child repository:
+Context is written to `.forge/context.toml` in each child repository:
 
 ```toml
 [context]
@@ -372,42 +388,42 @@ ticket_id = "456"
 cd /path/to/my-application
 
 # Draft issue that spans multiple services
-nia app issue draft
+frg app issue draft
 
 # Output: Creates draft considering all repositories
-# Location: .nia/work/job_XXX/issue.md
+# Location: .forge/work/job_XXX/issue.md
 ```
 
 #### Example 2: Plan and Implement Feature
 
 ```bash
 # Set issue context
-export NIA_ISSUE_ID=123
+export FORGE_ISSUE_ID=123
 
 # Create implementation plans in each repository
-nia app issue plan
+frg app issue plan
 
 # Each repository gets:
-# - .nia/work/job_123/code/phase_X.md
-# - Context propagated via .nia/context.toml
+# - .forge/work/job_123/code/phase_X.md
+# - Context propagated via .forge/context.toml
 
 # Create code implementation in each repository
-nia app code create
+frg app code create
 
 # Each repository gets:
 # - Code changes in src/
 # - Tests in tests/
-# - Job output in .nia/work/job_123/
+# - Job output in .forge/work/job_123/
 ```
 
 #### Example 3: Parallel Execution Control
 
 ```bash
 # Run workflows in 5 repositories at a time
-nia app issue plan --max-workers 5
+frg app issue plan --max-workers 5
 
 # Quiet mode for CI/automation
-nia app issue plan --quiet --bypass-approvals
+frg app issue plan --quiet --bypass-approvals
 ```
 
 #### Example 4: Custom App Workflow Commands
@@ -415,7 +431,7 @@ nia app issue plan --quiet --bypass-approvals
 Users can add custom commands with workflow execution:
 
 ```toml
-# .nia/config/commands.toml
+# .forge/config/commands.toml
 [[commands]]
 target = "deploy"
 
@@ -427,7 +443,7 @@ app_workflow = "deploy-staging"    # Custom workflow
 
 Then use:
 ```bash
-nia app deploy staging    # Runs custom workflow in each repo
+frg app deploy staging    # Runs custom workflow in each repo
 ```
 
 ### Status Tracking
@@ -438,7 +454,7 @@ Command execution shows per-repository progress:
 Executing workflow 'issue-to-plan' in 3 repositories
   [✓] api-service     (12.3s)
   [✓] web-frontend    (8.7s)
-  [⚠] worker-service  (failed - see logs at .nia/work/job_123/logs/)
+  [⚠] worker-service  (failed - see logs at .forge/work/job_123/logs/)
 
 2 of 3 repositories completed successfully
 ```
@@ -470,7 +486,7 @@ and non-TTY output are unaffected.
 2. **Use workflow execution for implementation**: Code creation, PR creation need per-repo independence
 3. **Control parallelism**: Use `--max-workers` to avoid rate limiting or resource exhaustion
 4. **Monitor status**: Watch for failures and check logs in failed repositories
-5. **Propagate context**: Always set NIA_ISSUE_ID before starting application workflows
+5. **Propagate context**: Always set FORGE_ISSUE_ID before starting application workflows
 6. **Test incrementally**: Try commands on single repos before scaling to full application
 
 ### Troubleshooting
@@ -481,9 +497,14 @@ and non-TTY output are unaffected.
 
 **Solutions:**
 ```bash
-nia app discover                 # Discover repositories
-nia app status                   # Show where each repository's output landed
-nia config show --sources        # Verify discovery results
+<<<<<<< HEAD
+frg app discover                 # Discover repositories
+frg app status                   # Show where each repository's output landed
+frg config show --sources        # Verify discovery results
+=======
+frg app discover                 # Discover repositories
+frg config show --sources        # Verify discovery results
+>>>>>>> 6b0144bb8 (chore: update nias)
 ```
 
 #### "Repository UUID mismatch"
@@ -493,11 +514,11 @@ nia config show --sources        # Verify discovery results
 **Solutions:**
 ```bash
 # Check application UUID
-grep 'id =' .nia/config/application.toml
+grep 'id =' .forge/config/application.toml
 
 # Update child repository
 cd child-repo
-echo 'allow_app = "uuid-from-above"' >> .nia/config/project.toml
+echo 'allow_app = "uuid-from-above"' >> .forge/config/project.toml
 ```
 
 #### "Workflow not supported"
@@ -507,10 +528,10 @@ echo 'allow_app = "uuid-from-above"' >> .nia/config/project.toml
 **Solution:** Remove unsupported flags:
 ```bash
 # ❌ Wrong - --model not supported in workflow mode
-nia app issue plan --model claude-opus-4.8
+frg app issue plan --model claude-opus-4.8
 
 # ✅ Correct - model defined in workflow configuration
-nia app issue plan
+frg app issue plan
 ```
 
 ### Related Documentation

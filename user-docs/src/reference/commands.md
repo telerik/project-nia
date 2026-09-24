@@ -1,6 +1,6 @@
 # Command Reference
 
-Complete reference for all Nia CLI commands. Nia provides two types of commands:
+Complete reference for all Progress Forge CLI commands. Progress Forge provides two types of commands:
 
 1. **Workflow Commands** - AI agent-driven operations for development workflows
 2. **Utility Commands** - System and configuration management
@@ -79,18 +79,18 @@ These flags intentionally do not have short versions:
 
 ```bash
 # Short flags for common operations
-nia issue draft -a copilot -r software_engineer -m claude-sonnet-4
-nia code review -c docs/design.md -c src/main.rs -m gpt-5.2-codex
+frg issue draft -a copilot -r software_engineer -m claude-sonnet-4
+frg code review -c docs/design.md -c src/main.rs -m gpt-5.2-codex
 
 # Long flags for scripts (recommended for readability)
-nia issue draft --agent copilot --role software_engineer --model claude-opus-5
+frg issue draft --agent copilot --role software_engineer --model claude-opus-5
 ```
 
 ---
 
 ## Workflow Commands
 
-Workflow commands follow the pattern: `nia <target> <operation> [MODIFIERS]`
+Workflow commands follow the pattern: `frg <target> <operation> [MODIFIERS]`
 
 All workflow commands are AI agent-driven and compose prompts from your repository context.
 
@@ -98,7 +98,7 @@ All workflow commands are AI agent-driven and compose prompts from your reposito
 
 Commands for managing work items (features, bugs, tasks).
 
-#### `nia issue draft`
+#### `frg issue draft`
 
 **Description**: Create a local issue draft with AI assistance.
 
@@ -109,10 +109,10 @@ Commands for managing work items (features, bugs, tasks).
 **Usage Examples**:
 ```bash
 # Create an issue draft
-nia issue draft
+frg issue draft
 
 # Create with editing instructions
-nia issue draft --edit
+frg issue draft --edit
 ```
 
 **Common Use Cases**:
@@ -124,7 +124,7 @@ nia issue draft --edit
 
 ---
 
-#### `nia issue publish`
+#### `frg issue publish`
 
 **Description**: Publish a local issue draft to your issue tracking system (GitHub, GitLab, etc.).
 
@@ -135,7 +135,7 @@ nia issue draft --edit
 **Usage Examples**:
 ```bash
 # Publish issue to tracking system
-nia issue publish
+frg issue publish
 ```
 
 **Common Use Cases**:
@@ -147,22 +147,22 @@ nia issue publish
 
 ---
 
-#### `nia issue review`
+#### `frg issue review`
 
 **Description**: Review an issue for completeness, clarity, and quality.
 
-**Required Context**: `NIA_ISSUE_ID` (set via env or config)
+**Required Context**: `FORGE_ISSUE_ID` (set via env or config)
 
 **Available Modifiers**: `--edit`
 
 **Usage Examples**:
 ```bash
 # Review current issue
-export NIA_ISSUE_ID=123
-nia issue review
+export FORGE_ISSUE_ID=123
+frg issue review
 
 # Review with editing instructions
-nia issue review --edit
+frg issue review --edit
 ```
 
 **Common Use Cases**:
@@ -174,25 +174,25 @@ nia issue review --edit
 
 ---
 
-#### `nia issue plan`
+#### `frg issue plan`
 
 **Description**: Generate a detailed implementation plan for an issue.
 
-**Required Context**: `NIA_ISSUE_ID`
+**Required Context**: `FORGE_ISSUE_ID`
 
 **Available Modifiers**: `--edit`, `--lite`, `--lite-edit`
 
 **Usage Examples**:
 ```bash
 # Generate implementation plan
-nia config set-issue 123
-nia issue plan
+frg config set-issue 123
+frg issue plan
 
 # Plan with editing instructions
-nia issue plan --edit
+frg issue plan --edit
 
 # Lightweight plan for simple changes
-nia issue plan --lite
+frg issue plan --lite
 ```
 
 **Common Use Cases**:
@@ -204,19 +204,19 @@ nia issue plan --lite
 
 ---
 
-#### `nia issue triage`
+#### `frg issue triage`
 
 **Description**: Evaluate and prioritize an issue based on impact, effort, and dependencies.
 
-**Required Context**: `NIA_ISSUE_ID`
+**Required Context**: `FORGE_ISSUE_ID`
 
 **Available Modifiers**: None
 
 **Usage Examples**:
 ```bash
 # Triage an issue
-export NIA_ISSUE_ID=123
-nia issue triage
+export FORGE_ISSUE_ID=123
+frg issue triage
 ```
 
 **Common Use Cases**:
@@ -228,19 +228,19 @@ nia issue triage
 
 ---
 
-#### `nia issue split`
+#### `frg issue split`
 
 **Description**: Split a large issue into smaller, manageable work items.
 
-**Required Context**: `NIA_ISSUE_ID`
+**Required Context**: `FORGE_ISSUE_ID`
 
 **Available Modifiers**: None
 
 **Usage Examples**:
 ```bash
 # Split large issue
-nia config set-issue 123
-nia issue split
+frg config set-issue 123
+frg issue split
 ```
 
 **Common Use Cases**:
@@ -252,22 +252,22 @@ nia issue split
 
 ---
 
-#### `nia issue ask`
+#### `frg issue ask`
 
 **Description**: Ask questions about the current issue context.
 
-**Required Context**: `NIA_ISSUE_ID`
+**Required Context**: `FORGE_ISSUE_ID`
 
 **Available Modifiers**: None
 
 **Usage Examples**:
 ```bash
 # Ask about issue
-export NIA_ISSUE_ID=123
-nia issue ask "What are the main technical challenges?"
+export FORGE_ISSUE_ID=123
+frg issue ask "What are the main technical challenges?"
 
 # Query issue requirements
-nia issue ask "Are there any missing dependencies?"
+frg issue ask "Are there any missing dependencies?"
 ```
 
 **Common Use Cases**:
@@ -283,7 +283,7 @@ nia issue ask "Are there any missing dependencies?"
 
 Commands for strategic planning and backlog management.
 
-#### `nia backlog create`
+#### `frg backlog create`
 
 **Description**: Create a strategic planning document or backlog.
 
@@ -294,10 +294,10 @@ Commands for strategic planning and backlog management.
 **Usage Examples**:
 ```bash
 # Create backlog document
-nia backlog create
+frg backlog create
 
 # Create with editing instructions
-nia backlog create --edit
+frg backlog create --edit
 ```
 
 **Common Use Cases**:
@@ -309,7 +309,7 @@ nia backlog create --edit
 
 ---
 
-#### `nia backlog review`
+#### `frg backlog review`
 
 **Description**: Review backlog health, quality, and completeness.
 
@@ -320,10 +320,10 @@ nia backlog create --edit
 **Usage Examples**:
 ```bash
 # Review backlog
-nia backlog review
+frg backlog review
 
 # Review with editing instructions
-nia backlog review --edit
+frg backlog review --edit
 ```
 
 **Common Use Cases**:
@@ -335,7 +335,7 @@ nia backlog review --edit
 
 ---
 
-#### `nia backlog rank`
+#### `frg backlog rank`
 
 **Description**: Rank backlog items by priority, impact, and dependencies.
 
@@ -346,10 +346,10 @@ nia backlog review --edit
 **Usage Examples**:
 ```bash
 # Rank backlog items
-nia backlog rank
+frg backlog rank
 
 # Rank with editing instructions
-nia backlog rank --edit
+frg backlog rank --edit
 ```
 
 **Common Use Cases**:
@@ -361,7 +361,7 @@ nia backlog rank --edit
 
 ---
 
-#### `nia backlog ask`
+#### `frg backlog ask`
 
 **Description**: Ask questions about backlog strategy and planning.
 
@@ -372,10 +372,10 @@ nia backlog rank --edit
 **Usage Examples**:
 ```bash
 # Query backlog strategy
-nia backlog ask "What should we prioritize for Q2?"
+frg backlog ask "What should we prioritize for Q2?"
 
 # Ask about technical debt
-nia backlog ask "How much technical debt is in the backlog?"
+frg backlog ask "How much technical debt is in the backlog?"
 ```
 
 **Common Use Cases**:
@@ -387,9 +387,9 @@ nia backlog ask "How much technical debt is in the backlog?"
 
 ---
 
-#### `nia backlog plan`
+#### `frg backlog plan`
 
-**Description**: Transform `.nia/work/backlog/roadmap.md` into a structured plan file (`plan.json` by default). Deterministic — parses the roadmap directly and does not invoke a coding agent.
+**Description**: Transform `.forge/work/backlog/roadmap.md` into a structured plan file (`plan.json` by default). Deterministic — parses the roadmap directly and does not invoke a coding agent.
 
 **Required Context**: Existing `roadmap.md` (or `--input` pointing to one)
 
@@ -398,14 +398,14 @@ nia backlog ask "How much technical debt is in the backlog?"
 **Usage Examples**:
 ```bash
 # Generate a plan from the roadmap
-nia backlog plan
+frg backlog plan
 
-# Generate the flat format nia dispatch consumes
-nia backlog plan --dispatch-format
+# Generate the flat format frg dispatch consumes
+frg backlog plan --dispatch-format
 
 # Validate or summarize an existing plan
-nia backlog plan --validate
-nia backlog plan --summary --graph
+frg backlog plan --validate
+frg backlog plan --summary --graph
 ```
 
 **Common Use Cases**:
@@ -421,22 +421,22 @@ nia backlog plan --summary --graph
 
 Commands for code generation, review, and maintenance.
 
-#### `nia code create`
+#### `frg code create`
 
 **Description**: Generate new code with AI assistance.
 
-**Required Context**: None (optional: `NIA_ISSUE_ID`)
+**Required Context**: None (optional: `FORGE_ISSUE_ID`)
 
 **Available Modifiers**: `--fix`
 
 **Usage Examples**:
 ```bash
 # Create code for current issue
-export NIA_ISSUE_ID=123
-nia code create
+export FORGE_ISSUE_ID=123
+frg code create
 
 # Create with fix instructions
-nia code create --fix
+frg code create --fix
 ```
 
 **Common Use Cases**:
@@ -448,7 +448,7 @@ nia code create --fix
 
 ---
 
-#### `nia code review`
+#### `frg code review`
 
 **Description**: Review code quality, patterns, and best practices.
 
@@ -456,21 +456,21 @@ nia code create --fix
 
 **Available Modifiers**: `--edit`
 
-**Available Options**: `--auto-fix <LEVEL>` (requires `.nia/work/job_<id>/code/review.md`; run `nia code review` first)
+**Available Options**: `--auto-fix <LEVEL>` (requires `.forge/work/job_<id>/code/review.md`; run `frg code review` first)
 
 **Usage Examples**:
 ```bash
 # Review code changes
-nia code review
+frg code review
 
 # Review with editing instructions
-nia code review --edit
+frg code review --edit
 
 # Auto-fix all issues from review
-nia code review --auto-fix issues
+frg code review --auto-fix issues
 
 # Auto-fix only critical issues
-nia code review --auto-fix critical
+frg code review --auto-fix critical
 ```
 
 **Common Use Cases**:
@@ -483,7 +483,7 @@ nia code review --auto-fix critical
 
 ---
 
-#### `nia code refactor`
+#### `frg code refactor`
 
 **Description**: Restructure existing code to improve quality and maintainability.
 
@@ -494,10 +494,10 @@ nia code review --auto-fix critical
 **Usage Examples**:
 ```bash
 # Refactor code
-nia code refactor
+frg code refactor
 
 # Apply refactorings using your instructions
-nia code refactor --fix
+frg code refactor --fix
 ```
 
 **Common Use Cases**:
@@ -509,7 +509,7 @@ nia code refactor --fix
 
 ---
 
-#### `nia code document`
+#### `frg code document`
 
 **Description**: Generate code documentation (comments, README, API docs).
 
@@ -520,10 +520,10 @@ nia code refactor --fix
 **Usage Examples**:
 ```bash
 # Generate documentation
-nia code document
+frg code document
 
 # Generate with editing instructions
-nia code document --edit
+frg code document --edit
 ```
 
 **Common Use Cases**:
@@ -535,7 +535,7 @@ nia code document --edit
 
 ---
 
-#### `nia code build`
+#### `frg code build`
 
 **Description**: Compile and build code, diagnose build issues.
 
@@ -546,7 +546,7 @@ nia code document --edit
 **Usage Examples**:
 ```bash
 # Build project
-nia code build
+frg code build
 ```
 
 **Common Use Cases**:
@@ -558,7 +558,7 @@ nia code build
 
 ---
 
-#### `nia code test`
+#### `frg code test`
 
 **Description**: Execute test suites and analyze test results.
 
@@ -569,7 +569,7 @@ nia code build
 **Usage Examples**:
 ```bash
 # Run tests
-nia code test
+frg code test
 ```
 
 **Common Use Cases**:
@@ -581,7 +581,7 @@ nia code test
 
 ---
 
-#### `nia code ask`
+#### `frg code ask`
 
 **Description**: Ask questions about code in your repository.
 
@@ -592,10 +592,10 @@ nia code test
 **Usage Examples**:
 ```bash
 # Ask about code architecture
-nia code ask "How does authentication work?"
+frg code ask "How does authentication work?"
 
 # Query specific functionality
-nia code ask "Where is user validation implemented?"
+frg code ask "Where is user validation implemented?"
 ```
 
 **Common Use Cases**:
@@ -611,22 +611,22 @@ nia code ask "Where is user validation implemented?"
 
 Commands for pull request management.
 
-#### `nia pr draft`
+#### `frg pr draft`
 
 **Description**: Create a pull request draft with generated title and description.
 
-**Required Context**: `NIA_ISSUE_ID`, `NIA_PR_ID` (optional)
+**Required Context**: `FORGE_ISSUE_ID`, `FORGE_PR_ID` (optional)
 
 **Available Modifiers**: `--edit`
 
 **Usage Examples**:
 ```bash
 # Create PR draft
-export NIA_ISSUE_ID=123
-nia pr draft
+export FORGE_ISSUE_ID=123
+frg pr draft
 
 # Create with editing instructions
-nia pr draft --edit
+frg pr draft --edit
 ```
 
 **Common Use Cases**:
@@ -638,22 +638,22 @@ nia pr draft --edit
 
 ---
 
-#### `nia pr review`
+#### `frg pr review`
 
 **Description**: Review a pull request for quality, completeness, and best practices.
 
-**Required Context**: `NIA_ISSUE_ID`, `NIA_PR_ID`
+**Required Context**: `FORGE_ISSUE_ID`, `FORGE_PR_ID`
 
 **Available Modifiers**: `--edit`
 
 **Usage Examples**:
 ```bash
 # Review current PR
-export NIA_ISSUE_ID=123 NIA_PR_ID=456
-nia pr review
+export FORGE_ISSUE_ID=123 FORGE_PR_ID=456
+frg pr review
 
 # Review with editing instructions
-nia pr review --edit
+frg pr review --edit
 ```
 
 **Common Use Cases**:
@@ -665,23 +665,23 @@ nia pr review --edit
 
 ---
 
-#### `nia pr merge`
+#### `frg pr merge`
 
 **Description**: Analyze merge safety, check CI status, and prepare for merge.
 
-**Required Context**: `NIA_ISSUE_ID`, `NIA_PR_ID`
+**Required Context**: `FORGE_ISSUE_ID`, `FORGE_PR_ID`
 
 **Available Modifiers**: `--fix`
 
 **Usage Examples**:
 ```bash
 # Check merge readiness
-nia config set-issue 123
-nia config set-pr 456
-nia pr merge
+frg config set-issue 123
+frg config set-pr 456
+frg pr merge
 
 # Fix merge issues and CI failures
-nia pr merge --fix
+frg pr merge --fix
 ```
 
 **Common Use Cases**:
@@ -693,22 +693,22 @@ nia pr merge --fix
 
 ---
 
-#### `nia pr ask`
+#### `frg pr ask`
 
 **Description**: Ask questions about a pull request.
 
-**Required Context**: `NIA_ISSUE_ID`, `NIA_PR_ID`
+**Required Context**: `FORGE_ISSUE_ID`, `FORGE_PR_ID`
 
 **Available Modifiers**: None
 
 **Usage Examples**:
 ```bash
 # Ask about PR
-export NIA_ISSUE_ID=123 NIA_PR_ID=456
-nia pr ask "What are the main changes in this PR?"
+export FORGE_ISSUE_ID=123 FORGE_PR_ID=456
+frg pr ask "What are the main changes in this PR?"
 
 # Query PR impact
-nia pr ask "Are there any breaking changes?"
+frg pr ask "Are there any breaking changes?"
 ```
 
 **Common Use Cases**:
@@ -724,7 +724,7 @@ nia pr ask "Are there any breaking changes?"
 
 Commands for documentation management.
 
-#### `nia docs create`
+#### `frg docs create`
 
 **Description**: Generate documentation or user guides.
 
@@ -735,10 +735,10 @@ Commands for documentation management.
 **Usage Examples**:
 ```bash
 # Create documentation
-nia docs create
+frg docs create
 
 # Create with editing instructions
-nia docs create --edit
+frg docs create --edit
 ```
 
 **Common Use Cases**:
@@ -750,7 +750,7 @@ nia docs create --edit
 
 ---
 
-#### `nia docs build`
+#### `frg docs build`
 
 **Description**: Build documentation from code (API docs, inline comments).
 
@@ -761,10 +761,10 @@ nia docs create --edit
 **Usage Examples**:
 ```bash
 # Build documentation
-nia docs build
+frg docs build
 
 # Build for developer audience
-nia docs build --dev
+frg docs build --dev
 ```
 
 **Common Use Cases**:
@@ -776,7 +776,7 @@ nia docs build --dev
 
 ---
 
-#### `nia docs ask`
+#### `frg docs ask`
 
 **Description**: Ask questions about project documentation.
 
@@ -787,10 +787,10 @@ nia docs build --dev
 **Usage Examples**:
 ```bash
 # Ask about documentation
-nia docs ask "What's missing from the user guide?"
+frg docs ask "What's missing from the user guide?"
 
 # Query documentation coverage
-nia docs ask "Which APIs are undocumented?"
+frg docs ask "Which APIs are undocumented?"
 ```
 
 **Common Use Cases**:
@@ -808,37 +808,37 @@ System and configuration management commands.
 
 ### config
 
-Configuration management for Nia CLI.
+Configuration management for Progress Forge CLI.
 
-#### `nia config show`
+#### `frg config show`
 
-**Description**: Display current Nia configuration.
+**Description**: Display current Progress Forge configuration.
 
 **Usage Example**:
 ```bash
-nia config show
+frg config show
 ```
 
 ---
 
-#### `nia config validate`
+#### `frg config validate`
 
-**Description**: Validate Nia configuration files for errors.
+**Description**: Validate Progress Forge configuration files for errors.
 
 **Usage Example**:
 ```bash
 # Validate default config
-nia config validate
+frg config validate
 
 # Validate specific file
-nia config validate --file .nia/config/commands.toml
+frg config validate --file .forge/config/commands.toml
 ```
 
 ---
 
-#### `nia config init`
+#### `frg config init`
 
-**Description**: Initialize the `.nia/` directory structure in your project.
+**Description**: Initialize the `.forge/` directory structure in your project.
 
 **Environment Support**:
 - ✅ Git repository: Full support with commit SHA tracking
@@ -849,23 +849,23 @@ nia config validate --file .nia/config/commands.toml
 **Usage Example**:
 ```bash
 # Basic initialization (toolchain only)
-nia config init
+frg config init
 
 # Initialize with specific tools
-nia config init --issues github_issues --code github
+frg config init --issues github_issues --code github
 
 # Initialize with agent and model profile (v3.1.0+)
-nia config init --agent github_copilot --models balanced
-nia config init --agent opencode --models stable
+frg config init --agent github_copilot --models balanced
+frg config init --agent opencode --models stable
 
 # Agent with default profile (stable)
-nia config init --agent github_copilot
+frg config init --agent github_copilot
 
 # Replace an existing agents.toml with a generated profile
-nia config init --agent github_copilot --models balanced --force
+frg config init --agent github_copilot --models balanced --force
 
 # Edit an existing project.toml without the initial confirmation
-nia config init --interactive --force
+frg config init --interactive --force
 ```
 
 **Flags**:
@@ -891,24 +891,24 @@ confirmation but keeps the per-field review prompts.
 
 In a git repository:
 ```
-Initializing .nia directory structure...
-✓ Created .nia/ directory structure
-  - .nia/config/   (configuration files)
-  - .nia/work/     (job outputs)
-  - .nia/prompts/  (custom prompts)
+Initializing .frg directory structure...
+✓ Created .forge/ directory structure
+  - .forge/config/   (configuration files)
+  - .forge/work/     (job outputs)
+  - .forge/prompts/  (custom prompts)
   Project root: /path/to/project
 
-⚙  .gitignore patterns for nia:
-    .nia/logs/
-    .nia/cache/
-    .nia/.context.lock
-    .nia/.workflow.lock
-    .nia/work/**/traces/.heartbeat
-    .nia/config/opensearch.toml
-    .nia/config/telemetry.toml
-    # .nia/work/              (team decision - see docs)
+⚙  .gitignore patterns for forge:
+    .forge/logs/
+    .forge/cache/
+    .forge/.context.lock
+    .forge/.workflow.lock
+    .forge/work/**/traces/.heartbeat
+    .forge/config/opensearch.toml
+    .forge/config/telemetry.toml
+    # .forge/work/              (team decision - see docs)
 
-  ℹ Commit: .nia/config/ and .nia/prompts/
+  ℹ Commit: .forge/config/ and .forge/prompts/
   For detailed guidance: https://telerik.github.io/project-nia/configuration/version-control
 
 ✓ Initialization complete!
@@ -916,11 +916,11 @@ Initializing .nia directory structure...
 
 In a non-git directory:
 ```
-Initializing .nia directory structure...
-✓ Created .nia/ directory structure
-  - .nia/config/   (configuration files)
-  - .nia/work/     (job outputs)
-  - .nia/prompts/  (custom prompts)
+Initializing .frg directory structure...
+✓ Created .forge/ directory structure
+  - .forge/config/   (configuration files)
+  - .forge/work/     (job outputs)
+  - .forge/prompts/  (custom prompts)
   Project root: /path/to/project
   Note: Not in a git repository
 
@@ -928,7 +928,7 @@ Initializing .nia directory structure...
 ```
 
 **Common Use Cases**:
-- Setting up Nia in a new project (git or non-git)
+- Setting up Progress Forge in a new project (git or non-git)
 - Reinitializing after directory structure changes
 - Creating temporary testing environments
 
@@ -936,13 +936,13 @@ Initializing .nia directory structure...
 
 ---
 
-#### `nia config export`
+#### `frg config export`
 
-**Description**: Export built-in workflow definitions to `.nia/config/commands.toml`.
+**Description**: Export built-in workflow definitions to `.forge/config/commands.toml`.
 
 **Usage Example**:
 ```bash
-nia config export
+frg config export
 ```
 
 **Common Use Cases**:
@@ -952,17 +952,17 @@ nia config export
 
 ---
 
-#### `nia config set-issue`
+#### `frg config set-issue`
 
 **Description**: Set the current issue ID in context.
 
 **Usage Example**:
 ```bash
 # Set current issue
-nia config set-issue 123
+frg config set-issue 123
 
 # Use in workflow
-nia issue review
+frg issue review
 ```
 
 **Common Use Cases**:
@@ -974,17 +974,17 @@ nia issue review
 
 ---
 
-#### `nia config set-pr`
+#### `frg config set-pr`
 
 **Description**: Set the current PR ID in context.
 
 **Usage Example**:
 ```bash
 # Set current PR
-nia config set-pr 456
+frg config set-pr 456
 
 # Use in workflow
-nia pr review
+frg pr review
 ```
 
 **Common Use Cases**:
@@ -996,14 +996,14 @@ nia pr review
 
 ---
 
-#### `nia config set-base-branch`
+#### `frg config set-base-branch`
 
 **Description**: Set the project-level base branch/ref that newly created branches are forked from.
 
 **Usage Example**:
 ```bash
 # Fork new branches from 'develop' instead of the repo's checked-out branch
-nia config set-base-branch develop
+frg config set-base-branch develop
 ```
 
 **Common Use Cases**:
@@ -1011,10 +1011,10 @@ nia config set-base-branch develop
 - Standardizing which ref feature branches fork from across the team
 
 **Prerequisites**:
-- Run inside a nia project (`.nia/config/project.toml` must already exist; run `nia config init` first)
+- Run inside a frg project (`.forge/config/project.toml` must already exist; run `frg config init` first)
 
 **Notes**:
-- This is a project-level, team-shared setting written to `.nia/config/project.toml`'s `[branch]` table — not a per-job or per-user override. Commit the resulting change to share it with your team.
+- This is a project-level, team-shared setting written to `.forge/config/project.toml`'s `[branch]` table — not a per-job or per-user override. Commit the resulting change to share it with your team.
 
 **Related Commands**: `config validate`
 
@@ -1022,13 +1022,13 @@ nia config set-base-branch develop
 
 ---
 
-#### `nia config show-context`
+#### `frg config show-context`
 
 **Description**: Display current workflow context (issue ID, PR ID, service).
 
 **Usage Example**:
 ```bash
-nia config show-context
+frg config show-context
 ```
 
 **Example Output**:
@@ -1043,21 +1043,21 @@ Context Configuration:
 
 ---
 
-#### `nia config clear-context`
+#### `frg config clear-context`
 
 **Description**: Clear both Issue ID and PR ID from the workflow context file.
 
 **Usage Example**:
 ```bash
 # Set context
-nia config set-issue 42
-nia config set-pr 99
+frg config set-issue 42
+frg config set-pr 99
 
 # Clear all context
-nia config clear-context
+frg config clear-context
 
 # Verify context is empty
-nia config show-context
+frg config show-context
 ```
 
 **Common Use Cases**:
@@ -1065,30 +1065,30 @@ nia config show-context
 - Resetting workflow context
 - Cleaning up after completing work
 
-**Note**: This command only clears the context file (`.nia/context.toml`). If you have set `NIA_ISSUE_ID` or `NIA_PR_ID` environment variables, they must be manually unset:
+**Note**: This command only clears the context file (`.forge/context.toml`). If you have set `FORGE_ISSUE_ID` or `FORGE_PR_ID` environment variables, they must be manually unset:
 ```bash
-unset NIA_ISSUE_ID NIA_PR_ID
+unset FORGE_ISSUE_ID FORGE_PR_ID
 ```
 
 **Related Commands**: `config set-issue`, `config set-pr`, `config show-context`, `config clear-issue`, `config clear-pr`
 
 ---
 
-#### `nia config clear-issue`
+#### `frg config clear-issue`
 
 **Description**: Clear the Issue ID from the workflow context, preserving the PR ID.
 
 **Usage Example**:
 ```bash
 # Set both values
-nia config set-issue 42
-nia config set-pr 99
+frg config set-issue 42
+frg config set-pr 99
 
 # Clear only issue (PR preserved)
-nia config clear-issue
+frg config clear-issue
 
 # Verify - PR should still be set
-nia config show-context
+frg config show-context
 ```
 
 **Common Use Cases**:
@@ -1096,30 +1096,30 @@ nia config show-context
 - Switching to a different issue while keeping same PR
 - Cleaning up partial context
 
-**Note**: This command only clears the context file. If you have set the `NIA_ISSUE_ID` environment variable, it must be manually unset:
+**Note**: This command only clears the context file. If you have set the `FORGE_ISSUE_ID` environment variable, it must be manually unset:
 ```bash
-unset NIA_ISSUE_ID
+unset FORGE_ISSUE_ID
 ```
 
 **Related Commands**: `config clear-context`, `config clear-pr`, `config set-issue`, `config show-context`
 
 ---
 
-#### `nia config clear-pr`
+#### `frg config clear-pr`
 
 **Description**: Clear the PR ID from the workflow context, preserving the Issue ID.
 
 **Usage Example**:
 ```bash
 # Set both values
-nia config set-issue 42
-nia config set-pr 99
+frg config set-issue 42
+frg config set-pr 99
 
 # Clear only PR (issue preserved)
-nia config clear-pr
+frg config clear-pr
 
 # Verify - issue should still be set
-nia config show-context
+frg config show-context
 ```
 
 **Common Use Cases**:
@@ -1127,26 +1127,26 @@ nia config show-context
 - Switching to a different PR while keeping same issue
 - Cleaning up partial context
 
-**Note**: This command only clears the context file. If you have set the `NIA_PR_ID` environment variable, it must be manually unset:
+**Note**: This command only clears the context file. If you have set the `FORGE_PR_ID` environment variable, it must be manually unset:
 ```bash
-unset NIA_PR_ID
+unset FORGE_PR_ID
 ```
 
 **Related Commands**: `config clear-context`, `config clear-issue`, `config set-pr`, `config show-context`
 
 ---
 
-#### `nia config set-service`
+#### `frg config set-service`
 
 **Description**: Set the current service in context (for monorepo projects).
 
 **Usage Example**:
 ```bash
 # Set current service
-nia config set-service api
+frg config set-service api
 
 # Use in workflow
-nia code implement
+frg code implement
 ```
 
 **Common Use Cases**:
@@ -1164,20 +1164,20 @@ nia code implement
 
 ---
 
-#### `nia config clear-service`
+#### `frg config clear-service`
 
 **Description**: Clear service selection from context (reverts to project-wide mode).
 
 **Usage Example**:
 ```bash
 # Set service
-nia config set-service api
+frg config set-service api
 
 # Clear service selection
-nia config clear-service
+frg config clear-service
 
 # Verify service is cleared
-nia config show-context
+frg config show-context
 ```
 
 **Common Use Cases**:
@@ -1193,17 +1193,17 @@ nia config show-context
 
 ### guide
 
-Open Nia user documentation.
+Open Progress Forge user documentation.
 
-**Description**: Open the Nia user guide in your default browser.
+**Description**: Open the Progress Forge user guide in your default browser.
 
 **Usage Examples**:
 ```bash
 # Open full guide
-nia guide
+frg guide
 
 # Open specific section (if available)
-nia guide getting-started
+frg guide getting-started
 ```
 
 ---
@@ -1212,45 +1212,45 @@ nia guide getting-started
 
 Shell completion management.
 
-#### `nia shell install`
+#### `frg shell install`
 
 **Description**: Install shell completions for your shell.
 
 **Usage Example**:
 ```bash
 # Auto-detect and install
-nia shell install
+frg shell install
 
 # Install for specific shell
-nia shell install bash
-nia shell install zsh
-nia shell install fish
+frg shell install bash
+frg shell install zsh
+frg shell install fish
 ```
 
 ---
 
-#### `nia shell uninstall`
+#### `frg shell uninstall`
 
 **Description**: Uninstall shell completions.
 
 **Usage Example**:
 ```bash
-nia shell uninstall
+frg shell uninstall
 ```
 
 ---
 
-#### `nia shell generate`
+#### `frg shell generate`
 
 **Description**: Generate shell completion script (for manual installation).
 
 **Usage Example**:
 ```bash
 # Generate for bash
-nia shell generate bash > nia-completions.bash
+frg shell generate bash > forge-completions.bash
 
 # Generate for zsh
-nia shell generate zsh > _neo
+frg shell generate zsh > _neo
 ```
 
 ---
@@ -1259,25 +1259,25 @@ nia shell generate zsh > _neo
 
 System status check.
 
-**Description**: Check Nia configuration, project root detection, and agent connectivity.
+**Description**: Check Progress Forge configuration, project root detection, and agent connectivity.
 
 **Usage Examples**:
 ```bash
 # Quick status check
-nia status
+frg status
 
 # Verbose diagnostics
-nia status --verbose
+frg status --verbose
 ```
 
 **Example Output**:
 ```
-Nia Status Check
+Progress Forge Status Check
 =================
 
 ℹ  Project Root: /path/to/your/project
    Detected via: .git/ directory
-✓  Nia: Initialized
+✓  Progress Forge: Initialized
 ℹ  Coding Agent: GitHub Copilot (authenticated)
 ✓  Toolchain: Configured
    Issue Tracker: github_issues (cli)
@@ -1286,12 +1286,12 @@ Nia Status Check
 
 **Project Root Detection**:
 
-The status command shows how Nia detected your project root:
+The status command shows how Progress Forge detected your project root:
 
 | Detection Method | Meaning |
 |-----------------|---------|
 | `.git/` directory | Found git repository root |
-| `.nia/` directory | Found existing Nia installation |
+| `.forge/` directory | Found existing Progress Forge installation |
 | current working directory | No markers found, using CWD |
 
 **Common Use Cases**:
@@ -1322,7 +1322,7 @@ Show current telemetry status, including:
 
 **Example:**
 ```bash
-nia telemetry status
+frg telemetry status
 ```
 
 #### telemetry on
@@ -1331,7 +1331,7 @@ Enable usage telemetry. Writes `[usage] enabled = true` to telemetry.toml.
 
 **Example:**
 ```bash
-nia telemetry on
+frg telemetry on
 ```
 
 #### telemetry off
@@ -1340,10 +1340,10 @@ Disable usage telemetry. Writes `[usage] enabled = false` to telemetry.toml.
 
 **Example:**
 ```bash
-nia telemetry off
+frg telemetry off
 ```
 
-**Alternative:** Set `NIA_TELEMETRY_DISABLED=1` environment variable.
+**Alternative:** Set `FORGE_TELEMETRY_DISABLED=1` environment variable.
 
 ---
 
@@ -1351,33 +1351,33 @@ nia telemetry off
 
 Workflow definition management and visualization tools.
 
-#### `nia workflow run`
+#### `frg workflow run`
 
 **Description**: Execute a stateful workflow from a TOML definition.
 
 **Usage Example**:
 ```bash
 # Run a workflow
-nia workflow run issue-to-pr
+frg workflow run issue-to-pr
 
 # Run with specific context
-export NIA_ISSUE_ID=123
-nia workflow run issue-to-pr
+export FORGE_ISSUE_ID=123
+frg workflow run issue-to-pr
 
 # List all states in a workflow
-nia workflow run issue-to-pr --list-states
+frg workflow run issue-to-pr --list-states
 
 # Start from a specific step
-nia workflow run issue-to-pr --start-from create_code
+frg workflow run issue-to-pr --start-from create_code
 
 # Stop right before a certified exit-point state
-nia workflow run issue-to-pr --ends-at create_code
+frg workflow run issue-to-pr --ends-at create_code
 
 # Classify the current issue and pick a workflow automatically
-nia workflow run --auto
+frg workflow run --auto
 
 # Validate without executing
-nia workflow run issue-to-pr --dry-run
+frg workflow run issue-to-pr --dry-run
 ```
 
 **Options**:
@@ -1392,7 +1392,7 @@ nia workflow run issue-to-pr --dry-run
   The state must be marked `is_exit_point = true` in the workflow definition (an author-certified
   safe stopping point); reaching it is reported as a successful, `stopped_early` run. Use
   `--list-states` to see which states qualify.
-- `--auto` - Classify the current issue context (`nia config --issue <ID>`) with the routing
+- `--auto` - Classify the current issue context (`frg config --issue <ID>`) with the routing
   classifier and run whichever workflow it selects, instead of a caller-supplied workflow name.
   Mutually exclusive with a positional workflow name. Requires interactive confirmation unless
   `--bypass-approvals` is also given. Requires `[routing].enabled = true` in `project.toml` (the
@@ -1400,18 +1400,18 @@ nia workflow run issue-to-pr --dry-run
 - `--bypass-approvals` - Skip approval gates during execution
 - `--dry-run` - Validate workflow without executing
 
-> **Inline approvals:** when `nia workflow run` is attached to an interactive terminal, approval
+> **Inline approvals:** when `frg workflow run` is attached to an interactive terminal, approval
 > gates can be approved or rejected directly in that terminal. Set
-> `NIA_DISABLE_INLINE_APPROVAL=1` to suppress the inline prompt and use only
-> `nia workflow approve` / `nia workflow reject` from another session.
+> `FORGE_DISABLE_INLINE_APPROVAL=1` to suppress the inline prompt and use only
+> `frg workflow approve` / `frg workflow reject` from another session.
 >
-> **Approvals console:** when `nia app` runs in an interactive terminal, repositories blocked at
+> **Approvals console:** when `frg app` runs in an interactive terminal, repositories blocked at
 > an approval gate show their approval code in the status table and can be approved or rejected
 > from the same terminal. Type `h` for the command list; `a 2` approves repository 2, `a all`
 > batch-approves everything currently pending (one email, one confirmation), and `r 1,3 <reason>`
 > batch-rejects with a shared reason. Each repository is still resolved independently through the
-> same validation and audit path as `nia workflow approve` / `nia workflow reject`, which remain
-> available from another terminal at any time. Set `NIA_DISABLE_INLINE_APPROVAL=1` (or run with
+> same validation and audit path as `frg workflow approve` / `frg workflow reject`, which remain
+> available from another terminal at any time. Set `FORGE_DISABLE_INLINE_APPROVAL=1` (or run with
 > `--quiet`, piped output, or in CI) to disable the console and use the out-of-band commands only.
 > See [Resolving approval gates](../advanced/multi-repository.md#resolving-approval-gates) for
 > full details.
@@ -1430,26 +1430,26 @@ nia workflow run issue-to-pr --dry-run
 
 ---
 
-#### `nia workflow graph`
+#### `frg workflow graph`
 
 **Description**: Generate a visual Mermaid state diagram of a workflow.
 
 **Usage Example**:
 ```bash
 # Generate diagram file for one workflow
-nia workflow graph issue-to-pr
+frg workflow graph issue-to-pr
 
 # Generate diagrams for all workflows
-nia workflow graph --all
+frg workflow graph --all
 
 # Print to stdout
-nia workflow graph linear-test --print
+frg workflow graph linear-test --print
 
 # Print all diagrams to stdout
-nia workflow graph --all --print
+frg workflow graph --all --print
 
 # Quiet mode (no success message)
-nia workflow graph branch-test --quiet
+frg workflow graph branch-test --quiet
 ```
 
 **Options**:
@@ -1458,10 +1458,10 @@ nia workflow graph branch-test --quiet
 - `--quiet` (`-q`) - Suppress success messages
 
 **Output**:
-- Built-in workflows: Creates `.nia/config/workflows/<workflow-name>.md`
+- Built-in workflows: Creates `.forge/config/workflows/<workflow-name>.md`
 - User-defined workflows: Creates `<workflow-name>.md` alongside the workflow TOML file
 - Mermaid diagram renders natively in GitHub markdown
-- The `.nia/config/workflows/` directory is created automatically if it doesn't exist
+- The `.forge/config/workflows/` directory is created automatically if it doesn't exist
 
 **Diagram Features**:
 
@@ -1532,17 +1532,17 @@ Did you mean one of these?
 
 ---
 
-#### `nia workflow validate`
+#### `frg workflow validate`
 
 **Description**: Validate a workflow definition without executing it.
 
 **Usage Example**:
 ```bash
 # Validate a built-in workflow
-nia workflow validate issue-to-pr
+frg workflow validate issue-to-pr
 
 # Validate a custom workflow
-nia workflow validate my-custom-flow
+frg workflow validate my-custom-flow
 ```
 
 **Validation Checks**:
@@ -1554,7 +1554,7 @@ Performs both syntactic and semantic validation:
 
 **Key Features**:
 
-- ✅ **No execution context required** - Works without `NIA_ISSUE_ID`, `NIA_PR_ID`, or `NIA_TICKET_ID`
+- ✅ **No execution context required** - Works without `FORGE_ISSUE_ID`, `FORGE_PR_ID`, or `FORGE_TICKET_ID`
 - ✅ **Detailed feedback** - Specific error messages for each validation issue
 - ✅ **Development tool** - Perfect for testing workflow definitions
 - ✅ **Suggestions** - Suggests similar workflow names for typos
@@ -1600,24 +1600,24 @@ Did you mean: 'issue-to-pr'?
 
 ---
 
-#### `nia workflow disable`
+#### `frg workflow disable`
 
-**Description**: Disable a workflow (built-in or user-defined) so `nia workflow run` refuses to execute it, without deleting its definition file.
+**Description**: Disable a workflow (built-in or user-defined) so `frg workflow run` refuses to execute it, without deleting its definition file.
 
 **Usage Example**:
 ```bash
-nia workflow disable issue-to-pr
+frg workflow disable issue-to-pr
 ```
 
 **Key Features**:
 
-- ✅ **Persisted per project** — state is written to `.nia/config/workflows.toml` (project-local, not global)
+- ✅ **Persisted per project** — state is written to `.forge/config/workflows.toml` (project-local, not global)
 - ✅ **Non-destructive** — the workflow definition file is untouched; `validate` and `graph` keep working
-- ✅ **Visible in `list`** — disabled workflows still appear in `nia workflow list`, marked as disabled
-- ✅ **Excluded from `--auto`** — disabled workflows are never selected as `nia workflow run --auto` candidates
+- ✅ **Visible in `list`** — disabled workflows still appear in `frg workflow list`, marked as disabled
+- ✅ **Excluded from `--auto`** — disabled workflows are never selected as `frg workflow run --auto` candidates
 - ✅ **Idempotent** — disabling an already-disabled workflow succeeds without error
 
-`.nia/config/workflows.toml` format:
+`.forge/config/workflows.toml` format:
 ```toml
 disabled = ["issue-to-pr", "my-custom-flow"]
 ```
@@ -1626,13 +1626,13 @@ disabled = ["issue-to-pr", "my-custom-flow"]
 
 ---
 
-#### `nia workflow enable`
+#### `frg workflow enable`
 
 **Description**: Re-enable a previously disabled workflow.
 
 **Usage Example**:
 ```bash
-nia workflow enable issue-to-pr
+frg workflow enable issue-to-pr
 ```
 
 **Key Features**:
@@ -1666,19 +1666,19 @@ The `--model` flag allows you to override the AI model on a per-command basis. T
 
 ```bash
 # Use a specific model for this execution
-nia issue draft --model claude-sonnet-4
+frg issue draft --model claude-sonnet-4
 
 # Short form
-nia code create -m claude-opus-5
+frg code create -m claude-opus-5
 
 # Combine with other flags
-nia issue plan --model claude-opus-5 --role software_architect
+frg issue plan --model claude-opus-5 --role software_architect
 
 # Override for quick fixes
-nia code fix -m claude-haiku-4.5
+frg code fix -m claude-haiku-4.5
 
 # Override for ask command
-nia ask --model claude-sonnet-4 "How does authentication work?"
+frg ask --model claude-sonnet-4 "How does authentication work?"
 ```
 
 #### Model Precedence
@@ -1690,12 +1690,12 @@ When `--model` is specified, it takes highest precedence:
 ```bash
 # Even if agents.toml specifies claude-sonnet-5 for issue.draft,
 # this command will use claude-opus-5
-nia issue draft --model claude-opus-5
+frg issue draft --model claude-opus-5
 ```
 
 #### Available Models
 
-Available models depend on your configured agent. Use `nia status` to see available models for your agent:
+Available models depend on your configured agent. Use `frg status` to see available models for your agent:
 
 **GitHub Copilot CLI:**
 - Standard: `claude-sonnet-5`, `gpt-5.2`, `gpt-5.1`
@@ -1707,14 +1707,14 @@ Available models depend on your configured agent. Use `nia status` to see availa
 If you specify an invalid model, you'll see a clear error with available options:
 
 ```bash
-$ nia issue draft --model nonexistent-model
+$ frg issue draft --model nonexistent-model
 Error: Invalid model 'nonexistent-model' for agent 'github_copilot'.
 
 Available models:
   claude-sonnet-5, claude-haiku-4.5,
   claude-opus-5, gpt-5.2, gpt-5.1, ...
 
-Use 'nia status' to see model details and pricing tiers.
+Use 'frg status' to see model details and pricing tiers.
 ```
 
 #### When to Use
@@ -1736,14 +1736,14 @@ Use 'nia status' to see model details and pricing tiers.
 The `--model` flag is independent of configuration file settings:
 
 ```toml
-# .nia/config/agents.toml
+# .forge/config/agents.toml
 [agent.github_copilot.operations]
 "issue.draft" = "claude-opus-5"  # Config says opus
 ```
 
 ```bash
 # CLI override wins
-nia issue draft --model claude-haiku-4.5  # Uses haiku, not opus
+frg issue draft --model claude-haiku-4.5  # Uses haiku, not opus
 ```
 
 See [Model Selection Guide](../agents/model-selection.md) for details on configuring default models.
@@ -1773,22 +1773,22 @@ Override the default AI role for workflow command execution.
 
 ```bash
 # Override role for issue planning
-nia issue plan --role software_architect
+frg issue plan --role software_architect
 
 # Use short form
-nia code review -r software_engineer
+frg code review -r software_engineer
 
 # Combine with other flags
-nia issue draft --role product_manager --agent copilot
+frg issue draft --role product_manager --agent copilot
 
 # Technical writer for documentation-heavy work
-nia docs create --role technical_writer
+frg docs create --role technical_writer
 ```
 
 #### Disabling the role prompt
 
 ```bash
-nia issue draft --role none
+frg issue draft --role none
 ```
 
 `none` is a reserved value that omits the role (persona) prompt entirely, reducing
@@ -1816,7 +1816,7 @@ When using `--custom-agent`, the `--role` flag is ignored because custom agents 
 
 ```bash
 # Warning: --role ignored when --custom-agent is specified
-nia issue draft --custom-agent security-expert --role product_manager
+frg issue draft --custom-agent security-expert --role product_manager
 # Output: Warning: Ignoring --role 'product_manager' because --custom-agent 'security-expert' is specified.
 ```
 
@@ -1847,16 +1847,16 @@ The `--context-file` flag allows you to provide additional context to the AI age
 
 ```bash
 # Single context file
-nia issue draft --context-file docs/architecture.md
+frg issue draft --context-file docs/architecture.md
 
 # Multiple context files
-nia code create --context-file docs/design.md --context-file examples/reference.rs
+frg code create --context-file docs/design.md --context-file examples/reference.rs
 
 # Using short form with multiple files
-nia issue plan -c docs/requirements.md -c specs/api.yaml -c CHANGELOG.md
+frg issue plan -c docs/requirements.md -c specs/api.yaml -c CHANGELOG.md
 
 # Combine with other workflow flags
-nia code review --context-file docs/style-guide.md --role software_architect
+frg code review --context-file docs/style-guide.md --role software_architect
 ```
 
 #### Path Handling
@@ -1865,13 +1865,13 @@ Both relative and absolute paths are supported:
 
 ```bash
 # Relative path (from current directory)
-nia code create --context-file ./docs/design.md
+frg code create --context-file ./docs/design.md
 
 # Absolute path
-nia code create --context-file /project/shared/patterns.md
+frg code create --context-file /project/shared/patterns.md
 
 # Multiple path types
-nia issue draft -c docs/local.md -c /shared/global-standards.md
+frg issue draft -c docs/local.md -c /shared/global-standards.md
 ```
 
 #### Context Window Considerations
@@ -1894,7 +1894,7 @@ Each context file's contents are included in the prompt sent to the AI agent. Co
 Invalid paths result in clear error messages:
 
 ```bash
-$ nia code create --context-file nonexistent.md
+$ frg code create --context-file nonexistent.md
 Error: Context file not found: nonexistent.md
 
 Verify the file exists and the path is correct.
@@ -1904,17 +1904,17 @@ Verify the file exists and the path is correct.
 
 **Architecture reference:**
 ```bash
-nia code create --context-file docs/architecture.md --context-file docs/api-design.md
+frg code create --context-file docs/architecture.md --context-file docs/api-design.md
 ```
 
 **Style guide enforcement:**
 ```bash
-nia code review --context-file .github/STYLE_GUIDE.md
+frg code review --context-file .github/STYLE_GUIDE.md
 ```
 
 **Cross-reference related issues:**
 ```bash
-nia issue draft --context-file .nia/work/job_41/issue/issue.md
+frg issue draft --context-file .forge/work/job_41/issue/issue.md
 ```
 
 ---
@@ -1942,16 +1942,16 @@ The `--context-dir` flag allows you to provide entire directories of context fil
 
 ```bash
 # Single context directory
-nia issue draft --context-dir docs/
+frg issue draft --context-dir docs/
 
 # Multiple context directories
-nia code create --context-dir docs/patterns --context-dir examples/
+frg code create --context-dir docs/patterns --context-dir examples/
 
 # Combine with --context-file
-nia code review --context-file docs/checklist.md --context-dir docs/standards/
+frg code review --context-file docs/checklist.md --context-dir docs/standards/
 
 # With other workflow flags
-nia code create --context-dir docs/api/ --role software_architect
+frg code create --context-dir docs/api/ --role software_architect
 ```
 
 #### Directory Traversal Behavior
@@ -1959,7 +1959,7 @@ nia code create --context-dir docs/api/ --role software_architect
 The flag automatically:
 
 - **Recursively traverses** all subdirectories
-- **Skips hidden directories** (`.git`, `.nia`, `node_modules`, `.venv`, etc.)
+- **Skips hidden directories** (`.git`, `.forge`, `node_modules`, `.venv`, etc.)
 - **Skips binary files** (images, executables, archives, compiled code)
 - **Includes text files** (markdown, code, config, documentation)
 - **Deduplicates** files if the same path is encountered multiple times
@@ -1979,13 +1979,13 @@ Both relative and absolute paths are supported:
 
 ```bash
 # Relative path (from current directory)
-nia code create --context-dir ./docs
+frg code create --context-dir ./docs
 
 # Absolute path
-nia code create --context-dir /project/shared/standards
+frg code create --context-dir /project/shared/standards
 
 # Multiple path types
-nia issue draft --context-dir docs/ --context-dir /shared/templates/
+frg issue draft --context-dir docs/ --context-dir /shared/templates/
 ```
 
 #### Combining with --context-file
@@ -1994,12 +1994,12 @@ The `--context-dir` and `--context-file` flags work together seamlessly:
 
 ```bash
 # Specific file + entire directory
-nia code review \
+frg code review \
   --context-file docs/review-checklist.md \
   --context-dir docs/patterns/
 
 # Multiple files and directories
-nia issue plan \
+frg issue plan \
   --context-file requirements.md \
   --context-file specs/api.yaml \
   --context-dir docs/architecture/ \
@@ -2013,12 +2013,12 @@ Files are deduplicated across all sources, so if a file is referenced multiple t
 Invalid paths result in clear error messages:
 
 ```bash
-$ nia code create --context-dir nonexistent/
+$ frg code create --context-dir nonexistent/
 Error: Context directory not found: nonexistent/
 
 Verify the directory exists and the path is correct.
 
-$ nia code create --context-dir README.md
+$ frg code create --context-dir README.md
 Error: Path is not a directory: README.md
 
 Use --context-file for individual files, or --context-dir for directories.
@@ -2028,24 +2028,24 @@ Use --context-file for individual files, or --context-dir for directories.
 
 **Documentation folder:**
 ```bash
-nia code create --context-dir docs/
+frg code create --context-dir docs/
 ```
 
 **Multiple reference directories:**
 ```bash
-nia code review --context-dir docs/standards/ --context-dir docs/patterns/
+frg code review --context-dir docs/standards/ --context-dir docs/patterns/
 ```
 
 **Architecture documentation with specific checklist:**
 ```bash
-nia code create \
+frg code create \
   --context-dir docs/architecture/ \
   --context-file docs/checklist.md
 ```
 
 **Example code patterns:**
 ```bash
-nia code create --context-dir examples/ --context-dir tests/fixtures/
+frg code create --context-dir examples/ --context-dir tests/fixtures/
 ```
 
 #### Context Window Considerations
@@ -2089,10 +2089,10 @@ Pass instructions directly on the command line for simple, one-line edits:
 
 ```bash
 # Quick edit instruction
-nia issue review --edit "Fix all spelling errors in the requirements"
+frg issue review --edit "Fix all spelling errors in the requirements"
 
 # Quick fix instruction
-nia code create --fix "Address all TODO comments"
+frg code create --fix "Address all TODO comments"
 ```
 
 **Best for:**
@@ -2106,7 +2106,7 @@ Create a markdown file with detailed, multi-line instructions:
 
 ```bash
 # Create detailed instructions file
-cat > .nia/work/job_42/code/fix.md << 'EOF'
+cat > .forge/work/job_42/code/fix.md << 'EOF'
 # Fix Instructions
 
 ## Priority Issues
@@ -2123,7 +2123,7 @@ cat > .nia/work/job_42/code/fix.md << 'EOF'
 EOF
 
 # Run with file-based instructions (no argument after --fix)
-nia code create --fix
+frg code create --fix
 ```
 
 **Best for:**
@@ -2133,28 +2133,28 @@ nia code create --fix
 - Complex modification requirements
 
 **File Location:**
-- Edit modifier: `.nia/work/job_{ID}/{target}/edit.md`
-- Fix modifier: `.nia/work/job_{ID}/{target}/fix.md`
+- Edit modifier: `.forge/work/job_{ID}/{target}/edit.md`
+- Fix modifier: `.forge/work/job_{ID}/{target}/fix.md`
 
-**Tip:** Use `nia status` to see your current job ID and context.
+**Tip:** Use `frg status` to see your current job ID and context.
 
 ### Modifier Usage Examples
 
 ```bash
 # Editing with inline instruction
-nia issue draft --edit "Add acceptance criteria for edge cases"
+frg issue draft --edit "Add acceptance criteria for edge cases"
 
 # Editing with file (create edit.md first)
-nia issue draft --edit
+frg issue draft --edit
 
 # Fix with inline instruction
-nia code create --fix "Use async/await instead of callbacks"
+frg code create --fix "Use async/await instead of callbacks"
 
 # Fix with file (create fix.md first)
-nia code create --fix
+frg code create --fix
 
 # Combine modifiers
-nia code refactor --fix "Extract common validation logic"
+frg code refactor --fix "Extract common validation logic"
 ```
 
 ### `--tail` - Real-Time Trace Watching
@@ -2163,28 +2163,28 @@ The `--tail` flag streams trace file output in real-time during agent execution.
 
 **Usage**:
 ```bash
-nia <target> <operation> --tail
+frg <target> <operation> --tail
 ```
 
 **Examples**:
 ```bash
 # Watch issue draft execution
-export NIA_ISSUE_ID=42
-nia issue draft --tail
+export FORGE_ISSUE_ID=42
+frg issue draft --tail
 
 # Watch code review in progress
-nia code review --tail
+frg code review --tail
 
 # Watch PR creation from another terminal
 # Terminal 1:
-nia pr draft
+frg pr draft
 
 # Terminal 2:
-nia pr draft --tail  # Streams Terminal 1's execution
+frg pr draft --tail  # Streams Terminal 1's execution
 ```
 
 **Requirements**:
-- Job context must be set (`NIA_ISSUE_ID` or `NIA_PR_ID`)
+- Job context must be set (`FORGE_ISSUE_ID` or `FORGE_PR_ID`)
 - Trace directory must exist (created during agent execution)
 
 **Behavior**:
@@ -2200,13 +2200,13 @@ nia pr draft --tail  # Streams Terminal 1's execution
 - Agent's thought process and tool usage
 
 **Common Issues**:
-- "No active job context": Set `NIA_ISSUE_ID` or `NIA_PR_ID` environment variable
+- "No active job context": Set `FORGE_ISSUE_ID` or `FORGE_PR_ID` environment variable
 - "Trace directory not found": Workflow hasn't started yet or job ID is incorrect
 - "Timeout waiting for trace file": Agent failed to start or encountered error
 
 **See Also**:
-- `nia status` - Check current job context
-- Manual trace viewing: `cat .nia/work/<job_id>/traces/<trace_file>`
+- `frg status` - Check current job context
+- Manual trace viewing: `cat .forge/work/<job_id>/traces/<trace_file>`
 
 ---
 
@@ -2218,21 +2218,21 @@ Many workflow commands require context (issue ID, PR ID) to operate:
 
 **Via Environment Variables**:
 ```bash
-export NIA_ISSUE_ID=123
-export NIA_PR_ID=456
-nia issue review
+export FORGE_ISSUE_ID=123
+export FORGE_PR_ID=456
+frg issue review
 ```
 
 **Via Config Commands**:
 ```bash
-nia config set-issue 123
-nia config set-pr 456
-nia pr review
+frg config set-issue 123
+frg config set-pr 456
+frg pr review
 ```
 
 ### Context Storage
 
-Context is stored in `.nia/context.toml`:
+Context is stored in `.forge/context.toml`:
 ```toml
 issue_id = 123
 pr_id = 456
@@ -2242,7 +2242,7 @@ code = "code-481"
 issue = "issue-481"
 ```
 
-The `[agent_sessions]` section tracks agent session IDs for reusing sessions across related commands. This reduces token consumption and improves execution speed. Session management is automatic - nia creates, reuses, and clears sessions as needed.
+The `[agent_sessions]` section tracks agent session IDs for reusing sessions across related commands. This reduces token consumption and improves execution speed. Session management is automatic - frg creates, reuses, and clears sessions as needed.
 
 **Session Groups**: Commands are organized into session groups that share agent sessions:
 - `code` - code create, test, ask
@@ -2251,13 +2251,13 @@ The `[agent_sessions]` section tracks agent session IDs for reusing sessions acr
 - `pr` - pr draft, review, merge, ask
 - `backlog`, `docs`, `sec`, `ticket` - respective command operations
 
-Use `--clear` flag to start a fresh session: `nia code create --clear`
+Use `--clear` flag to start a fresh session: `frg code create --clear`
 
 ### Context Priority
 
-Nia resolves context in this order:
-1. Environment variables (`NIA_ISSUE_ID`, `NIA_PR_ID`)
-2. Config file (`.nia/context.toml`)
+Progress Forge resolves context in this order:
+1. Environment variables (`FORGE_ISSUE_ID`, `FORGE_PR_ID`)
+2. Config file (`.forge/context.toml`)
 3. None (for commands that don't require context)
 
 ### Commands by Context Requirement
@@ -2285,50 +2285,50 @@ Nia resolves context in this order:
 **Starting New Work**:
 ```bash
 # 1. Create and publish issue
-nia issue draft
-nia issue publish
+frg issue draft
+frg issue publish
 
 # 2. Set context
-nia config set-issue 123
+frg config set-issue 123
 
 # 3. Plan implementation
-nia issue plan
+frg issue plan
 
 # 4. Create code
-nia code create
+frg code create
 
 # 5. Review and test
-nia code review
-nia code test
+frg code review
+frg code test
 ```
 
 **Pull Request Workflow**:
 ```bash
 # 1. Set context
-nia config set-issue 123
-nia config set-pr 456
+frg config set-issue 123
+frg config set-pr 456
 
 # 2. Draft PR
-nia pr draft
+frg pr draft
 
 # 3. Review
-nia pr review
+frg pr review
 
 # 4. Merge preparation
-nia pr merge
+frg pr merge
 ```
 
 **Planning Workflow**:
 ```bash
 # 1. Create backlog
-nia backlog create
+frg backlog create
 
 # 2. Review and rank
-nia backlog review
-nia backlog rank
+frg backlog review
+frg backlog rank
 
 # 3. Create issues
-nia issue draft
+frg issue draft
 ```
 
 ---
@@ -2342,7 +2342,7 @@ nia issue draft
 
 ---
 
-*For additional help, run `nia --help` or `nia <command> --help`*
+*For additional help, run `frg --help` or `frg <command> --help`*
 
 ##### validate (default)
 
@@ -2353,9 +2353,9 @@ nia issue draft
 
 **Examples**:
 ```bash
-nia config validate
-nia config validate --file .nia/config.toml
-nia config -f custom.toml
+frg config validate
+frg config validate --file .forge/config.toml
+frg config -f custom.toml
 ```
 
 ---
@@ -2363,7 +2363,7 @@ nia config -f custom.toml
 ## Command Tree
 
 ```
-nia [--help | --version]
+frg [--help | --version]
 ├── plan
 │   └── task
 │       ├── create
@@ -2377,7 +2377,7 @@ nia [--help | --version]
 
 | Pattern | Example | Description |
 |---------|---------|-------------|
-| Global help | `nia --help` | Show all commands |
-| Command help | `nia plan --help` | Show command details |
-| Default operation | `nia config` | Uses `validate` |
-| Sub-operation | `nia plan task draft edit` | Nested operation |
+| Global help | `frg --help` | Show all commands |
+| Command help | `frg plan --help` | Show command details |
+| Default operation | `frg config` | Uses `validate` |
+| Sub-operation | `frg plan task draft edit` | Nested operation |

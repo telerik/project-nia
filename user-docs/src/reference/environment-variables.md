@@ -1,14 +1,14 @@
 # Environment Variables
 
-Nia respects the following environment variables for configuration and behavior control.
+Progress Forge respects the following environment variables for configuration and behavior control.
 
 ## Beta Consent
 
-### `NIA_ACCEPT_BETA_RISK`
+### `FORGE_ACCEPT_BETA_RISK`
 
 Bypasses the interactive beta consent prompt for CI/CD environments.
 
-**Purpose**: Allows Nia to run in non-interactive CI pipelines by confirming
+**Purpose**: Allows Progress Forge to run in non-interactive CI pipelines by confirming
 acceptance of beta software terms.
 
 **Valid Values**: `true`, `1`, `yes`, `on` (case-insensitive)
@@ -21,20 +21,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      NIA_ACCEPT_BETA_RISK: true
+      FORGE_ACCEPT_BETA_RISK: true
     steps:
       - uses: actions/checkout@v4
-      - name: Run nia workflow
-        run: nia issue draft 123
+      - name: Run frg workflow
+        run: frg issue draft 123
 ```
 
 **Example - GitLab CI**:
 ```yaml
-nia-job:
+forge-job:
   variables:
-    NIA_ACCEPT_BETA_RISK: "true"
+    FORGE_ACCEPT_BETA_RISK: "true"
   script:
-    - nia issue draft 123
+    - frg issue draft 123
 ```
 
 **Security Considerations**:
@@ -47,7 +47,7 @@ nia-job:
 
 ## Telemetry
 
-### `NIA_TELEMETRY_DISABLED`
+### `FORGE_TELEMETRY_DISABLED`
 
 Disable all usage telemetry. Takes precedence over configuration files.
 
@@ -60,7 +60,7 @@ useful for CI/CD pipelines or organizational policies.
 
 **Example - Disable telemetry**:
 ```bash
-export NIA_TELEMETRY_DISABLED=1
+export FORGE_TELEMETRY_DISABLED=1
 ```
 
 **Example - GitHub Actions**:
@@ -68,22 +68,22 @@ export NIA_TELEMETRY_DISABLED=1
 jobs:
   build:
     env:
-      NIA_TELEMETRY_DISABLED: 1
+      FORGE_TELEMETRY_DISABLED: 1
 ```
 
 ---
 
-### `NIA_TELEMETRY_PATH`
+### `FORGE_TELEMETRY_PATH`
 
 Override the default telemetry configuration file path.
 
-**Default**: `.nia/config/telemetry.toml` or `~/.config/nia/telemetry.toml`
+**Default**: `.forge/config/telemetry.toml` or `~/.config/forge/telemetry.toml`
 
 ---
 
 ## Agent Retry
 
-### `NIA_RETRY_DISABLED`
+### `FORGE_RETRY_DISABLED`
 
 Disable retry logic for transient agent failures.
 
@@ -91,7 +91,7 @@ Disable retry logic for transient agent failures.
 
 **Default**: not set (retries enabled)
 
-### `NIA_RETRY_MAX_ATTEMPTS`
+### `FORGE_RETRY_MAX_ATTEMPTS`
 
 Maximum number of retry attempts for transient agent failures.
 
@@ -99,19 +99,19 @@ Maximum number of retry attempts for transient agent failures.
 
 **Special Case**: set to `0` to disable retries.
 
-### `NIA_RETRY_INITIAL_DELAY`
+### `FORGE_RETRY_INITIAL_DELAY`
 
 Initial retry delay in seconds.
 
 **Default**: `1`
 
-### `NIA_RETRY_MAX_DELAY`
+### `FORGE_RETRY_MAX_DELAY`
 
 Maximum retry delay cap in seconds.
 
 **Default**: `30`
 
-### `NIA_RETRY_BACKOFF_FACTOR`
+### `FORGE_RETRY_BACKOFF_FACTOR`
 
 Exponential backoff multiplier for successive retries.
 
@@ -119,26 +119,26 @@ Exponential backoff multiplier for successive retries.
 
 **Example**:
 ```bash
-NIA_RETRY_MAX_ATTEMPTS=4 \
-NIA_RETRY_INITIAL_DELAY=2 \
-NIA_RETRY_MAX_DELAY=20 \
-NIA_RETRY_BACKOFF_FACTOR=1.5 \
-nia issue plan 781
+FORGE_RETRY_MAX_ATTEMPTS=4 \
+FORGE_RETRY_INITIAL_DELAY=2 \
+FORGE_RETRY_MAX_DELAY=20 \
+FORGE_RETRY_BACKOFF_FACTOR=1.5 \
+frg issue plan 781
 ```
 
 ---
 
 ## Context
 
-### `NIA_ISSUE_ID`
+### `FORGE_ISSUE_ID`
 
 Set the current issue context for workflow commands.
 
-### `NIA_PR_ID`
+### `FORGE_PR_ID`
 
 Set the current pull request context for workflow commands.
 
-### `NIA_TICKET_ID`
+### `FORGE_TICKET_ID`
 
 Set the current ticket context for workflow commands.
 
@@ -146,7 +146,7 @@ Set the current ticket context for workflow commands.
 
 ## Testing
 
-### `NIA_FORCE_INTERACTIVE`
+### `FORGE_FORCE_INTERACTIVE`
 
 **Test-only variable**. Forces interactive mode even when stdin is not a TTY.
 

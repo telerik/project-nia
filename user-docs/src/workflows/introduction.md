@@ -1,12 +1,12 @@
 # Introduction to Workflows
 
-Stateful workflows in nia allow you to define complex, multi-step automation sequences using simple TOML configuration files—no coding required.
+Stateful workflows in frg allow you to define complex, multi-step automation sequences using simple TOML configuration files—no coding required.
 
 ## What Are Workflows?
 
-Workflows are automated sequences of nia commands and operations that:
+Workflows are automated sequences of frg commands and operations that:
 
-- **Execute multiple steps** - Chain together nia commands, shell scripts, and checks
+- **Execute multiple steps** - Chain together frg commands, shell scripts, and checks
 - **Handle failures gracefully** - Automatic retries, loops, and fallback strategies
 - **Pause for approval** - Human decision points at critical moments
 - **Resume automatically** - Pick up where they left off after interruptions
@@ -29,7 +29,7 @@ Workflows are ideal for:
 
 ## Built-in Workflows
 
-Nia includes 10 production-ready workflows you can use immediately:
+Progress Forge includes 10 production-ready workflows you can use immediately:
 
 | Workflow | Description | Use Case |
 |----------|-------------|----------|
@@ -46,12 +46,12 @@ Nia includes 10 production-ready workflows you can use immediately:
 
 List available workflows:
 ```bash
-nia workflow list
+frg workflow list
 ```
 
 View detailed information:
 ```bash
-nia workflow list --verbose
+frg workflow list --verbose
 ```
 
 ## Running Workflows
@@ -60,10 +60,10 @@ nia workflow list --verbose
 
 ```bash
 # Run a workflow
-nia workflow run <workflow-name>
+frg workflow run <workflow-name>
 
 # Example
-nia workflow run issue-to-pr
+frg workflow run issue-to-pr
 ```
 
 ### Available Options
@@ -79,16 +79,16 @@ nia workflow run issue-to-pr
 
 ```bash
 # Standard execution
-nia workflow run issue-to-pr
+frg workflow run issue-to-pr
 
 # Skip approval gates (CI mode)
-nia workflow run issue-to-pr --bypass-approvals
+frg workflow run issue-to-pr --bypass-approvals
 
 # Validate without executing
-nia workflow run issue-to-pr --dry-run
+frg workflow run issue-to-pr --dry-run
 
 # Resume from a specific state
-nia workflow run issue-to-pr --start-from create_code
+frg workflow run issue-to-pr --start-from create_code
 ```
 
 ## Validating Workflows
@@ -97,10 +97,10 @@ Before running a workflow, validate its definition to catch errors early:
 
 ```bash
 # Validate a workflow
-nia workflow validate <workflow-name>
+frg workflow validate <workflow-name>
 
 # Example
-nia workflow validate issue-to-pr
+frg workflow validate issue-to-pr
 ```
 
 ### What Gets Validated
@@ -114,7 +114,7 @@ The validate command performs comprehensive checks:
 ### Why Validate?
 
 ✅ **Catch errors before execution** - Find configuration issues without running the workflow  
-✅ **No execution context required** - Validate without setting `NIA_ISSUE_ID` or `NIA_PR_ID`  
+✅ **No execution context required** - Validate without setting `FORGE_ISSUE_ID` or `FORGE_PR_ID`  
 ✅ **Detailed feedback** - Get specific error messages for each validation issue  
 ✅ **Development tool** - Perfect for testing workflow definitions during development  
 
@@ -154,8 +154,8 @@ Did you mean: 'issue-to-pr'?
 
 ### See Also
 
-- [`nia workflow list`](#built-in-workflows) - List available workflows
-- [`nia workflow graph`](../reference/commands.md#nia-workflow-graph) - Generate workflow diagram
+- [`frg workflow list`](#built-in-workflows) - List available workflows
+- [`frg workflow graph`](../reference/commands.md#forge-workflow-graph) - Generate workflow diagram
 - [Troubleshooting Workflows](../troubleshooting/workflow.md) - Common validation errors
 
 ## Key Concepts
@@ -164,7 +164,7 @@ Did you mean: 'issue-to-pr'?
 
 A workflow is a finite state machine composed of **states**. Each state represents a single step and can:
 
-- Execute a nia command (`nia issue draft`, `nia pr create`, etc.)
+- Execute a frg command (`frg issue draft`, `frg pr create`, etc.)
 - Run shell scripts or checks before/after the command
 - Request human approval before proceeding
 - Transition to different states based on success or failure
@@ -234,7 +234,7 @@ required_code = "DEPLOY-PROD"  # Optional confirmation code
 
 When a workflow reaches an approval gate it pauses until a human approves or rejects it.
 
-**In the same terminal (interactive runs).** If `nia workflow run` is attached to an interactive
+**In the same terminal (interactive runs).** If `frg workflow run` is attached to an interactive
 terminal, the gate details — including the required code — are printed directly, followed by a
 prompt:
 
@@ -250,14 +250,14 @@ Message: Ready to deploy to production. Approve?
 Required Code: DEPLOY-PROD
 
 Approve or reject below, or from another terminal run:
-  nia workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
-  nia workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason <your-reason>
+  frg workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
+  frg workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason <your-reason>
 
 Approve this gate? [a]pprove / [r]eject / [w]ait for another session >
 ```
 
 Enter `a` or `r`, then the required code, then your email address. Press Enter at the email
-prompt to accept the `user_email` value from `.nia/context.toml`. Choosing `w` hides the prompt
+prompt to accept the `user_email` value from `.forge/context.toml`. Choosing `w` hides the prompt
 and waits for someone else to resolve the gate.
 
 **From another terminal or another machine.** The existing commands are unchanged and can be
@@ -265,14 +265,14 @@ used at any time, including while the inline prompt is displayed — whichever p
 first resolves the gate:
 
 ```bash
-nia workflow status
-nia workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
-nia workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason "needs rework"
+frg workflow status
+frg workflow approve --workflow-id 1226 --code DEPLOY-PROD --email you@example.com
+frg workflow reject  --workflow-id 1226 --code DEPLOY-PROD --email you@example.com --reason "needs rework"
 ```
 
 **Non-interactive runs.** When stdin or stdout is not a terminal, in CI, or with
 `--quiet`/silent output, no prompt is shown and the workflow waits for an out-of-band
-approval exactly as before. Set `NIA_DISABLE_INLINE_APPROVAL=1` to force this behaviour on an
+approval exactly as before. Set `FORGE_DISABLE_INLINE_APPROVAL=1` to force this behaviour on an
 interactive terminal.
 
 Both paths enforce identical validation (case-sensitive code match, email format) and produce
@@ -291,7 +291,7 @@ keystrokes leaking to another process.
   should not be scheduled immediately after an approval gate. If it is, and an operator is still
   mid-keystroke at the gate when that step starts, the step receives empty input for that one
   window rather than risk stealing bytes from the approval prompt. Setting
-  `NIA_DISABLE_INLINE_APPROVAL=1` avoids the scenario entirely by never arming an inline prompt in
+  `FORGE_DISABLE_INLINE_APPROVAL=1` avoids the scenario entirely by never arming an inline prompt in
   the first place.
 
 ## Quick Example
@@ -329,10 +329,10 @@ name = "done_failed"
 description = "Failed to create issue"
 ```
 
-Save this to `.nia/config/workflows/quick-example.toml` and run:
+Save this to `.forge/config/workflows/quick-example.toml` and run:
 
 ```bash
-nia workflow run quick-example
+frg workflow run quick-example
 ```
 
 ## How Workflows Execute
@@ -350,17 +350,17 @@ Workflows use transaction logs to track every state change. If interrupted:
 
 ```bash
 # Resume exactly where you left off
-nia workflow run my-workflow
+frg workflow run my-workflow
 ```
 
-**Note**: Running `nia workflow run <workflow-name>` without `--start-from` will start from the initial state, not from where the workflow was interrupted. You must explicitly use the `--start-from` flag to resume from a specific state.
+**Note**: Running `frg workflow run <workflow-name>` without `--start-from` will start from the initial state, not from where the workflow was interrupted. You must explicitly use the `--start-from` flag to resume from a specific state.
 
 ### Discovering Workflow States
 
 Before resuming or debugging a workflow, you can list all available states:
 
 ```bash
-nia workflow run <workflow-name> --list-states
+frg workflow run <workflow-name> --list-states
 ```
 
 This displays:
@@ -388,11 +388,11 @@ Workflow States: issue-to-pr
 Total: 7 states
 
 Use state names with --start-from to resume from a specific state:
-  nia workflow run issue-to-pr --start-from <state-name>
+  frg workflow run issue-to-pr --start-from <state-name>
 ```
 
 Use this information to:
-- Resume workflows: `nia workflow run issue-to-pr --start-from create_code`
+- Resume workflows: `frg workflow run issue-to-pr --start-from create_code`
 - Understand workflow structure before execution
 - Debug workflow execution issues
 
@@ -401,7 +401,7 @@ Use this information to:
 To resume from a specific step, use:
 
 ```bash
-nia workflow run my-workflow --start-from awaiting_approval
+frg workflow run my-workflow --start-from awaiting_approval
 ```
 
 To see which state to resume from, check the error message when a workflow fails - it provides a helpful hint with the exact command to retry. You can also use `--list-states` to list all available state names.
@@ -421,17 +421,17 @@ To see which state to resume from, check the error message when a workflow fails
 
 List all available workflows:
 ```bash
-nia workflow list
+frg workflow list
 ```
 
 View workflow details:
 ```bash
-nia workflow status my-workflow
+frg workflow status my-workflow
 ```
 
 ## Built-in Examples
 
-nia bundles several production-ready workflows that are available immediately without any setup:
+frg bundles several production-ready workflows that are available immediately without any setup:
 
 **`issue-to-plan`** - Generate implementation plan from issue  
 **`issue-to-pr`** - Complete issue → PR automation with planning, coding, review, and PR creation  
@@ -441,23 +441,23 @@ nia bundles several production-ready workflows that are available immediately wi
 
 View available workflows:
 ```bash
-nia workflow list
+frg workflow list
 ```
 
 Export for customization:
 ```bash
-nia config export --workflows
+frg config export --workflows
 ```
 
 Workflows are automatically loaded from two sources:
-1. **Built-in workflows** (bundled with nia binary) - marked as "(built-in)" in `nia workflow list`
-2. **User workflows** in `.nia/config/workflows/` - override built-ins with the same name
+1. **Built-in workflows** (bundled with frg binary) - marked as "(built-in)" in `frg workflow list`
+2. **User workflows** in `.forge/config/workflows/` - override built-ins with the same name
 
 This means you can customize specific workflows by exporting and editing them, while keeping others at their default built-in versions.
 
 ## Production Example
 
-The nia project uses workflows for its own development. The **`issue-to-pr`** workflow demonstrates production patterns:
+The frg project uses workflows for its own development. The **`issue-to-pr`** workflow demonstrates production patterns:
 
 - **Iterative code generation** - Loops until all tasks in `tasks.md` are complete
 - **Automated task checking** - Uses `tasks_complete` check type to auto-detect completion
@@ -468,12 +468,12 @@ The nia project uses workflows for its own development. The **`issue-to-pr`** wo
 
 View the full workflow:
 ```bash
-cat .nia/config/workflows/issue-to-pr.toml
+cat .forge/config/workflows/issue-to-pr.toml
 ```
 
 Run the workflow:
 ```bash
-nia workflow run issue-to-pr
+frg workflow run issue-to-pr
 ```
 
 **Key Features Demonstrated:**
@@ -611,7 +611,7 @@ This workflow:
 
 Run it with:
 ```bash
-nia workflow run issue-to-pr
+frg workflow run issue-to-pr
 ```
 
 ## Next Steps

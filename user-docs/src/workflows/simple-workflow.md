@@ -1,6 +1,6 @@
 # Creating Your First Workflow
 
-This guide walks you through creating a simple linear workflow in nia.
+This guide walks you through creating a simple linear workflow in forge.
 
 ## What You'll Build
 
@@ -11,19 +11,19 @@ A basic workflow that:
 
 ## Prerequisites
 
-- nia CLI installed
+- frg CLI installed
 - Git repository initialized
-- `.nia/` directory exists (run `nia init` if needed)
+- `.forge/` directory exists (run `frg init` if needed)
 
 ## Step 1: Create the Workflows Directory
 
 ```bash
-mkdir -p .nia/config/workflows
+mkdir -p .forge/config/workflows
 ```
 
 ## Step 2: Create the Workflow File
 
-Create `.nia/config/workflows/simple-workflow.toml`:
+Create `.forge/config/workflows/simple-workflow.toml`:
 
 ```toml
 workflow_schema_version = "1.0.0"
@@ -93,7 +93,7 @@ description = "Failed to create PR"
 ## Step 3: Validate the Workflow
 
 ```bash
-nia workflow list
+frg workflow list
 ```
 
 Expected output:
@@ -108,7 +108,7 @@ Available workflows:
 ## Step 4: Run the Workflow
 
 ```bash
-nia workflow run simple-workflow
+frg workflow run simple-workflow
 ```
 
 You'll see progress as each state executes:
@@ -129,7 +129,7 @@ You'll see progress as each state executes:
 Monitor workflow progress at any time:
 
 ```bash
-nia workflow status simple-workflow
+frg workflow status simple-workflow
 ```
 
 ## Understanding the Flow
@@ -153,7 +153,7 @@ nia workflow status simple-workflow
 Each `[[workflow.states]]` entry defines a single step in your workflow:
 - **name**: Unique identifier for the state
 - **description**: Human-readable description
-- **command**: The nia command to execute (optional)
+- **command**: The frg command to execute (optional)
 - **on_success**: Next state if successful
 - **on_failure**: Next state if failed
 
@@ -177,10 +177,10 @@ Workflows automatically move between states based on command results:
 If a workflow is interrupted (Ctrl+C, system crash), you can manually resume from a specific state:
 
 ```bash
-nia workflow run <workflow-name> --start-from <STEP_NAME>
+frg workflow run <workflow-name> --start-from <STEP_NAME>
 ```
 
-**Note**: Running `nia workflow run <workflow-name>` without `--start-from` will start from the initial state, not from where the workflow was interrupted. You must explicitly use the `--start-from` flag to resume from a specific state.
+**Note**: Running `frg workflow run <workflow-name>` without `--start-from` will start from the initial state, not from where the workflow was interrupted. You must explicitly use the `--start-from` flag to resume from a specific state.
 
 To see which state to resume from, check the error message when a workflow fails - it provides a helpful hint with the exact command to retry.
 
@@ -239,7 +239,7 @@ operation = "draft"
 
 ### "Workflow not found"
 
-Make sure your workflow file is in `.nia/config/workflows/` and has a `.toml` extension.
+Make sure your workflow file is in `.forge/config/workflows/` and has a `.toml` extension.
 
 ### "Invalid schema version"
 

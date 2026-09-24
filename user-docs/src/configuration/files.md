@@ -1,6 +1,6 @@
 # Configuration Files Reference
 
-Quick reference for all nia configuration files, their purposes, and key fields.
+Quick reference for all frg configuration files, their purposes, and key fields.
 
 ## File Overview
 
@@ -15,7 +15,7 @@ Quick reference for all nia configuration files, their purposes, and key fields.
 
 Defines project metadata used to provide context to AI agents.
 
-**Location:** `.nia/config/project.toml` (repository only)
+**Location:** `.forge/config/project.toml` (repository only)
 
 **Key Fields:**
 
@@ -35,7 +35,7 @@ Defines project metadata used to provide context to AI agents.
 
 Configures AI agent selection and model preferences.
 
-**Location:** `.nia/config/agents.toml` (supports hierarchical loading)
+**Location:** `.forge/config/agents.toml` (supports hierarchical loading)
 
 **Key Fields:**
 
@@ -51,7 +51,7 @@ Configures AI agent selection and model preferences.
 
 Defines development tools and platforms available in your environment.
 
-**Location:** `.nia/config/toolchain.toml` (supports hierarchical loading)
+**Location:** `.forge/config/toolchain.toml` (supports hierarchical loading)
 
 **Key Fields:**
 
@@ -68,7 +68,7 @@ Defines development tools and platforms available in your environment.
 
 Customizes workflow commands with context and prompt overrides.
 
-**Location:** `.nia/config/commands.toml` (supports hierarchical loading)
+**Location:** `.forge/config/commands.toml` (supports hierarchical loading)
 
 **Key Fields:**
 
@@ -86,10 +86,10 @@ Create configuration files with:
 
 ```bash
 # Full initialization with all options
-nia config init --issues github_issues --code github --agent github_copilot
+frg config init --issues github_issues --code github --agent github_copilot
 
 # Minimal initialization (uses external configs)
-nia config init --minimal
+frg config init --minimal
 ```
 
 ## Validation
@@ -97,7 +97,7 @@ nia config init --minimal
 Check configuration validity:
 
 ```bash
-nia config validate
+frg config validate
 ```
 
 ## See Also

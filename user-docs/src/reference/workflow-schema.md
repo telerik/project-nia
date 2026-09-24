@@ -1,10 +1,10 @@
 # Workflow TOML Schema Reference
 
-This document provides a complete reference for the workflow TOML schema used to define stateful workflows in nia.
+This document provides a complete reference for the workflow TOML schema used to define stateful workflows in forge.
 
 ## File Location
 
-Workflow files are located in `.nia/config/workflows/` with the `.toml` extension. Each file defines one workflow.
+Workflow files are located in `.forge/config/workflows/` with the `.toml` extension. Each file defines one workflow.
 
 ## Schema Version
 
@@ -56,7 +56,7 @@ name = "first_state"
 
 ## Loop Detection Configuration
 
-Workflows are protected against infinite loops with configurable thresholds. By default, nia aborts workflows that exceed reasonable iteration limits, but you can adjust these for workflows with legitimate repetitive patterns (like iterative code generation).
+Workflows are protected against infinite loops with configurable thresholds. By default, frg aborts workflows that exceed reasonable iteration limits, but you can adjust these for workflows with legitimate repetitive patterns (like iterative code generation).
 
 ### Global Loop Detection
 
@@ -125,10 +125,10 @@ Loop counters are automatically exposed as environment variables for use in shel
 
 ```bash
 # If loop_counter = "code_iterations", the following env var is available:
-echo $NIA_LOOP_COUNTER_CODE_ITERATIONS
+echo $FORGE_LOOP_COUNTER_CODE_ITERATIONS
 ```
 
-**Format**: `NIA_LOOP_COUNTER_{COUNTER_NAME}` (uppercase, underscores)
+**Format**: `FORGE_LOOP_COUNTER_{COUNTER_NAME}` (uppercase, underscores)
 
 **Usage Example**:
 ```toml
@@ -139,7 +139,7 @@ loop_counter = "iterations"
 command = { target = "code", operation = "create" }
 
 # In a subsequent shell step:
-# $NIA_LOOP_COUNTER_ITERATIONS will contain the current count
+# $FORGE_LOOP_COUNTER_ITERATIONS will contain the current count
 ```
 
 ### Complete Example
@@ -190,7 +190,7 @@ description = "Optional description"
 | `description` | String | No | Human-readable description |
 | `operation` | Object | No | Single operation to execute |
 | `operations` | Array | No | Multiple operations to execute in sequence |
-| `command` | Object | No | Nia command to execute (legacy) |
+| `command` | Object | No | Progress Forge command to execute (legacy) |
 | `pre_steps` | Array | No | Steps to run before command (legacy) |
 | `post_steps` | Array | No | Steps to run after command (legacy) |
 | `approval` | Object | No | Approval gate configuration |
@@ -201,11 +201,11 @@ description = "Optional description"
 | `escape_conditions` | Array | No | Conditions to exit loops |
 | `retry` | Object | No | Retry configuration |
 | `max_visits` | Number | No | Override loop detection threshold for this state |
-| `is_exit_point` | Boolean | No | Marks this state as a certified `nia workflow run --ends-at` target (default: false) |
+| `is_exit_point` | Boolean | No | Marks this state as a certified `frg workflow run --ends-at` target (default: false) |
 
 > **Note**: States must specify one of: `operation`, `operations`, `command`, or `approval`. The `operation`/`operations` fields represent the new operation model, while `command`/`pre_steps`/`post_steps` are legacy patterns maintained for backward compatibility.
 
-> **`is_exit_point` and `--ends-at`**: `nia workflow run <name> --ends-at <state>` stops the
+> **`is_exit_point` and `--ends-at`**: `frg workflow run <name> --ends-at <state>` stops the
 > workflow right before entering `<state>`, without executing it (`stopped_early` is reported
 > even when `<state>` is itself a terminal state). This only works for states explicitly marked
 > `is_exit_point = true` — the flag is an author certification that stopping there leaves the
@@ -343,7 +343,7 @@ these three IDs are supported — project metadata and toolchain placeholders
 Every agent step writes a trace file to `<job_dir>/traces/` (named
 `{timestamp}_{step_id}.trace.md`), containing the prompt sent to the agent and
 its stdout/stderr/exit code — the same convention used by command-based
-states, so `nia --tail`/`--continue` and `nia diagnose` work for agent steps
+states, so `frg --tail`/`--continue` and `frg diagnose` work for agent steps
 too.
 
 **Built-in Actions**:
@@ -358,7 +358,7 @@ Evaluate a condition and control workflow based on result:
 
 **File Exists**:
 ```toml
-operation = { id = "config-exists", type = "file_exists", path = ".nia/config.toml", on_false = "fail" }
+operation = { id = "config-exists", type = "file_exists", path = ".forge/config.toml", on_false = "fail" }
 ```
 
 **Environment Equals**:
@@ -402,7 +402,7 @@ Instead of a literal `command`, a `command_success` check can set `auto_detect` 
 operation = { id = "project-builds", type = "command_success", auto_detect = "build", on_false = "fail" }
 ```
 
-The command is read from `.nia/config/project.toml`'s `[project]` table
+The command is read from `.forge/config/project.toml`'s `[project]` table
 (`build_command` / `test_command`) — it is **not** derived by scanning the
 filesystem for build-system markers (no `Cargo.toml`/`package.json` detection).
 If `project.toml` is absent or the field isn't set, the check is **skipped**,
@@ -411,7 +411,7 @@ don't record a build/test command. A check may set exactly one of `command` or
 `auto_detect`, and `auto_detect` is only valid on `command_success` checks.
 
 ```toml
-# .nia/config/project.toml
+# .forge/config/project.toml
 [project]
 build_command = "cargo build --all-targets"
 test_command = "cargo test"
@@ -445,7 +445,7 @@ With explicit path:
 operation = {
     id = "all-tasks-done",
     type = "tasks_complete",
-    path = ".nia/work/job_123/code/tasks.md",
+    path = ".forge/work/job_123/code/tasks.md",
     on_false = "fail"
 }
 ```
@@ -543,7 +543,7 @@ on_failure = "create_code"          # Regular operation
 
 #### Command Operations
 
-Execute a Nia CLI command within the workflow. A command operation is identified solely by the
+Execute a Forge CLI command within the workflow. A command operation is identified solely by the
 presence of the `target` field — there is no `type` field on command operations, and adding one
 causes a parse error:
 
@@ -594,7 +594,7 @@ on_success = "done"
 
 ### Example Workflows
 
-See the example workflows in `.nia/config/workflows/`:
+See the example workflows in `.forge/config/workflows/`:
 - `06-step-check-demo.toml`: Basic steps and checks
 - `07-multi-operation-state.toml`: Multiple operations in one state
 - `08-conditional-validation.toml`: Conditional branching with checks
@@ -607,7 +607,7 @@ See the example workflows in `.nia/config/workflows/`:
 
 ### Commands (Legacy)
 
-Execute a nia command within a state:
+Execute a frg command within a state:
 
 ```toml
 [[workflow.states]]
@@ -820,7 +820,7 @@ Duration fields accept strings in the format:
 
 ## Complete Example
 
-The production `issue-to-pr` workflow in `.nia/config/workflows/issue-to-pr.toml` demonstrates advanced patterns:
+The production `issue-to-pr` workflow in `.forge/config/workflows/issue-to-pr.toml` demonstrates advanced patterns:
 
 **Key Features**:
 - Iterative code generation with loop logic and `tasks_complete` check
@@ -868,7 +868,7 @@ on_failure = "create_code"          # Counter % 3 != 0, continue normally
 
 **View the Full Example**:
 ```bash
-cat .nia/config/workflows/issue-to-pr.toml
+cat .forge/config/workflows/issue-to-pr.toml
 ```
 
 ---

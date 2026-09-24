@@ -1,8 +1,8 @@
 # Common Issues and Solutions
 
-This troubleshooting guide covers the most frequently encountered issues with Nia CLI.
+This troubleshooting guide covers the most frequently encountered issues with Progress Forge CLI.
 
-> **Quick Start**: Run `nia status --verbose` first to diagnose most common issues automatically.
+> **Quick Start**: Run `frg status --verbose` first to diagnose most common issues automatically.
 
 ---
 
@@ -26,7 +26,7 @@ For specific issues, see:
 
 **Trace Location**:
 ```
-.nia/work/job_<job_id>/traces/
+.forge/work/job_<job_id>/traces/
 ```
 
 **Trace Naming Convention**:
@@ -36,29 +36,29 @@ For specific issues, see:
 
 **Example**:
 ```
-.nia/work/job_42/traces/20240115_143022_plan_task_create.trace.md
+.forge/work/job_42/traces/20240115_143022_plan_task_create.trace.md
 ```
 
 **Commands**:
 
 1. **List all traces**:
    ```bash
-   nia trace list
+   frg trace list
    ```
 
 2. **View specific trace**:
    ```bash
-   nia trace view <trace-file>
+   frg trace view <trace-file>
    ```
 
 3. **Find recent traces**:
    ```bash
-   find .nia/work/ -name "*.trace.md" -path "*/traces/*" -mtime -1
+   find .forge/work/ -name "*.trace.md" -path "*/traces/*" -mtime -1
    ```
 
 4. **View latest trace**:
    ```bash
-   cat $(find .nia/work/ -name "*.trace.md" -path "*/traces/*" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
+   cat $(find .forge/work/ -name "*.trace.md" -path "*/traces/*" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
    ```
 
 **Trace Contents**:
@@ -78,25 +78,25 @@ For specific issues, see:
 1. **Verify prompt content**:
    ```bash
    # Check if prompt contains expected context
-   grep -A 20 "^# Prompt" .nia/work/job_<job_id>/traces/<trace>.trace.md
+   grep -A 20 "^# Prompt" .forge/work/job_<job_id>/traces/<trace>.trace.md
    ```
 
 2. **Check agent response**:
    ```bash
    # View what agent returned
-   grep -A 100 "^# Response" .nia/work/job_<job_id>/traces/<trace>.trace.md
+   grep -A 100 "^# Response" .forge/work/job_<job_id>/traces/<trace>.trace.md
    ```
 
 3. **Find error patterns**:
    ```bash
    # Search for common error keywords
-   grep -E "Error:|Failed:|Invalid:" .nia/work/*/traces/*.trace.md
+   grep -E "Error:|Failed:|Invalid:" .forge/work/*/traces/*.trace.md
    ```
 
 4. **Compare successful vs failed traces**:
    ```bash
    # Diff two traces
-   diff .nia/work/job_1/traces/trace1.trace.md .nia/work/job_2/traces/trace2.trace.md
+   diff .forge/work/job_1/traces/trace1.trace.md .forge/work/job_2/traces/trace2.trace.md
    ```
 
 **Related**: [Advanced Troubleshooting](../troubleshooting/common-issues.md)
@@ -111,7 +111,7 @@ For specific issues, see:
 
 1. **Job-specific logs** (preferred):
    ```
-   .nia/work/job_<job_id>/logs/
+   .forge/work/job_<job_id>/logs/
    ```
 
 2. **Legacy logs** (deprecated):
@@ -122,44 +122,44 @@ For specific issues, see:
 **Log Types**:
 - Execution logs: Command output, errors
 - Agent logs: Agent-specific output
-- System logs: Nia internal logging
+- System logs: Progress Forge internal logging
 
 **Commands**:
 
 1. **Find latest job logs**:
    ```bash
-   ls -lt .nia/work/
-   cat .nia/work/job_<job_id>/logs/*.log
+   ls -lt .forge/work/
+   cat .forge/work/job_<job_id>/logs/*.log
    ```
 
 2. **Search all logs for errors**:
    ```bash
-   grep -r "Error:" .nia/work/*/logs/
+   grep -r "Error:" .forge/work/*/logs/
    ```
 
 3. **View logs with timestamps**:
    ```bash
-   cat .nia/work/job_<job_id>/logs/*.log | grep -E "^\[.*\]"
+   cat .forge/work/job_<job_id>/logs/*.log | grep -E "^\[.*\]"
    ```
 
 4. **Follow logs in real-time** (if job is running):
    ```bash
-   tail -f .nia/work/job_<job_id>/logs/*.log
+   tail -f .forge/work/job_<job_id>/logs/*.log
    ```
 
 **Enable Debug Logging**:
 ```bash
 # Linux/macOS - Maximum verbosity
-RUST_LOG=debug nia issue plan
+RUST_LOG=debug frg issue plan
 
 # Windows PowerShell - Maximum verbosity
-$env:RUST_LOG="debug"; nia issue plan
+$env:RUST_LOG="debug"; frg issue plan
 
 # Linux/macOS - Trace level (very verbose)
-RUST_LOG=trace nia issue plan 2>&1 | tee debug.log
+RUST_LOG=trace frg issue plan 2>&1 | tee debug.log
 
 # Windows PowerShell - Trace level (very verbose)
-$env:RUST_LOG="trace"; nia issue plan 2>&1 | Tee-Object -FilePath debug.log
+$env:RUST_LOG="trace"; frg issue plan 2>&1 | Tee-Object -FilePath debug.log
 ```
 
 **Log Levels**:
@@ -177,7 +177,7 @@ $env:RUST_LOG="trace"; nia issue plan 2>&1 | Tee-Object -FilePath debug.log
 
 **Documentation**:
 - User Documentation: `user-docs/src/`
-- API Documentation: `nia-api.md`
+- API Documentation: `forge-api.md`
 - Examples: `examples/`
 - Roadmaps: `roadmaps/`
 
@@ -229,7 +229,7 @@ When reporting issues, provide the following information for fastest resolution:
    # Collect system info
    echo "OS: $(uname -s)"
    echo "Architecture: $(uname -m)"
-   echo "Nia version: $(nia --version)"
+   echo "Progress Forge version: $(frg --version)"
    echo "Rust version: $(rustc --version 2>/dev/null || echo 'N/A')"
    ```
 
@@ -240,36 +240,36 @@ When reporting issues, provide the following information for fastest resolution:
    copilot --version
 
    # Authentication status
-   nia status --verbose
+   frg status --verbose
    ```
 
 3. **Full Error Message**:
    ```bash
    # Capture complete error output
-   nia issue plan 2>&1 | tee error.log
+   frg issue plan 2>&1 | tee error.log
    ```
 
 4. **Steps to Reproduce**:
    ```
-   1. Set NIA_ISSUE_ID=123
-   2. Run: nia backlog task create
+   1. Set FORGE_ISSUE_ID=123
+   2. Run: frg backlog task create
    3. Observe error: <paste error>
    ```
 
 5. **Configuration Files**:
    ```bash
    # Include relevant config (redact secrets!)
-   cat .nia/config/toolchain.toml
-   cat .nia/config/commands.toml
+   cat .forge/config/toolchain.toml
+   cat .forge/config/commands.toml
    ```
 
 6. **Logs and Traces**:
    ```bash
    # Include latest log
-   cat .nia/work/job_<job_id>/logs/*.log
+   cat .forge/work/job_<job_id>/logs/*.log
 
    # Include relevant trace (may be large)
-   cat .nia/work/job_<job_id>/traces/<trace>.trace.md
+   cat .forge/work/job_<job_id>/traces/<trace>.trace.md
    ```
 
 7. **Expected vs Actual Behavior**:
@@ -285,24 +285,24 @@ When reporting issues, provide the following information for fastest resolution:
 echo "=== System Information ==="
 echo "OS: $(uname -s)"
 echo "Architecture: $(uname -m)"
-echo "Nia version: $(nia --version)"
+echo "Progress Forge version: $(frg --version)"
 echo "Rust version: $(rustc --version 2>/dev/null || echo 'N/A')"
 
 echo -e "\n=== Agent Information ==="
 which copilot
 copilot --version 2>/dev/null || echo "Not installed"
 
-echo -e "\n=== Nia Status ==="
-nia status --verbose
+echo -e "\n=== Progress Forge Status ==="
+frg status --verbose
 
 echo -e "\n=== Latest Job ==="
-ls -lt .nia/work/ | head -5
+ls -lt .forge/work/ | head -5
 
 echo -e "\n=== Recent Errors ==="
-grep -r "Error:" .nia/work/*/logs/ 2>/dev/null | tail -10
+grep -r "Error:" .forge/work/*/logs/ 2>/dev/null | tail -10
 
 echo -e "\n=== Configuration ==="
-cat .nia/config/toolchain.toml 2>/dev/null || echo "No toolchain config"
+cat .forge/config/toolchain.toml 2>/dev/null || echo "No toolchain config"
 ```
 
 **Usage**:
@@ -333,12 +333,12 @@ chmod +x collect-diagnostic.sh
 
 | Error Message | Solution |
 |---------------|----------|
-| `nia: command not found` | Add nia to PATH or install |
+| `frg: command not found` | Add frg to PATH or install |
 | `Permission denied` | Fix file permissions with `chmod +x` |
 | `Agent not installed` | Install agent with npm/pip/apt |
 | `Agent not authenticated` | Run agent auth command |
-| `Missing workflow context` | Set `NIA_ISSUE_ID` or `NIA_PR_ID` |
-| `No active job context found` | Set `NIA_ISSUE_ID` or `NIA_PR_ID` for --tail |
+| `Missing workflow context` | Set `FORGE_ISSUE_ID` or `FORGE_PR_ID` |
+| `No active job context found` | Set `FORGE_ISSUE_ID` or `FORGE_PR_ID` for --tail |
 | `Trace directory not found` | Run workflow first, verify job ID |
 | `Timeout waiting for trace file` | Check agent logs, verify agent started |
 | `TOML parse error` | Fix TOML syntax, validate file |
@@ -350,40 +350,40 @@ chmod +x collect-diagnostic.sh
 
 ```bash
 # System check
-nia --version
-nia status --verbose
+frg --version
+frg status --verbose
 
 # Find errors in logs
-grep -r "Error:" .nia/work/*/logs/
+grep -r "Error:" .forge/work/*/logs/
 
 # View latest trace
-nia trace list
-nia trace view <trace-file>
+frg trace list
+frg trace view <trace-file>
 
 # Check agent
 which copilot
 gh auth status
 
 # Validate configuration
-cat .nia/config/toolchain.toml
-nia status --verbose
+cat .forge/config/toolchain.toml
+frg status --verbose
 
 # Linux/macOS - Debug run
-RUST_LOG=debug nia issue plan
+RUST_LOG=debug frg issue plan
 
 # Windows PowerShell - Debug run
-$env:RUST_LOG="debug"; nia issue plan
+$env:RUST_LOG="debug"; frg issue plan
 ```
 
 ### Prevention Checklist
 
-- [ ] Install nia to standard PATH location
-- [ ] Run `nia config init` before first use
+- [ ] Install frg to standard PATH location
+- [ ] Run `frg config init` before first use
 - [ ] Install and authenticate required agents
-- [ ] Set `NIA_ISSUE_ID` when working on issues
+- [ ] Set `FORGE_ISSUE_ID` when working on issues
 - [ ] Validate configuration after changes
 - [ ] Keep agents and tools updated
-- [ ] Regular cleanup of `.nia/work/`
+- [ ] Regular cleanup of `.forge/work/`
 - [ ] Configure proxy if behind firewall
 - [ ] Document team-specific setup requirements
 

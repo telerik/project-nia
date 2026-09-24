@@ -1,11 +1,11 @@
 ---
 title: Documentation Workflows
-description: Create, build, and review project documentation with NIA using implementation plans, local outputs, and build reports.
+description: Create, build, and review project documentation with Progress Forge using implementation plans, local outputs, and build reports.
 ---
 
 # Documentation Workflows
 
-Use the `docs` target to create project documentation, build documentation from source files, and ask questions about documentation coverage. These workflows use the implementation plan in `.nia/work/job_<issue_id>/code/` as their shared source of task requirements.
+Use the `docs` target to create project documentation, build documentation from source files, and ask questions about documentation coverage. These workflows use the implementation plan in `.forge/work/job_<issue_id>/code/` as their shared source of task requirements.
 
 ## Purpose and Benefits
 
@@ -14,14 +14,14 @@ Documentation Workflows connect documentation work to an issue implementation pl
 - Turn documented requirements and implementation details into project documentation.
 - Build documentation and capture build results for review.
 - Investigate documentation gaps through questions grounded in the project files.
-- Keep generated documentation in the repository while keeping temporary diagnostics in `.nia/work/`.
+- Keep generated documentation in the repository while keeping temporary diagnostics in `.forge/work/`.
 
 ## How Documentation Workflows Work
 
-Each operation runs in the current `NIA` project and uses the implementation-plan files for the selected issue:
+Each operation runs in the current `Progress Forge` project and uses the implementation-plan files for the selected issue:
 
 ```text
-.nia/work/job_<issue_id>/code/
+.forge/work/job_<issue_id>/code/
 ```
 
 The plan directory contains the files that the prompts require:
@@ -37,15 +37,15 @@ The selected operation then writes its result either to the repository's documen
 
 Before running a Documentation Workflow, make sure that:
 
-- The `NIA` project contains the implementation plan at `.nia/work/job_<issue_id>/code/`.
+- The `Progress Forge` project contains the implementation plan at `.forge/work/job_<issue_id>/code/`.
 - The plan includes the files required by the selected prompt.
-- An issue ID is available through `NIA` context. The job directory uses that ID.
+- An issue ID is available through `Progress Forge` context. The job directory uses that ID.
 - The repository contains the documentation source files and build configuration needed by the selected task.
 
-`NIA` resolves the issue ID from the `NIA_ISSUE_ID` environment variable before falling back to the configured context file. You can set it for a shell session:
+`Progress Forge` resolves the issue ID from the `FORGE_ISSUE_ID` environment variable before falling back to the configured context file. You can set it for a shell session:
 
 ```bash
-export NIA_ISSUE_ID=123
+export FORGE_ISSUE_ID=123
 ```
 
 ## Operations
@@ -58,11 +58,11 @@ Choose an operation based on the task you need to complete:
 
 ### Create
 
-Create documentation from the issue requirements, research, tasks, implementation phases, source code, and existing documentation. The workflow writes documentation to the repository's designated documentation directories, not to `.nia/work/`, so the files remain available for version control.
+Create documentation from the issue requirements, research, tasks, implementation phases, source code, and existing documentation. The workflow writes documentation to the repository's designated documentation directories, not to `.forge/work/`, so the files remain available for version control.
 
 ```bash
-nia docs create
-nia docs create --edit       # Refine documentation with your instructions
+frg docs create
+frg docs create --edit       # Refine documentation with your instructions
 ```
 
 Use `--edit` to provide refinement instructions. The command registry also supports `--dev` for this operation, which selects the developer/API audience option. The default role is `technical_writer`.
@@ -70,10 +70,10 @@ Use `--edit` to provide refinement instructions. The command registry also suppo
 The prompt requires these planning files before it creates documentation:
 
 ```text
-.nia/work/job_<issue_id>/code/README.md
-.nia/work/job_<issue_id>/code/research.md
-.nia/work/job_<issue_id>/code/tasks.md
-.nia/work/job_<issue_id>/code/phase_x.md
+.forge/work/job_<issue_id>/code/README.md
+.forge/work/job_<issue_id>/code/research.md
+.forge/work/job_<issue_id>/code/tasks.md
+.forge/work/job_<issue_id>/code/phase_x.md
 ```
 
 ### Build
@@ -81,14 +81,14 @@ The prompt requires these planning files before it creates documentation:
 Build documentation from the project's source files and configured documentation framework. The workflow validates sources, configures and runs the build, analyzes errors and warnings, validates the results, and reports the status.
 
 ```bash
-nia docs build
-nia docs build --dev         # Build developer/API docs only
+frg docs build
+frg docs build --dev         # Build developer/API docs only
 ```
 
-Use `--dev` to focus the build on a developer/API audience. The default role is `technical_writer`. The build command does not place generated artifacts in `.nia/work/`; it uses the documentation framework's default artifact location. It writes build information to:
+Use `--dev` to focus the build on a developer/API audience. The default role is `technical_writer`. The build command does not place generated artifacts in `.forge/work/`; it uses the documentation framework's default artifact location. It writes build information to:
 
 ```text
-.nia/work/job_<issue_id>/docs/build_report.md
+.forge/work/job_<issue_id>/docs/build_report.md
 ```
 
 The report records the build command, status, errors, warnings, artifact location, recommended fixes, and available performance or output-size information.
@@ -98,12 +98,12 @@ The report records the build command, status, errors, warnings, artifact locatio
 Ask a question about the project's documentation. The workflow checks the documentation before answering and writes the response to:
 
 ```text
-.nia/work/job_<issue_id>/docs/answer.md
+.forge/work/job_<issue_id>/docs/answer.md
 ```
 
 ```bash
-nia docs ask "What sections need updating?"
-nia docs ask "Is the API reference complete?"
+frg docs ask "What sections need updating?"
+frg docs ask "Is the API reference complete?"
 ```
 
 The default role is `technical_writer`. Ask does not modify documentation unless the request explicitly asks for a change through a different workflow.
@@ -124,11 +124,11 @@ The built-in tasks are `docs_create`, `docs_build`, and `docs_ask`. The `--edit`
 
 Use this sequence when documentation work is part of an issue:
 
-1. Prepare the implementation plan in `.nia/work/job_<issue_id>/code/`.
-2. Run `nia docs create` to generate or update repository documentation.
-3. Run `nia docs build` to validate the documentation build and inspect `build_report.md`.
-4. Run `nia docs ask` to investigate gaps or coverage questions before review.
-5. Review and commit the repository documentation files separately from temporary reports in `.nia/work/`.
+1. Prepare the implementation plan in `.forge/work/job_<issue_id>/code/`.
+2. Run `frg docs create` to generate or update repository documentation.
+3. Run `frg docs build` to validate the documentation build and inspect `build_report.md`.
+4. Run `frg docs ask` to investigate gaps or coverage questions before review.
+5. Review and commit the repository documentation files separately from temporary reports in `.forge/work/`.
 
 ## Common Scenarios
 
@@ -136,23 +136,23 @@ Use this sequence when documentation work is part of an issue:
 
 ```bash
 # Generate user documentation
-nia docs create --edit
+frg docs create --edit
 
 # Build and preview
-nia docs build --dev
+frg docs build --dev
 ```
 
 ### Investigate API Documentation Coverage
 
 ```bash
 # Ask what needs updating
-nia docs ask "What APIs are undocumented?"
+frg docs ask "What APIs are undocumented?"
 
 # Generate missing docs
-nia docs create
+frg docs create
 
 # Build for review
-nia docs build
+frg docs build
 ```
 
 ## Best Practices
@@ -160,7 +160,7 @@ nia docs build
 - Keep the implementation plan current before running `create`, `build`, or `ask`.
 - Run `build` after documentation changes so you can review errors and warnings before committing.
 - Keep generated documentation in the repository's designated documentation directories.
-- Treat `.nia/work/job_<issue_id>/docs/` as temporary workflow output and do not commit its build reports unless your project explicitly requires them.
+- Treat `.forge/work/job_<issue_id>/docs/` as temporary workflow output and do not commit its build reports unless your project explicitly requires them.
 - Use `--edit` for targeted documentation changes instead of relying on unstated assumptions.
 - Use `ask` to identify coverage gaps, then verify the answer against the documentation files before editing.
 
@@ -169,7 +169,7 @@ nia docs build
 - The prompts require an implementation plan; a missing or incomplete plan can prevent the workflow from producing useful results.
 - The source contracts do not define one universal artifact directory for every documentation framework. Inspect the build report for the artifact location used by the project.
 - The Documentation Workflows configuration does not define a separate `--fix` modifier for build failures. Use the build report to identify issues, correct the repository sources or configuration, and run the build again.
-- `create` writes project documentation, while `build` and `ask` write their workflow reports under `.nia/work/`.
+- `create` writes project documentation, while `build` and `ask` write their workflow reports under `.forge/work/`.
 
 ## Related Topics
 
@@ -191,11 +191,11 @@ The built-in tasks are `docs_create`, `docs_build`, and `docs_ask`. The `--edit`
 
 Use this sequence when documentation work is part of an issue:
 
-1. Prepare the implementation plan in `.nia/work/job_<issue_id>/code/`.
-2. Run `nia docs create` to generate or update repository documentation.
-3. Run `nia docs build` to validate the documentation build and inspect `build_report.md`.
-4. Run `nia docs ask` to investigate gaps or coverage questions before review.
-5. Review and commit the repository documentation files separately from temporary reports in `.nia/work/`.
+1. Prepare the implementation plan in `.forge/work/job_<issue_id>/code/`.
+2. Run `frg docs create` to generate or update repository documentation.
+3. Run `frg docs build` to validate the documentation build and inspect `build_report.md`.
+4. Run `frg docs ask` to investigate gaps or coverage questions before review.
+5. Review and commit the repository documentation files separately from temporary reports in `.forge/work/`.
 
 ## Common Scenarios
 
@@ -203,5 +203,5 @@ Use this sequence when documentation work is part of an issue:
 
 ```bash
 # Generate user documentation
-nia docs create --edit
+frg docs create --edit
 # Build and preview

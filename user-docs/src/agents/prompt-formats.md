@@ -1,13 +1,13 @@
 ---
 title: Prompt Formats
-meta_title: Configure NIA Prompt Formats
+meta_title: Configure Progress Forge Prompt Formats
 description: Choose XML or Markdown prompt files with automatic model detection and operation, target, or agent-level overrides.
 slug: prompt-formats
 ---
 
 # Prompt Formats
 
-NIA supports XML and Markdown prompt formats. The selected format determines which prompt files NIA loads and which parser it uses for prompt metadata.
+Progress Forge supports XML and Markdown prompt formats. The selected format determines which prompt files Progress Forge loads and which parser it uses for prompt metadata.
 
 ## Choose a Prompt Format
 
@@ -16,7 +16,7 @@ Use XML or Markdown according to the prompt files and model integration used by 
 - **XML** uses XML elements and attributes to structure prompt content.
 - **Markdown** uses headings, lists, and fenced blocks to structure prompt content.
 
-NIA selects a format automatically from the model name unless you provide a valid configuration override. You can also set different formats for an agent, target, or operation.
+Progress Forge selects a format automatically from the model name unless you provide a valid configuration override. You can also set different formats for an agent, target, or operation.
 
 ### XML Prompt File
 
@@ -31,7 +31,7 @@ NIA selects a format automatically from the model name unless you provide a vali
     </steps>
   </process>
   <output_requirements>
-    <output_path>.nia/work/job_{{issue_id}}/</output_path>
+    <output_path>.forge/work/job_{{issue_id}}/</output_path>
     <required_files>
       <file>
         <name>output.md</name>
@@ -58,7 +58,7 @@ Task description
 ## Output Requirements
 
 \```yaml
-output_path: .nia/work/job_{{issue_id}}/
+output_path: .forge/work/job_{{issue_id}}/
 required_files:
   - name: output.md
     description: Output file description
@@ -68,14 +68,14 @@ required_files:
 
 ## Understand Format Selection
 
-NIA selects the format before it resolves prompt file paths. The selection order is:
+Progress Forge selects the format before it resolves prompt file paths. The selection order is:
 
 1. Operation-specific override.
 2. Target-specific override.
 3. Global agent override.
 4. Automatic detection from the model name.
 
-An invalid value at one level does not stop selection. NIA ignores that value and checks the next level. If no valid override exists, NIA uses automatic detection.
+An invalid value at one level does not stop selection. Progress Forge ignores that value and checks the next level. If no valid override exists, Progress Forge uses automatic detection.
 
 Automatic detection is case-insensitive:
 
@@ -98,7 +98,7 @@ The format changes how prompt content is represented and parsed. The source code
 
 ## Configure Prompt Formats
 
-Configure prompt formats in `.nia/config/agents.toml`. The configuration belongs under the selected agent table. The global `prompt_format` field applies to that agent unless a target or operation provides a valid override.
+Configure prompt formats in `.forge/config/agents.toml`. The configuration belongs under the selected agent table. The global `prompt_format` field applies to that agent unless a target or operation provides a valid override.
 
 Supported format values are `xml`, `markdown`, and `md`. Values are case-insensitive. The `md` alias resolves to Markdown.
 
@@ -111,7 +111,7 @@ Apply one format to all operations for an agent:
 prompt_format = "markdown"  # or "xml"
 ```
 
-The setting does not change the selected model. It changes the format NIA uses when composing prompts for that agent.
+The setting does not change the selected model. It changes the format Progress Forge uses when composing prompts for that agent.
 
 ### Set a Target Format
 
@@ -139,7 +139,7 @@ Use the `target.operation` key form. The operation setting has higher precedence
 
 ### Apply Precedence
 
-When multiple valid format settings apply, NIA uses this order:
+When multiple valid format settings apply, Progress Forge uses this order:
 
 1. **Operation-specific**&mdash;For example, `operations["issue.plan"].prompt_format`.
 2. **Target-specific**&mdash;For example, `targets.issue.prompt_format`.
@@ -161,13 +161,13 @@ issue = { prompt_format = "xml" }  # Target override: XML for issue
 
 In this configuration:
 
-- `nia issue draft` uses Markdown from the operation override.
-- `nia issue plan` uses XML from the target override.
-- `nia code review` uses Markdown from the global setting.
+- `frg issue draft` uses Markdown from the operation override.
+- `frg issue plan` uses XML from the target override.
+- `frg code review` uses Markdown from the global setting.
 
 ## Use Format Aliases
 
-NIA accepts these format values:
+Progress Forge accepts these format values:
 
 | Configuration value | Result |
 |---|---|
@@ -175,7 +175,7 @@ NIA accepts these format values:
 | `markdown` or `MARKDOWN` | Markdown. |
 | `md` | Markdown. |
 
-Other values are invalid for format selection. NIA ignores an invalid override and continues with the next precedence level. If all configured values are invalid, NIA falls back to model detection.
+Other values are invalid for format selection. Progress Forge ignores an invalid override and continues with the next precedence level. If all configured values are invalid, Progress Forge falls back to model detection.
 
 ## Select a Format for Common Scenarios
 
@@ -191,7 +191,7 @@ Use these decision rules when configuring a project:
 
 ### Prompt Files Do Not Load
 
-Check the selected format before checking the prompt content. NIA chooses the format before resolving prompt paths, and the format determines the directory name and file extension:
+Check the selected format before checking the prompt content. Progress Forge chooses the format before resolving prompt paths, and the format determines the directory name and file extension:
 
 - XML uses the `xml` directory name and `.xml` extension.
 - Markdown uses the `markdown` directory name and `.md` extension.
@@ -208,7 +208,7 @@ Check the override value and its location:
 4. Confirm operation keys use the `target.operation` form.
 5. Check for a higher-precedence valid operation or target override.
 
-NIA ignores invalid values instead of treating them as a format. For example, `prompt_format = "json"` falls through to the next selection level.
+Progress Forge ignores invalid values instead of treating them as a format. For example, `prompt_format = "json"` falls through to the next selection level.
 
 ### The Model Uses an Unexpected Format
 
@@ -220,7 +220,7 @@ Set an explicit global, target, or operation override when automatic detection d
 
 Prompt Formats has these implementation limits:
 
-- NIA supports XML and Markdown only.
+- Progress Forge supports XML and Markdown only.
 - The automatic rule uses model-name text rather than external model metadata.
 - Invalid overrides are ignored and do not produce a format-selection error at the selector level.
 - The source code does not define performance differences between XML and Markdown.
@@ -234,7 +234,7 @@ Apply these practices to keep format selection predictable:
 - Use explicit overrides when a model name does not identify the intended format.
 - Use operation overrides sparingly so the precedence chain remains easy to inspect.
 - Keep equivalent XML and Markdown prompts synchronized when both formats are maintained.
-- Validate the exact agent, target, and operation keys in `.nia/config/agents.toml` before troubleshooting prompt content.
+- Validate the exact agent, target, and operation keys in `.forge/config/agents.toml` before troubleshooting prompt content.
 
 ## Related Information
 

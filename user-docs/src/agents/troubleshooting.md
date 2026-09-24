@@ -1,18 +1,18 @@
 # AI Coding Agent Troubleshooting Guide
 
-Use this guide when NIA cannot find an AI coding agent, load project configuration, compose a prompt, or complete a workflow. Start with the status check, then follow the issue that matches the observed error.
+Use this guide when Progress Forge cannot find an AI coding agent, load project configuration, compose a prompt, or complete a workflow. Start with the status check, then follow the issue that matches the observed error.
 
 ## Before You Begin
 
-Run commands from the NIA project directory. NIA detects the project root from a `.git` or `.nia` directory when available.
+Run commands from the Progress Forge project directory. Progress Forge detects the project root from a `.git` or `.forge` directory when available.
 
 Keep these details available when investigating a failure:
 
-- The NIA command and operation that failed.
+- The Progress Forge command and operation that failed.
 - The complete error message.
 - The configured agent name and command.
 - The job ID, when the command created a job.
-- The relevant files under `.nia/work/<job_id>/traces/`.
+- The relevant files under `.forge/work/<job_id>/traces/`.
 
 Do not include API keys, access tokens, or other secrets when sharing diagnostic output.
 
@@ -20,7 +20,7 @@ Do not include API keys, access tokens, or other secrets when sharing diagnostic
 
 Use this diagnostic sequence:
 
-1. Run `nia status --verbose` to check the detected project root, the configured coding agent, authentication, toolchain configuration, and configuration warnings.
+1. Run `frg status --verbose` to check the detected project root, the configured coding agent, authentication, toolchain configuration, and configuration warnings.
 2. Correct installation, authentication, or configuration problems reported by the status check.
 3. Run the failed workflow again and record its job ID.
 4. Inspect the trace files for the failed job.
@@ -35,12 +35,12 @@ The status command reports problems without failing when the toolchain file is m
 Run the verbose status check first:
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 The command reports the following information:
 
-- The detected project root and whether NIA is initialized.
+- The detected project root and whether Progress Forge is initialized.
 - The default coding agent and its installation status.
 - The agent authentication status.
 - The toolchain configuration status.
@@ -50,44 +50,44 @@ The command reports the following information:
 Run the shorter form when you need the same checks without timing and warning details:
 
 ```bash
-nia status
+frg status
 ```
 
 ### Inspect Workflow Traces
 
-NIA stores session traces under the job directory. List the files for a known job ID:
+Progress Forge stores session traces under the job directory. List the files for a known job ID:
 
 ```bash
-Get-ChildItem .nia/work/<job_id>/traces
+Get-ChildItem .forge/work/<job_id>/traces
 ```
 
 On Linux or macOS, use:
 
 ```bash
-ls .nia/work/<job_id>/traces/
+ls .forge/work/<job_id>/traces/
 ```
 
 Trace files use the `.md` extension. Read the trace file that belongs to the failed operation:
 
 ```bash
-Get-Content .nia/work/<job_id>/traces/<trace-file>
+Get-Content .forge/work/<job_id>/traces/<trace-file>
 ```
 
 On Linux or macOS, use:
 
 ```bash
-cat .nia/work/<job_id>/traces/<trace-file>
+cat .forge/work/<job_id>/traces/<trace-file>
 ```
 
 A missing traces directory can mean that the job does not exist or that the workflow did not create a trace.
 
 ## Resolve Agent Installation Problems
 
-### NIA Cannot Find the Coding Agent
+### Progress Forge Cannot Find the Coding Agent
 
 #### Symptoms
 
-The status check reports that the coding agent is not installed, or NIA reports an agent installation error.
+The status check reports that the coding agent is not installed, or Progress Forge reports an agent installation error.
 
 #### Exact error message
 
@@ -101,16 +101,16 @@ The status command displays `not installed` and then reports the underlying erro
 
 #### Possible Causes
 
-NIA cannot execute the configured command, the command is not in `PATH`, or the configured command exits unsuccessfully when NIA runs `--version`.
+Progress Forge cannot execute the configured command, the command is not in `PATH`, or the configured command exits unsuccessfully when Progress Forge runs `--version`.
 
-For GitHub Copilot CLI, NIA uses `copilot` when no command override exists. On Windows, NIA also handles supported npm wrapper scripts and native executables.
+For GitHub Copilot CLI, Progress Forge uses `copilot` when no command override exists. On Windows, Progress Forge also handles supported npm wrapper scripts and native executables.
 
 #### Resolution
 
-1. Check the configured command in `.nia/config/agents.toml`.
+1. Check the configured command in `.forge/config/agents.toml`.
 2. Run the configured command with `--version`.
 3. Add the command to `PATH`, or set an absolute executable path in the agent configuration.
-4. Run `nia status --verbose` again.
+4. Run `frg status --verbose` again.
 
 Use a direct command or executable path when required:
 
@@ -136,18 +136,18 @@ Run both commands and confirm that the status output identifies the agent as ins
 
 ```bash
 <configured-command> --version
-nia status --verbose
+frg status --verbose
 ```
 
 #### Additional Notes
 
-NIA rejects `command = "gh"` for GitHub Copilot because the GitHub CLI wrapper has Windows command-line length limitations. Remove that setting and allow automatic detection, or configure a supported executable path.
+Progress Forge rejects `command = "gh"` for GitHub Copilot because the GitHub CLI wrapper has Windows command-line length limitations. Remove that setting and allow automatic detection, or configure a supported executable path.
 
-### NIA Uses the Wrong Agent
+### Progress Forge Uses the Wrong Agent
 
 #### Symptoms
 
-NIA checks or runs a different coding agent than the one you intended to use.
+Progress Forge checks or runs a different coding agent than the one you intended to use.
 
 #### Exact status message
 
@@ -159,32 +159,32 @@ No default coding agent configured
 
 #### Possible Causes
 
-The `agent.default` value selects the configured default agent. NIA does not silently replace an absent or unknown default with another agent.
+The `agent.default` value selects the configured default agent. Progress Forge does not silently replace an absent or unknown default with another agent.
 
 #### Resolution
 
-Set the intended default agent in `.nia/config/agents.toml`:
+Set the intended default agent in `.forge/config/agents.toml`:
 
 ```toml
 [agent]
 default = "github_copilot"
 ```
 
-Use the agent identifier supported by the current NIA build. The source registry includes `github_copilot`, `opencode`, and `claude_code`; configuration support for another identifier requires verification against the current build.
+Use the agent identifier supported by the current Progress Forge build. The source registry includes `github_copilot`, `opencode`, and `claude_code`; configuration support for another identifier requires verification against the current build.
 
 #### Verification
 
 Run:
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 Confirm that the reported coding agent matches the `agent.default` value.
 
 #### Additional Notes
 
-The selected NIA agent implementation and the model or custom-agent settings are separate configuration choices. See [Custom Agent Configurations](./custom-agent-configurations.md) for custom-agent selection.
+The selected Progress Forge agent implementation and the model or custom-agent settings are separate configuration choices. See [Custom Agent Configurations](./custom-agent-configurations.md) for custom-agent selection.
 
 ## Resolve Authentication Problems
 
@@ -192,11 +192,11 @@ The selected NIA agent implementation and the model or custom-agent settings are
 
 #### Symptoms
 
-NIA reports that the agent is installed but not authenticated, or dependency validation returns an authentication error.
+Progress Forge reports that the agent is installed but not authenticated, or dependency validation returns an authentication error.
 
 #### Exact error message
 
-For the GitHub Copilot dependency path, NIA returns:
+For the GitHub Copilot dependency path, Progress Forge returns:
 
 ```text
 GitHub Copilot CLI is not authenticated.
@@ -204,7 +204,7 @@ GitHub Copilot CLI is not authenticated.
 To fix:
 1. Run: gh auth login
 2. Follow the authentication prompts
-3. Verify with: nia status
+3. Verify with: frg status
 ```
 
 The status command displays `(not authenticated)`.
@@ -213,13 +213,13 @@ The status command displays `(not authenticated)`.
 
 The configured agent rejected its authentication check, the authentication session expired, or the credentials required by the external agent are unavailable.
 
-For the GitHub Copilot dependency check, NIA runs `gh auth status` after confirming that the configured agent command is installed.
+For the GitHub Copilot dependency check, Progress Forge runs `gh auth status` after confirming that the configured agent command is installed.
 
 #### Resolution
 
 1. Run the authentication command required by the selected AI coding agent.
 2. Confirm that the command completes successfully.
-3. Run `nia status --verbose` again.
+3. Run `frg status --verbose` again.
 
 For the GitHub Copilot dependency path, the source error provides this command:
 
@@ -233,35 +233,35 @@ Run:
 
 ```bash
 gh auth status
-nia status --verbose
+frg status --verbose
 ```
 
 The status check should report the agent as authenticated.
 
 #### Additional Notes
 
-NIA does not store external agent credentials in `.nia/config/agents.toml`. Do not place secrets in configuration files or trace files.
+Progress Forge does not store external agent credentials in `.forge/config/agents.toml`. Do not place secrets in configuration files or trace files.
 
 ### Status Reports Not Authenticated After You Set a Model
 
 #### Symptoms
 
-`nia status` reports the agent as not authenticated, but the agent CLI works
+`frg status` reports the agent as not authenticated, but the agent CLI works
 normally when you run it yourself.
 
 #### Possible Causes
 
-`nia status` sends its authentication check using the agent-level `model` you set
-in `.nia/config/agents.toml`. If your agent CLI does not recognise that model
+`frg status` sends its authentication check using the agent-level `model` you set
+in `.forge/config/agents.toml`. If your agent CLI does not recognise that model
 name, the CLI returns an error that NIA cannot distinguish from a sign-in
 failure.
 
 #### Resolution
 
-1. Run `nia config validate`. NIA reports a warning when a configured model name
+1. Run `frg config validate`. NIA reports a warning when a configured model name
    is not in its known list for that agent.
 2. Confirm the model name against your agent CLI's own model list.
-3. Correct the `model` value in `.nia/config/agents.toml`, or remove it so the
+3. Correct the `model` value in `.forge/config/agents.toml`, or remove it so the
    check sends no model name and the agent CLI uses its own default.
 
 > **Claude Code users:** prefer correcting `model` to a current, valid value
@@ -274,7 +274,7 @@ failure.
 #### Verification
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 Set `NIA_LOG=debug` to see which model NIA used for the check, or that no model
@@ -298,26 +298,26 @@ With `--verbose`, it also displays the agent-specific error after `Error:`.
 
 #### Possible Causes
 
-Authentication behavior belongs to the selected agent implementation and its external service. The NIA source verifies the result of the agent-specific check; it does not define every provider's credential format.
+Authentication behavior belongs to the selected agent implementation and its external service. The Progress Forge source verifies the result of the agent-specific check; it does not define every provider's credential format.
 
 #### Resolution
 
 1. Run the selected agent's own authentication or status command.
-2. Confirm that the command succeeds outside NIA.
-3. Re-run `nia status --verbose`.
-4. If the external command succeeds but NIA still reports a failure, capture the complete NIA status output and the configured command for support.
+2. Confirm that the command succeeds outside Progress Forge.
+3. Re-run `frg status --verbose`.
+4. If the external command succeeds but Progress Forge still reports a failure, capture the complete Progress Forge status output and the configured command for support.
 
 #### Verification
 
 Run the external agent check and then:
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 #### Additional Notes
 
-NIA verifies the result of the selected agent's authentication check. It does not define one authentication procedure for every provider.
+Progress Forge verifies the result of the selected agent's authentication check. It does not define one authentication procedure for every provider.
 
 ## Resolve Custom-Agent Problems
 
@@ -329,11 +329,11 @@ The workflow runs, but it uses the built-in role prompt or a different custom-ag
 
 #### Exact status message
 
-There is no dedicated custom-agent error when the external platform does not define the requested name. An empty custom-agent value produces a configuration warning whose exact text is reported in the `Configuration Warnings:` section of `nia status --verbose`.
+There is no dedicated custom-agent error when the external platform does not define the requested name. An empty custom-agent value produces a configuration warning whose exact text is reported in the `Configuration Warnings:` section of `frg status --verbose`.
 
 #### Possible Causes
 
-NIA resolves custom agents in this order:
+Progress Forge resolves custom agents in this order:
 
 1. The `--custom-agent` command-line option.
 2. `custom_agent_operations["target.operation"]`.
@@ -361,16 +361,16 @@ issue = "issue-specialist"
 Use an invocation-level override when you need to test a value:
 
 ```bash
-nia issue draft --custom-agent my-special-agent
+frg issue draft --custom-agent my-special-agent
 ```
 
 #### Verification
 
-Run the workflow with `--custom-agent` and inspect the resulting trace. A selected custom agent causes NIA to omit the built-in role prompt from the composed prompt.
+Run the workflow with `--custom-agent` and inspect the resulting trace. A selected custom agent causes Progress Forge to omit the built-in role prompt from the composed prompt.
 
 #### Additional Notes
 
-An empty custom-agent name produces a configuration warning. NIA does not verify that the external agent platform defines the named custom agent.
+An empty custom-agent name produces a configuration warning. Progress Forge does not verify that the external agent platform defines the named custom agent.
 
 ### A Built-In Role Does Not Apply
 
@@ -380,15 +380,15 @@ A workflow does not use the role supplied with `--role`.
 
 #### Exact prompt behavior
 
-NIA does not emit a separate error. When a custom agent is selected, the composed prompt omits the built-in role prompt.
+Progress Forge does not emit a separate error. When a custom agent is selected, the composed prompt omits the built-in role prompt.
 
 #### Possible Causes
 
-When a custom agent is selected, NIA omits the built-in role prompt because the external custom agent supplies its own persona.
+When a custom agent is selected, Progress Forge omits the built-in role prompt because the external custom agent supplies its own persona.
 
 #### Resolution
 
-Remove `--custom-agent` when the workflow must use a built-in role. NIA supports these built-in role names:
+Remove `--custom-agent` when the workflow must use a built-in role. Progress Forge supports these built-in role names:
 
 - `product_manager`
 - `software_architect`
@@ -403,7 +403,7 @@ Run the workflow without a custom agent and inspect the trace to confirm that th
 
 #### Additional Notes
 
-Use `--custom-agent` for a persona defined by the external agent platform. Use `--role` for a role built into NIA.
+Use `--custom-agent` for a persona defined by the external agent platform. Use `--role` for a role built into Progress Forge.
 
 ## Resolve Prompt Problems
 
@@ -411,11 +411,11 @@ Use `--custom-agent` for a persona defined by the external agent platform. Use `
 
 #### Symptoms
 
-NIA reports a missing prompt override file and includes an expected path.
+Progress Forge reports a missing prompt override file and includes an expected path.
 
 #### Exact error message
 
-NIA returns this message shape, with values from the override declaration and resolved path:
+Progress Forge returns this message shape, with values from the override declaration and resolved path:
 
 ```text
 Error: Prompt override file not found
@@ -439,21 +439,21 @@ A `[[prompt_overrides]]` configuration entry declares an override, but the corre
 
 #### Verification
 
-Confirm that the expected file exists and that NIA no longer reports `MissingOverrideFile`.
+Confirm that the expected file exists and that Progress Forge no longer reports `MissingOverrideFile`.
 
 #### Additional Notes
 
-NIA loads prompt files only when an override is declared for them. The format affects the expected extension, such as `xml` or `md`.
+Progress Forge loads prompt files only when an override is declared for them. The format affects the expected extension, such as `xml` or `md`.
 
 ### The Selected Prompt Format Is Unexpected
 
 #### Symptoms
 
-NIA searches for a prompt file with an unexpected extension or in an unexpected prompt directory.
+Progress Forge searches for a prompt file with an unexpected extension or in an unexpected prompt directory.
 
 #### Exact error message
 
-NIA reports the resulting missing file through the same error:
+Progress Forge reports the resulting missing file through the same error:
 
 ```text
 Error: Prompt override file not found
@@ -463,11 +463,11 @@ The `Declared:` and `Expected:` lines identify the selected target, operation, p
 
 #### Possible Causes
 
-NIA selects prompt format from the operation, target, or global prompt-format setting before loading prompt files. Without a valid override, model names containing `claude` or `anthropic` select XML; other or missing model names select Markdown.
+Progress Forge selects prompt format from the operation, target, or global prompt-format setting before loading prompt files. Without a valid override, model names containing `claude` or `anthropic` select XML; other or missing model names select Markdown.
 
 #### Resolution
 
-Check the format settings in `.nia/config/agents.toml`:
+Check the format settings in `.forge/config/agents.toml`:
 
 ```toml
 [agent.github_copilot]
@@ -496,11 +496,11 @@ The target and operation examples above reflect the current configuration schema
 
 #### Symptoms
 
-NIA reports that no `agents.toml` file exists when a workflow requires agent configuration.
+Progress Forge reports that no `agents.toml` file exists when a workflow requires agent configuration.
 
 #### Exact error message
 
-NIA returns:
+Progress Forge returns:
 
 ```text
 Agent configuration required
@@ -509,12 +509,12 @@ No agents.toml file found at: <config-path>
 
 Run the following command to configure your AI agent:
 
- nia config init --agent <AGENT_NAME>
+ frg config init --agent <AGENT_NAME>
 ```
 
 #### Possible Causes
 
-The project has not initialized NIA agent configuration, or the command runs outside the intended project root.
+The project has not initialized Progress Forge agent configuration, or the command runs outside the intended project root.
 
 #### Resolution
 
@@ -522,25 +522,25 @@ The project has not initialized NIA agent configuration, or the command runs out
 2. Run the initialization command shown by the error:
 
 ```bash
-nia config init --agent <AGENT_NAME>
+frg config init --agent <AGENT_NAME>
 ```
 
-3. Set the default agent in `.nia/config/agents.toml`.
-4. Run `nia status --verbose`.
+3. Set the default agent in `.forge/config/agents.toml`.
+4. Run `frg status --verbose`.
 
 #### Verification
 
-Confirm that `.nia/config/agents.toml` exists and that the status output identifies the selected coding agent.
+Confirm that `.forge/config/agents.toml` exists and that the status output identifies the selected coding agent.
 
 #### Additional Notes
 
-The supported initialization examples are `github_copilot`, `opencode`, and `claude_code`. Use one of these agent identifiers when running `nia config init`.
+The supported initialization examples are `github_copilot`, `opencode`, and `claude_code`. Use one of these agent identifiers when running `frg config init`.
 
 ### The Toolchain Configuration Is Missing
 
 #### Symptoms
 
-The status check reports that `.nia/config/toolchain.toml` is missing.
+The status check reports that `.forge/config/toolchain.toml` is missing.
 
 #### Exact status message
 
@@ -559,13 +559,13 @@ The project has not created its toolchain configuration.
 Run the initialization command with the required agent, issue, and code values:
 
 ```bash
-nia config init --agent <agent> --issues <name> --code <name>
+frg config init --agent <agent> --issues <name> --code <name>
 ```
 
 The status command displays this example for a GitHub configuration:
 
 ```bash
-nia config init --agent github_copilot --issues github_issues --code github
+frg config init --agent github_copilot --issues github_issues --code github
 ```
 
 #### Verification
@@ -573,7 +573,7 @@ nia config init --agent github_copilot --issues github_issues --code github
 Run:
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 The toolchain status should report the configuration as configured.
@@ -586,11 +586,11 @@ The status command reports a missing toolchain file without failing. Workflows t
 
 #### Symptoms
 
-NIA reports a TOML parsing error, an invalid configuration error, or a validation warning.
+Progress Forge reports a TOML parsing error, an invalid configuration error, or a validation warning.
 
 #### Exact error messages
 
-NIA uses these error formats:
+Progress Forge uses these error formats:
 
 ```text
 TOML parsing error: <parser-message>
@@ -607,7 +607,7 @@ The configuration contains invalid TOML, an empty required value, an unsupported
 1. Read the file path and line number in the error.
 2. Check quotes, brackets, table names, and value types.
 3. Check agent-specific validation rules.
-4. Run `nia status --verbose` to display configuration warnings.
+4. Run `frg status --verbose` to display configuration warnings.
 5. Correct the file and repeat the status check.
 
 For example, an agent command must not be empty and must not contain shell operators:
@@ -622,14 +622,14 @@ command = "copilot"
 Run:
 
 ```bash
-nia status --verbose
+frg status --verbose
 ```
 
 Confirm that the configuration warnings are gone and that the related component reports a valid state.
 
 #### Additional Notes
 
-NIA distinguishes TOML parsing errors from semantic validation errors. Keep the original error text when reporting a configuration problem.
+Progress Forge distinguishes TOML parsing errors from semantic validation errors. Keep the original error text when reporting a configuration problem.
 
 ## Resolve Execution Problems
 
@@ -641,7 +641,7 @@ The agent starts, but the workflow ends with an agent error, a nonzero exit code
 
 #### Exact error messages
 
-Depending on the failure, NIA uses one of these formats:
+Depending on the failure, Progress Forge uses one of these formats:
 
 ```text
 Agent error: <agent-name> execution failed: <details>
@@ -657,7 +657,7 @@ The selected agent process returned an error, the prompt or configuration could 
 
 1. Run the failed command again with `RUST_LOG=debug`.
 2. Record the complete error and job ID.
-3. Read the trace under `.nia/work/<job_id>/traces/`.
+3. Read the trace under `.forge/work/<job_id>/traces/`.
 4. Check the selected model, custom agent, prompt format, and toolchain values.
 5. Test the configured agent command with `--version`.
 6. Correct the reported configuration or external-agent problem and retry.
@@ -665,13 +665,13 @@ The selected agent process returned an error, the prompt or configuration could 
 Use debug logging on Linux or macOS:
 
 ```bash
-RUST_LOG=debug nia issue draft
+RUST_LOG=debug frg issue draft
 ```
 
 Use debug logging in Windows PowerShell:
 
 ```powershell
-$env:RUST_LOG="debug"; nia issue draft
+$env:RUST_LOG="debug"; frg issue draft
 ```
 
 #### Verification
@@ -680,7 +680,7 @@ The workflow should complete successfully and create the expected output. Keep t
 
 #### Additional Notes
 
-NIA records the selected model, custom agent, and agent identifier in workflow transaction metadata when those values are available. Do not share traces that contain confidential prompts or credentials.
+Progress Forge records the selected model, custom agent, and agent identifier in workflow transaction metadata when those values are available. Do not share traces that contain confidential prompts or credentials.
 
 ### An Execution Times Out
 
@@ -694,13 +694,13 @@ The current source does not define one universal timeout error string. Capture t
 
 #### Possible Causes
 
-The process exceeded the timeout assigned to the operation or shell step. NIA's automation code applies timeout handling to shell execution, but a universal five-minute agent timeout is not established by the source.
+The process exceeded the timeout assigned to the operation or shell step. Progress Forge's automation code applies timeout handling to shell execution, but a universal five-minute agent timeout is not established by the source.
 
 #### Resolution
 
 1. Read the timeout value and operation from the error or debug output.
 2. Check whether the command is waiting for external input.
-3. Check agent installation, authentication, and network access using `nia status --verbose`.
+3. Check agent installation, authentication, and network access using `frg status --verbose`.
 4. Reduce the scope of the operation when the prompt or workflow performs too much work.
 5. Configure a larger timeout only where the workflow configuration supports that setting.
 
@@ -716,11 +716,11 @@ The current source does not establish a universal agent timeout or a documented 
 
 #### Symptoms
 
-NIA reports an I/O error while creating or writing under `.nia/work/`.
+Progress Forge reports an I/O error while creating or writing under `.forge/work/`.
 
 #### Exact error message
 
-NIA wraps the operating-system message in this format:
+Progress Forge wraps the operating-system message in this format:
 
 ```text
 IO error: <operating-system-message>
@@ -733,25 +733,25 @@ The project directory is not writable, the path is unavailable, or the process l
 #### Resolution
 
 1. Confirm that the project root is the intended directory.
-2. Check that `.nia/work/` exists or can be created.
-3. Check the permissions for the project and `.nia/work/`.
+2. Check that `.forge/work/` exists or can be created.
+3. Check the permissions for the project and `.forge/work/`.
 4. Run the workflow again from an account that can write to the project directory.
 
 On Linux or macOS, inspect the directory with:
 
 ```bash
-ls -ld .nia/work/
+ls -ld .forge/work/
 ```
 
 Create the directory when it is missing:
 
 ```bash
-mkdir -p .nia/work/
+mkdir -p .forge/work/
 ```
 
 #### Verification
 
-Run a workflow and confirm that NIA creates a job directory and trace files under `.nia/work/<job_id>/`.
+Run a workflow and confirm that Progress Forge creates a job directory and trace files under `.forge/work/<job_id>/`.
 
 #### Additional Notes
 
@@ -764,37 +764,37 @@ Avoid changing permissions or ownership recursively unless your operating system
 Set `RUST_LOG` to `debug` for command execution details:
 
 ```bash
-RUST_LOG=debug nia issue draft
+RUST_LOG=debug frg issue draft
 ```
 
 In Windows PowerShell, use:
 
 ```powershell
-$env:RUST_LOG="debug"; nia issue draft
+$env:RUST_LOG="debug"; frg issue draft
 ```
 
 Use `trace` when support requests the most detailed logging:
 
 ```bash
-RUST_LOG=trace nia issue draft 2>&1 | tee debug.log
+RUST_LOG=trace frg issue draft 2>&1 | tee debug.log
 ```
 
 In Windows PowerShell, use:
 
 ```powershell
-$env:RUST_LOG="trace"; nia issue draft 2>&1 | Tee-Object -FilePath debug.log
+$env:RUST_LOG="trace"; frg issue draft 2>&1 | Tee-Object -FilePath debug.log
 ```
 
 ### Collect a Support Package
 
 Collect the following information without exposing secrets:
 
-1. NIA version from `nia --version`.
+1. Progress Forge version from `frg --version`.
 2. Operating system and shell.
-3. Selected NIA agent and configured command.
+3. Selected Progress Forge agent and configured command.
 4. The exact workflow command, with secrets removed.
 5. The complete error message.
-6. Output from `nia status --verbose`.
+6. Output from `frg status --verbose`.
 7. The relevant job ID and trace file names.
 8. Relevant trace content after removing confidential prompts, tokens, and repository data.
 
@@ -802,7 +802,7 @@ Collect the following information without exposing secrets:
 
 Use these practices to reduce repeated troubleshooting:
 
-- Run `nia status --verbose` after changing agent or toolchain configuration.
+- Run `frg status --verbose` after changing agent or toolchain configuration.
 - Keep the configured agent command explicit when automatic discovery does not find the intended executable.
 - Use the exact target and operation names defined by the workflow.
 - Keep prompt override declarations and prompt files synchronized.
@@ -814,18 +814,18 @@ Use these practices to reduce repeated troubleshooting:
 
 The following limits are verified by the current implementation:
 
-- NIA's status command checks the detected project root, coding-agent installation, authentication, and toolchain configuration.
+- Progress Forge's status command checks the detected project root, coding-agent installation, authentication, and toolchain configuration.
 - GitHub Copilot installation checks reject the configured command `gh`.
 - GitHub Copilot authentication checks run `gh auth status`.
-- Custom-agent names are passed to the selected agent; NIA does not verify that the external platform defines each name.
-- A selected custom agent suppresses NIA's built-in role prompt.
+- Custom-agent names are passed to the selected agent; Progress Forge does not verify that the external platform defines each name.
+- A selected custom agent suppresses Progress Forge's built-in role prompt.
 - Prompt override files must exist when declared by `[[prompt_overrides]]` configuration.
 - Prompt format selection occurs before prompt files are loaded.
-- Trace listing and viewing require a known job ID and read files under `.nia/work/<job_id>/traces/`.
+- Trace listing and viewing require a known job ID and read files under `.forge/work/<job_id>/traces/`.
 
 ## Additional Resources
 
-- [Agent Setup](./setup.md) explains how to configure and authenticate NIA agents.
+- [Agent Setup](./setup.md) explains how to configure and authenticate Progress Forge agents.
 - [Custom Agent Configurations](./custom-agent-configurations.md) explains custom-agent selection and precedence.
 - [Model Selection](./model-selection.md) explains model resolution and model profiles.
 - [Prompt Formats](./prompt-formats.md) explains XML and Markdown prompt selection.

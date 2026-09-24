@@ -10,17 +10,17 @@ When updating, verify claims against source code in:
 
 ## Overview
 
-This guide explains what data nia transmits to AI agents and external services, which configuration files affect security behavior, and how to customize nia safely. It's designed for security-conscious developers, IT administrators, and security auditors evaluating nia for organizational adoption.
+This guide explains what data frg transmits to AI agents and external services, which configuration files affect security behavior, and how to customize frg safely. It's designed for security-conscious developers, IT administrators, and security auditors evaluating frg for organizational adoption.
 
 **Key topics covered:**
 - Data flow from your machine to AI agents and telemetry services
 - Configuration files that require security review
 - Safe patterns for command hooks and custom prompts
-- Nia's security boundaries and limitations
+- Progress Forge's security boundaries and limitations
 
 ## Quick Reference
 
-| Security Concern | What Nia Controls | What Nia Cannot Control |
+| Security Concern | What Progress Forge Controls | What Progress Forge Cannot Control |
 |------------------|-------------------|-------------------------|
 | **Context paths** | Validates paths stay within repository | Agent can read any file it has permission to access |
 | **Prompt injection** | Escapes description fields (500 char limit) | Custom prompts can override behavior |
@@ -29,13 +29,13 @@ This guide explains what data nia transmits to AI agents and external services, 
 
 ## What Data Is Sent to AI Agents
 
-When you run nia commands, data flows through two independent paths:
+When you run frg commands, data flows through two independent paths:
 1. **Prompt data** → your configured AI agent
 2. **Telemetry data** → Progress/Azure App Insights (opt-out)
 
 ### Prompt Data
 
-When you run a nia command, the following information is sent to your configured AI agent:
+When you run a frg command, the following information is sent to your configured AI agent:
 
 | Data Source | Content | When Sent |
 |-------------|---------|-----------|
@@ -49,12 +49,12 @@ When you run a nia command, the following information is sent to your configured
 > file paths that the AI agent reads directly using its file system access. This
 > means:
 > - Large context files don't consume prompt tokens
-> - The agent can read files beyond what nia validates
-> - Nia's path validation applies to what nia references, not what agent accesses
+> - The agent can read files beyond what frg validates
+> - Progress Forge's path validation applies to what frg references, not what agent accesses
 
 ### Init vs. Delta Prompts
 
-Nia uses a token optimization model with two prompt types:
+Progress Forge uses a token optimization model with two prompt types:
 
 **Init prompts** (new sessions):
 - Include role, project config, service config, task, and user input
@@ -75,16 +75,16 @@ new session if you suspect prompt contamination.
 > **⚠️ Critical Security Consideration**
 >
 > The AI agent can read ANY file it has filesystem permission to access, regardless
-> of what paths nia validates. Nia's `validate_context_path` function prevents nia
+> of what paths frg validates. Progress Forge's `validate_context_path` function prevents forge
 > from referencing paths outside the repository, but cannot constrain the agent's
 > direct file access.
 
-**What nia controls**:
+**What frg controls**:
 - Paths included in the composed prompt
 - Validation that paths don't escape repository boundary
 - Description sanitization for prompt injection prevention
 
-**What nia does NOT control**:
+**What frg does NOT control**:
 - Which files the agent chooses to read
 - Agent sandbox boundaries (agent-specific)
 - Network access or other agent capabilities
@@ -92,21 +92,21 @@ new session if you suspect prompt contamination.
 To inspect the exact prompt sent to the agent:
 
 ```bash
-nia <command> --print-prompt
+frg <command> --print-prompt
 ```
 
 This shows the composed prompt without executing, allowing security review.
 
 ### Telemetry Data
 
-Nia has two independent telemetry destinations with very different data sets. Read
+Progress Forge has two independent telemetry destinations with very different data sets. Read
 both rows before assuming what leaves your machine. Telemetry is **enabled by
 default** and can be disabled via configuration — see "Disabling Telemetry" below.
 
 | Destination | Enabled by | Data collected |
 |-------------|-----------|-----------------|
 | Progress Analytics (App Insights) | On by default, config-gated | Command, version, OS, agent name, model, invocation source, success, hashed machine ID, user ID |
-| Self-hosted OpenSearch | Off unless you configure a backend in `telemetry.toml` | Every transaction event nia writes locally, plus completed trace files and system logs |
+| Self-hosted OpenSearch | Off unless you configure a backend in `telemetry.toml` | Every transaction event frg writes locally, plus completed trace files and system logs |
 | Self-hosted OTEL | Off unless you configure a backend in `telemetry.toml` | Transaction events converted to OTLP spans — trace files, system logs and approval PII are OpenSearch-only, they are never sent to OTEL |
 
 **What is never transmitted to either destination**:
@@ -137,13 +137,13 @@ OpenSearch/OTEL backend when you configure one:
 > Set `[privacy] strict_privacy = true` in `telemetry.toml` to hash repository, git
 > user and approver identity fields before they are uploaded.
 
-Telemetry covers every `nia` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same `init`/`complete` events.
+Telemetry covers every `frg` command, not just AI-workflow commands (`ask`, `issue`, `code`, `pr`, ...) — utility commands (`config`, `status`, `guide`, `shell`, `learn`, `telemetry`, `workflow`, ...) emit the same `init`/`complete` events.
 
 ### Disabling Telemetry
 
 **Option 1: Configuration file**
 
-Edit `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`:
+Edit `~/.config/forge/telemetry.toml` or `.forge/config/telemetry.toml`:
 
 ```toml
 [usage]
@@ -153,7 +153,7 @@ enabled = false
 **Option 2: Environment variable**
 
 ```bash
-export NIA_TELEMETRY_DISABLED=1
+export FORGE_TELEMETRY_DISABLED=1
 ```
 
 The environment variable takes precedence over configuration files.
@@ -161,10 +161,10 @@ The environment variable takes precedence over configuration files.
 **Option 3: CLI command**
 
 ```bash
-nia telemetry off
+frg telemetry off
 ```
 
-Telemetry configuration is managed in `~/.config/nia/telemetry.toml` or `.nia/config/telemetry.toml`.
+Telemetry configuration is managed in `~/.config/forge/telemetry.toml` or `.forge/config/telemetry.toml`.
 
 See: `src/telemetry/usage.rs` for implementation details.
 
@@ -174,7 +174,7 @@ See: `src/telemetry/usage.rs` for implementation details.
 flowchart LR
     subgraph Local["Your Machine"]
         CF["Config Files"]
-        NIA["nia"]
+        FORGE["forge"]
         FS["File System"]
     end
 
@@ -186,39 +186,39 @@ flowchart LR
         TEL["Telemetry"]
     end
 
-    CF -->|paths, prompts| NIA
-    NIA -->|composed prompt| AR
+    CF -->|paths, prompts| FORGE
+    FORGE -->|composed prompt| AR
     AR -.->|direct read| FS
-    NIA -.->|anonymous usage| TEL
+    FORGE -.->|anonymous usage| TEL
 
     classDef local fill:none,stroke:#22c55e,stroke-width:2px
     classDef external fill:none,stroke:#3b82f6,stroke-width:2px
 
-    class CF,NIA,FS local
+    class CF,FORGE,FS local
     class AR,TEL external
 ```
 
 **Legend:**
-- Solid lines: Data flow through nia (validated)
-- Dashed lines: Direct access (not validated by nia)
+- Solid lines: Data flow through frg (validated)
+- Dashed lines: Direct access (not validated by forge)
 
 ## Security-Sensitive Configuration Files
 
-The following files control security-relevant behavior in nia. Review changes to
+The following files control security-relevant behavior in forge. Review changes to
 these files carefully in code review.
 
 ### Configuration Files Catalog
 
 | File | Security Impact | Review Priority |
 |------|-----------------|-----------------|
-| `.nia/config/project.toml` | Context paths, project metadata | High |
-| `.nia/config/commands.toml` | Hooks, environment variables | Critical |
-| `.nia/prompts/*.md` | Prompt overrides | High |
-| `.nia/config/.gitleaks.toml` | Secret masking patterns | Medium |
-| `.nia/config/.prompt-safety.toml` | Prompt injection detection rules | Medium |
-| `.nia/work/<job_id>/traces/*` | Session execution traces | Medium |
-| `.nia/work/<job_id>/logs/*` | Job execution logs | Medium |
-| `.nia/config/telemetry.toml` | Telemetry configuration | Low |
+| `.forge/config/project.toml` | Context paths, project metadata | High |
+| `.forge/config/commands.toml` | Hooks, environment variables | Critical |
+| `.forge/prompts/*.md` | Prompt overrides | High |
+| `.forge/config/.gitleaks.toml` | Secret masking patterns | Medium |
+| `.forge/config/.prompt-safety.toml` | Prompt injection detection rules | Medium |
+| `.forge/work/<job_id>/traces/*` | Session execution traces | Medium |
+| `.forge/work/<job_id>/logs/*` | Job execution logs | Medium |
+| `.forge/config/telemetry.toml` | Telemetry configuration | Low |
 
 ### project.toml Context Security
 
@@ -239,14 +239,14 @@ description = "System architecture"
 | `*.pem`, `*.key` | Private keys exposed |
 | `.git/config` | Repository credentials |
 | `~/.ssh/*` | SSH keys (blocked by path validation) |
-| `.nia/config/telemetry.toml` | Consent settings |
+| `.forge/config/telemetry.toml` | Consent settings |
 
 **Path validation** (`src/context/security.rs`):
 - Paths are canonicalized to resolve `..` and symlinks
 - Paths must resolve within repository boundary
 - Example blocked: `../../../etc/passwd`
 
-> **Limitation**: Path validation only applies to what nia references. If you
+> **Limitation**: Path validation only applies to what frg references. If you
 > configure context pointing to a sensitive directory, the agent may read ALL
 > files in that directory, including those you didn't intend.
 
@@ -285,7 +285,7 @@ may be visible to the AI agent depending on its execution model.
 
 ### Prompt Override Security
 
-Custom prompts in `.nia/prompts/` can completely override default behavior.
+Custom prompts in `.forge/prompts/` can completely override default behavior.
 
 **Risks**:
 - Malicious prompt could instruct agent to exfiltrate data
@@ -293,7 +293,7 @@ Custom prompts in `.nia/prompts/` can completely override default behavior.
 - No automated validation of prompt content
 
 **Recommendations**:
-- Treat `.nia/prompts/` as security-sensitive code
+- Treat `.forge/prompts/` as security-sensitive code
 - Require code review for all prompt changes
 - Use `--print-prompt` to audit composed prompts before execution
 - Consider separate review approval for prompt changes
@@ -321,14 +321,14 @@ input or external data in description fields.
 
 ### Prompt Injection Detection
 
-Nia validates user input for prompt injection attacks before sending content to AI agents.
+Progress Forge validates user input for prompt injection attacks before sending content to AI agents.
 
 **Protected Input Sources:**
 | Source | Validation Applied |
 |--------|-------------------|
 | GitHub issue bodies | ✓ Validated after fetch |
 | Modifier files (edit.md, question.md) | ✓ Validated before composition |
-| Custom prompts (.nia/prompts/) | ✓ Validated during resolution |
+| Custom prompts (.forge/prompts/) | ✓ Validated during resolution |
 | Command arguments | ✓ Validated at CLI level |
 | Context descriptions | ✓ Existing sanitization + new validation |
 
@@ -355,7 +355,7 @@ Nia validates user input for prompt injection attacks before sending content to 
 For legitimate use cases (security documentation, training materials), use:
 
 ```bash
-nia issue draft --bypass-safety-checks
+frg issue draft --bypass-safety-checks
 ```
 
 > ⚠️ **Warning**: Bypassed attempts are logged for security audit. Use only
@@ -366,10 +366,10 @@ nia issue draft --bypass-safety-checks
 Export the built-in config to start from a working copy, then customize it:
 
 ```bash
-nia config export --security
+frg config export --security
 ```
 
-This creates `.nia/config/.prompt-safety.toml` with all built-in rules. Edit it to add custom rules or allowlist entries:
+This creates `.forge/config/.prompt-safety.toml` with all built-in rules. Edit it to add custom rules or allowlist entries:
 
 ```toml
 [settings]
@@ -395,13 +395,13 @@ All detection events are logged to trace files:
 - Blocked attempts: Logged as ERROR
 - Bypassed attempts: Logged as WARN with full context
 
-Review trace files at `.nia/work/<job_id>/traces/` for security audit.
+Review trace files at `.forge/work/<job_id>/traces/` for security audit.
 
 See: `src/security/prompt_injection.rs` for implementation details.
 
 ## Safe Customization Guidelines
 
-Nia is designed to be customizable. This section explains how to extend nia
+Progress Forge is designed to be customizable. This section explains how to extend forge
 without introducing security vulnerabilities.
 
 ### Shell Hook Security
@@ -491,7 +491,7 @@ configuration as security-critical infrastructure.
 
 Custom prompts should follow a code review process:
 
-1. **Draft**: Write prompt in `.nia/prompts/` directory
+1. **Draft**: Write prompt in `.forge/prompts/` directory
 2. **Review**: Security-focused code review
    - Check for instruction injection vulnerabilities
    - Verify prompt doesn't request sensitive operations
