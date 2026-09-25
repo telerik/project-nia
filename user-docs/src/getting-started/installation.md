@@ -137,8 +137,8 @@ chmod +x frg-*-x86_64-linux-legacy
 sudo mv frg-*-x86_64-linux-legacy /usr/local/bin/frg
 
 # Rocky Linux / RHEL 8.x - RPM
-gh release download --repo telerik/project-nia --pattern 'frg-*-1.el8.x86_64.rpm'
-sudo dnf install ./frg-*-1.el8.x86_64.rpm
+gh release download --repo telerik/project-nia --pattern 'progress-forge-*-1.el8.x86_64.rpm'
+sudo dnf install ./progress-forge-*-1.el8.x86_64.rpm
 ```
 
 If your glibc is older than 2.28, build from source instead; compilation on those systems
@@ -169,6 +169,8 @@ is supported and links against your local glibc.
 
 The quick installer detects the release asset for your platform and provides the shortest installation path. Progress Forge releases are published in the public [`telerik/project-nia`](https://github.com/telerik/project-nia) repository.
 
+The public repository publishes stable releases only. Prereleases remain in the private `Progress-Copilot/nia` repository and require authorized access.
+
 #### Install with GitHub CLI
 
 *Linux/macOS:*
@@ -190,7 +192,6 @@ After downloading the installer, pass options to select a release channel, versi
 ```bash
 gh release download --repo telerik/project-nia --pattern 'install.sh'
 sh install.sh --version 4.0.1              # Install specific version
-sh install.sh --pre-release                 # Install pre-release
 sh install.sh --install-dir ~/.local/bin   # Custom directory
 sh install.sh --skip-verify                # Skip verification (not recommended)
 sh install.sh --quiet                      # Quiet mode for CI/CD
@@ -200,7 +201,6 @@ sh install.sh --quiet                      # Quiet mode for CI/CD
 ```powershell
 gh release download --repo telerik/project-nia --pattern 'install.ps1'
 .\install.ps1 -Version '4.0.1'             # Install specific version
-.\install.ps1 -PreRelease                  # Install pre-release
 .\install.ps1 -InstallDir "$env:LOCALAPPDATA\Programs\frg"  # Custom directory
 .\install.ps1 -SkipVerify                  # Skip verification (not recommended)
 .\install.ps1 -Quiet                       # Quiet mode for CI/CD
@@ -253,10 +253,10 @@ gh release download --repo telerik/project-nia --pattern 'frg-*-x86_64-darwin'
 # Make executable
 chmod +x frg-*-x86_64-darwin
 
-# Remove macOS quarantine attribute (required for unsigned binaries)
-xattr -d com.apple.quarantine frg-*-x86_64-darwin
-
-# Alternative: Control-click the file in Finder → Open → confirm
+# Verify the Apple Developer ID signature
+codesign --verify --verbose=2 frg-*-x86_64-darwin
+# Verify Gatekeeper acceptance
+spctl --assess --type execute --verbose frg-*-x86_64-darwin
 
 # Move to PATH
 sudo mv frg-*-x86_64-darwin /usr/local/bin/frg
@@ -265,7 +265,7 @@ sudo mv frg-*-x86_64-darwin /usr/local/bin/frg
 frg --version
 ```
 
-**Note**: macOS Gatekeeper will initially block the binary because it's not signed with an Apple Developer certificate. Use the `xattr` command or Control-click method to bypass this security warning. This is safe for frg as all binaries are GPG signed for verification.
+**Note**: Release macOS binaries are signed with a Progress Apple Developer ID certificate and notarized. Gatekeeper should accept them without disabling quarantine. If either verification command fails, download the release again and check the GPG signature before opening an issue.
 
 #### Install on macOS (Apple Silicon aarch64)
 
@@ -277,10 +277,10 @@ gh release download --repo telerik/project-nia --pattern 'frg-*-aarch64-darwin'
 # Make executable
 chmod +x frg-*-aarch64-darwin
 
-# Remove macOS quarantine attribute (required for unsigned binaries)
-xattr -d com.apple.quarantine frg-*-aarch64-darwin
-
-# Alternative: Control-click the file in Finder → Open → confirm
+# Verify the Apple Developer ID signature
+codesign --verify --verbose=2 frg-*-aarch64-darwin
+# Verify Gatekeeper acceptance
+spctl --assess --type execute --verbose frg-*-aarch64-darwin
 
 # Move to PATH
 sudo mv frg-*-aarch64-darwin /usr/local/bin/frg
@@ -486,14 +486,20 @@ If `frg` is not recognized:
 
 For supported Linux distributions, use the package that matches your architecture. Package installation integrates Progress Forge with the distribution's package manager and avoids manually moving the binary.
 
+Linux package identity is `progress-forge`; the installed command remains `frg`. On Windows, the executable is `frg.exe`.
+
+The RPM commands below install the standard package, which requires glibc 2.39 or newer.
+For systems with glibc 2.28 through 2.38, including RHEL 8, use the
+[legacy RPM instructions](#linux-glibc-requirements).
+
 #### Debian or Ubuntu (x86_64)
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'frg_*_amd64.deb'
+gh release download --repo telerik/project-nia --pattern 'progress-forge_*_amd64.deb'
 
 # Install package
-sudo dpkg -i frg_*_amd64.deb
+sudo dpkg -i progress-forge_*_amd64.deb
 
 # Verify installation
 frg --version
@@ -503,10 +509,10 @@ frg --version
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'frg_*_arm64.deb'
+gh release download --repo telerik/project-nia --pattern 'progress-forge_*_arm64.deb'
 
 # Install package
-sudo dpkg -i frg_*_arm64.deb
+sudo dpkg -i progress-forge_*_arm64.deb
 
 # Verify installation
 frg --version
@@ -516,13 +522,13 @@ frg --version
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'frg-*x86_64.rpm'
+gh release download --repo telerik/project-nia --pattern 'progress-forge-*-1.x86_64.rpm'
 
-# Install package (Fedora/RHEL 8+)
-sudo dnf install ./frg-*x86_64.rpm
+# Install standard package
+sudo dnf install ./progress-forge-*-1.x86_64.rpm
 
-# Or for older systems
-sudo rpm -i frg-*x86_64.rpm
+# Or install with rpm directly
+sudo rpm -i progress-forge-*-1.x86_64.rpm
 
 # Verify installation
 frg --version
@@ -532,13 +538,13 @@ frg --version
 
 ```bash
 # Download latest release
-gh release download --repo telerik/project-nia --pattern 'frg-*aarch64.rpm'
+gh release download --repo telerik/project-nia --pattern 'progress-forge-*-1.aarch64.rpm'
 
-# Install package (Fedora/RHEL 8+)
-sudo dnf install ./frg-*aarch64.rpm
+# Install standard package
+sudo dnf install ./progress-forge-*-1.aarch64.rpm
 
-# Or for older systems
-sudo rpm -i frg-*aarch64.rpm
+# Or install with rpm directly
+sudo rpm -i progress-forge-*-1.aarch64.rpm
 
 # Verify installation
 frg --version
@@ -781,7 +787,7 @@ RUN frg --version
 | Intel Mac | Linux x86_64 container | `frg-*-x86_64-linux` or x86_64 packages |
 | AWS Graviton (ARM64) | Linux ARM64 | `frg-*-aarch64-linux` or ARM64 packages |
 | Standard x86_64 Linux (glibc 2.39+) | - | `frg-*-x86_64-linux` or x86_64 packages |
-| Rocky Linux / RHEL / AlmaLinux 8.x | - | `frg-*-x86_64-linux-legacy` or `frg-*-1.el8.x86_64.rpm` |
+| Rocky Linux / RHEL / AlmaLinux 8.x | - | `frg-*-x86_64-linux-legacy` or `progress-forge-*-1.el8.x86_64.rpm` |
 
 > **Important**: The macOS aarch64 binary (`aarch64-darwin`) is for native macOS execution only. It will **not** work inside Linux containers, even on Apple Silicon Macs. Use the Linux aarch64 binary or packages for container deployments.
 
@@ -799,34 +805,19 @@ Start with these checks when installation does not complete successfully:
 
 ### Troubleshoot macOS
 
-#### Gatekeeper Blocks the Binary
+#### Gatekeeper Rejects the Binary
 
-**Problem**: "cannot be opened because it is from an unidentified developer"
+**Problem**: Gatekeeper rejects a release binary that should be signed and notarized.
 
 **Solution**:
 
-Method 1 - Remove quarantine attribute (recommended):
+Verify the code signature and Gatekeeper assessment:
 ```bash
-xattr -d com.apple.quarantine /usr/local/bin/frg
-# Or for the downloaded file:
-xattr -d com.apple.quarantine frg-*-darwin
+codesign --verify --verbose=2 /usr/local/bin/frg
+spctl --assess --type execute --verbose /usr/local/bin/frg
 ```
 
-Method 2 - Control-click bypass:
-1. Locate the file in Finder
-2. Control-click (or right-click) the file
-3. Select "Open" from the menu
-4. Click "Open" in the warning dialog
-5. The file will now run without warnings
-
-Method 3 - System Settings (macOS 13+):
-1. Try to run the binary (it will be blocked)
-2. Go to System Settings → Privacy & Security
-3. Scroll to "Security" section
-4. Click "Open Anyway" next to the blocked app message
-5. Re-run the binary
-
-**Why this happens**: macOS applies Gatekeeper checks to downloaded applications. Progress Forge release assets include signatures and checksums for authenticity verification.
+If verification fails, do not bypass Gatekeeper. Download the asset again and verify its GPG signature and SHA256 checksum.
 
 ---
 
@@ -1074,18 +1065,16 @@ The installation script requires PowerShell 6 or later. Windows includes PowerSh
 
 2. Open a new PowerShell 7 terminal and retry installation.
 
-**Problem**: macOS Gatekeeper blocks the binary
+**Problem**: macOS Gatekeeper rejects the binary
 
 **Solution**:
 
-The installation script automatically removes the quarantine attribute. If you still see a warning:
-
-1. Open System Preferences → Security & Privacy
-2. Click "Open Anyway" next to the frg warning
-3. Or manually remove the quarantine attribute:
-   ```bash
-   sudo xattr -d com.apple.quarantine /usr/local/bin/frg
-   ```
+The release binary is expected to be Developer ID signed and notarized. Verify it with:
+```bash
+codesign --verify --verbose=2 /usr/local/bin/frg
+spctl --assess --type execute --verbose /usr/local/bin/frg
+```
+Do not disable quarantine or use an "Open Anyway" bypass for a failed verification.
 
 ---
 

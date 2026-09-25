@@ -194,11 +194,11 @@ CentOS 8 all ship glibc 2.28.
    frg --version
 
    # or the RPM
-   gh release download --repo telerik/project-nia --pattern 'frg-*-1.el8.x86_64.rpm'
-   sudo dnf install ./frg-*-1.el8.x86_64.rpm
+   gh release download --repo telerik/project-nia --pattern 'progress-forge-*-1.el8.x86_64.rpm'
+   sudo dnf install ./progress-forge-*-1.el8.x86_64.rpm
    ```
 
-   Use `frg-*-aarch64-linux-legacy` / `frg-*-1.el8.aarch64.rpm` on ARM64.
+   Use `frg-*-aarch64-linux-legacy` / `progress-forge-*-1.el8.aarch64.rpm` on ARM64.
 
 3. **Or re-run the installer**, which selects the correct variant automatically from your
    glibc version:
