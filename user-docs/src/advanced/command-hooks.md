@@ -105,6 +105,79 @@ command_windows = "choco install jq"
 > **Before using shell hooks**, review [Safe Customization Guidelines](../reference/security.md#safe-customization-guidelines)
 > for secure patterns and common pitfalls to avoid.
 
+#### Agent Steps
+
+An agent step (`type = "agent"`) runs the coding agent with a **user-supplied
+prompt** as part of a hook. This is different from a regular nia workflow
+command (e.g., `nia issue draft 123`), which uses a predefined prompt from
+`configs/prompts/`. An agent step lets a hook run an arbitrary, one-off
+instruction of your own choosing.
+
+```toml
+[[commands.operations.hooks.pre]]
+kind = "step"
+id = "analyze-requirements"
+type = "agent"
+prompt = "Analyze the requirements in the issue and list key implementation points."
+context = ["issue"]
+```
+
+**Fields:**
+
+- `prompt` (required, string) — the instruction sent to the agent.
+- `context` (optional, string or array of strings) — injects resolved context
+  IDs in a separate XML block when available. Accepts a single value
+  (`context = "issue"`) or a list
+  (`context = ["issue", "pr"]`).
+
+  | Value | Injects |
+  |-------|---------|
+  | `issue` | `issue_id` when available |
+  | `code` | Nothing yet (reserved for future tooltip injection) |
+  | `pr` | `pr_id` when available |
+  | `security` | Nothing yet (reserved for future tooltip injection) |
+  | `ticket` | `ticket_id` when available |
+
+- `share_session_with` (optional, string) — reuses the agent session started
+  by another command state, continuing that conversation instead of starting
+  a new one. The referenced state must execute **before** this agent step in
+  definition order.
+
+```toml
+[[commands.operations.hooks.post]]
+kind = "step"
+id = "summarize-review-session"
+type = "agent"
+prompt = "Summarize the key points from the review discussion above."
+share_session_with = "pr_review"
+```
+
+**Timeout and retry**: `retry_count` and `retry_delay_seconds` apply to agent
+steps the same way they do for `shell`/`builtin` steps — a failing step is
+retried up to `retry_count` times. `timeout_seconds` only enforces a hard,
+process-killing timeout for `shell` steps; for agent and builtin steps it just
+prevents starting another retry attempt once the elapsed time exceeds the
+limit, it does not abort an agent call already in progress.
+
+**Validation and error behavior:**
+
+- A step with `type = "agent"` and no `prompt` fails config validation with
+  `agent step '<id>' must have prompt`.
+- An unrecognized `context` value fails config validation with
+  `unknown agent step context '<value>'. Valid values: issue, code, pr, security, ticket`.
+- If `share_session_with` names a state that hasn't executed yet (or doesn't
+  exist), the step does **not** fail — it logs a warning and runs with a
+  fresh session instead of resuming one.
+
+> **Security Note**: Agent steps accept arbitrary prompts and can inject
+> issue/PR/ticket context. Follow the guidance in
+> [Prompt Safety](prompt-safety.md) when authoring prompts that
+> include untrusted or user-controlled content.
+>
+> See also: [Agent Steps (Advanced)](../reference/workflow-steps.md#agent-steps-advanced)
+> in the Workflow Steps reference for how the same step type is used in
+> workflow-level `pre`/`post` steps.
+
 ### Checks
 
 Checks validate conditions without modifying state. If a check fails, the workflow can either stop or continue based on the `on_false` setting.

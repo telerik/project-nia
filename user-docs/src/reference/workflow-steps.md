@@ -233,7 +233,10 @@ env_value = "secret-value"
 
 ### Agent Steps (Advanced)
 
-Execute an AI agent prompt as part of the workflow.
+Execute an AI agent prompt as part of the workflow. This is a **user-supplied
+prompt**, distinct from a nia workflow command (e.g., `nia issue draft`),
+which runs a predefined prompt from `configs/prompts/`. An agent step lets
+a workflow's `pre`/`post` items run an arbitrary, one-off instruction.
 
 ```toml
 [[workflows.operations.pre]]
@@ -241,6 +244,7 @@ kind = "step"
 id = "analyze-context"
 type = "agent"
 prompt = "Analyze the provided context and summarize key requirements."
+context = "issue"
 ```
 
 The prompt may reference `{{issue_id}}`, `{{pr_id}}`, and `{{ticket_id}}` —
@@ -257,11 +261,45 @@ prompt = "Summarize issue {{issue_id}} for the team."
 context = ["issue"]
 ```
 
-`context` additionally injects a separate `<issue_context>`/`<pr_context>`/
-`<ticket_context>` XML block before the prompt (see [Workflow Schema
-Reference](workflow-schema.md) for the full field list). Every agent step
-writes a trace file to `<job_dir>/traces/` with the prompt and the agent's
-output, the same as command-based states.
+**Fields:**
+
+- `prompt` (required, string) — the instruction sent to the agent.
+- `context` (optional, string or array of strings) — injects a separate XML
+  block with the resolved `issue_id`, `pr_id`, or `ticket_id` when available.
+  Valid values: `issue`, `code`, `pr`, `security`, `ticket`. Accepts a single
+  value (`context = "issue"`) or a list (`context = ["issue", "pr"]`).
+  `code` and `security` are accepted but do not inject tooltips yet.
+- `share_session_with` (optional, string) — reuses the agent session started
+  by another command state instead of starting a fresh one. The referenced
+  state must execute **before** this agent step in definition order; if it
+  hasn't run yet (or doesn't exist), the step logs a warning and starts a new
+  session rather than failing.
+
+```toml
+[[workflows.operations.post]]
+kind = "step"
+id = "continue-discussion"
+type = "agent"
+prompt = "Given the review above, list the top 3 fixes to prioritize."
+share_session_with = "pr_review"
+```
+
+`retry_count` / `retry_delay_seconds` apply to agent steps the same as
+`shell`/`builtin` steps. `timeout_seconds` only enforces a hard,
+process-killing timeout for `shell` steps — for agent (and builtin) steps it
+merely blocks a further retry once elapsed time exceeds the limit and does
+not interrupt an in-progress agent call.
+
+A workflow agent step with no `prompt` fails when executed with a validation error (`Agent step '<id>' must have a prompt`). In command configuration files, the loader rejects the missing prompt during config validation; an unrecognized `context` value fails while parsing either configuration.
+
+The `context` XML block is separate from placeholder substitution and appears
+before the prompt (see [Workflow Schema Reference](workflow-schema.md) for the
+full field list). Every agent step writes a trace file to `<job_dir>/traces/`
+with the prompt and the agent's output, the same as command-based states.
+
+For the full field reference, more examples, and command-hook usage of the
+same step type, see [Agent Steps](../advanced/command-hooks.md#agent-steps)
+in the Command Hooks guide.
 
 ## Check Types
 
